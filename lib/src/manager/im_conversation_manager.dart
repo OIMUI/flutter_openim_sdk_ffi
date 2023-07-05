@@ -55,8 +55,7 @@ class ConversationManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
-    return ConversationInfo.fromJson(Map.from(result.value));
+    return result.value;
   }
 
   /// 根据会话id获取多个会话
@@ -92,10 +91,11 @@ class ConversationManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 设置会话草稿
@@ -114,10 +114,11 @@ class ConversationManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 置顶会话
@@ -135,10 +136,11 @@ class ConversationManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 获取未读消息总数
@@ -191,10 +193,11 @@ class ConversationManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 查询免打扰状态
@@ -230,10 +233,11 @@ class ConversationManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 删除本地以及服务器的会话
@@ -249,10 +253,10 @@ class ConversationManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 删除所有本地会话
@@ -266,10 +270,10 @@ class ConversationManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 重置强提醒标识[GroupAtType]
@@ -285,10 +289,10 @@ class ConversationManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 查询@所有人标识
@@ -319,10 +323,11 @@ class ConversationManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 设置阅后即焚时长
@@ -340,10 +345,11 @@ class ConversationManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 会话列表自定义排序规则。

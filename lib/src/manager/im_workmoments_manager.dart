@@ -57,9 +57,10 @@ class WorkMomentsManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 }

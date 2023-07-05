@@ -144,6 +144,11 @@ class OpenIMManager {
           _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => ConversationInfo.fromJson(v))));
           _sendPortMap.remove(msg.operationID!);
         }
+      case _PortMethod.getOneConversation:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => ConversationInfo.fromJson(v))));
+          _sendPortMap.remove(msg.operationID!);
+        }
       case _PortMethod.getHistoryMessageList:
         if (msg.operationID != null) {
           _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => Message.fromJson(v))));
@@ -151,6 +156,11 @@ class OpenIMManager {
         }
         break;
       case _PortMethod.getUsersInfo:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => UserInfo.fromJson(v))));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
       case _PortMethod.getSelfUserInfo:
         if (msg.operationID != null) {
           _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => UserInfo.fromJson(v))));
@@ -163,6 +173,45 @@ class OpenIMManager {
           _sendPortMap.remove(msg.operationID!);
         }
         break;
+      case _PortMethod.inviteUserToGroup:
+      case _PortMethod.kickGroupMember:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => GroupInviteResult.fromJson(v))));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
+      case _PortMethod.getGroupMembersInfo:
+      case _PortMethod.getGroupMemberList:
+      case _PortMethod.getGroupMemberListByJoinTimeFilter:
+      case _PortMethod.getGroupMemberOwnerAndAdmin:
+      case _PortMethod.searchGroupMembers:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => GroupMembersInfo.fromJson(v))));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
+      case _PortMethod.getJoinedGroupList:
+      case _PortMethod.getGroupsInfo:
+      case _PortMethod.searchGroups:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => GroupInfo.fromJson(v))));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
+      case _PortMethod.createGroup:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => GroupInfo.fromJson(v))));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
+      case _PortMethod.getRecvGroupApplicationList:
+      case _PortMethod.getSendGroupApplicationList:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => GroupApplicationInfo.fromJson(v))));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
+
       default:
         if (msg.operationID != null) {
           _sendPortMap[msg.operationID!]?.send(_PortResult(data: msg.data));
@@ -343,6 +392,9 @@ class OpenIMManager {
             final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
             final token = (msg.data['token'] as String).toNativeUtf8().cast<ffi.Char>();
             _imBindings.Login(operationID, uid, token);
+            calloc.free(operationID);
+            calloc.free(uid);
+            calloc.free(token);
             break;
           case _PortMethod.version:
             String version = _imBindings.GetSdkVersion().cast<Utf8>().toDartString();
@@ -350,9 +402,11 @@ class OpenIMManager {
             break;
           case _PortMethod.getUsersInfo:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final userIDList = (jsonEncode(msg.data['userList'] as List<String>)).toNativeUtf8().cast<ffi.Char>();
+            final uidList = (jsonEncode(msg.data['uidList'] as List<String>)).toNativeUtf8().cast<ffi.Char>();
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            _imBindings.GetUsersInfo(operationID, userIDList);
+            _imBindings.GetUsersInfo(operationID, uidList);
+            calloc.free(operationID);
+            calloc.free(uidList);
             break;
           case _PortMethod.getSelfUserInfo:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
@@ -365,6 +419,14 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             _imBindings.GetAllConversationList(operationID);
             calloc.free(operationID);
+            break;
+          case _PortMethod.getOneConversation:
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final sourceID = (msg.data['sourceID'] as String).toNativeUtf8().cast<ffi.Char>();
+            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
+            _imBindings.GetOneConversation(operationID, msg.data['sessionType'], sourceID);
+            calloc.free(operationID);
+            calloc.free(sourceID);
             break;
           case _PortMethod.getConversationListSplit:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();

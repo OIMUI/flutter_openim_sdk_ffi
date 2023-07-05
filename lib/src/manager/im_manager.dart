@@ -303,10 +303,11 @@ class IMManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 上传图片到服务器
@@ -331,10 +332,11 @@ class IMManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 更新firebase客户端注册token
@@ -354,10 +356,11 @@ class IMManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 标记app处于后台
@@ -376,10 +379,11 @@ class IMManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 网络改变
@@ -396,9 +400,10 @@ class IMManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 }

@@ -41,10 +41,11 @@ class FriendshipManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 获取别人加我为好友的申请
@@ -130,10 +131,11 @@ class FriendshipManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 加入黑名单
@@ -152,10 +154,11 @@ class FriendshipManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 获取黑名单列表
@@ -190,10 +193,11 @@ class FriendshipManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 检查友好关系
@@ -233,10 +237,11 @@ class FriendshipManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 接受好友请求
@@ -258,10 +263,11 @@ class FriendshipManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 拒绝好友请求
@@ -283,10 +289,11 @@ class FriendshipManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 查好友
@@ -319,10 +326,5 @@ class FriendshipManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     return IMUtils.toList(result.value, (map) => FriendInfo.fromJson(map));
-  }
-
-  static Map _buildParam(Map param) {
-    param["ManagerName"] = "friendshipManager";
-    return param;
   }
 }

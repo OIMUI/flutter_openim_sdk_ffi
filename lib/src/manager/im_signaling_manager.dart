@@ -72,10 +72,11 @@ class SignalingManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 邀请者取消音视频通话
@@ -92,10 +93,11 @@ class SignalingManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 挂断
@@ -112,10 +114,11 @@ class SignalingManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 获取当前群通话信息
@@ -218,10 +221,11 @@ class SignalingManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 创建会议室
@@ -318,10 +322,11 @@ class SignalingManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 获取所有的未完成会议
@@ -355,10 +360,11 @@ class SignalingManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 
   /// 自定义信令
@@ -377,9 +383,10 @@ class SignalingManager {
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
+
+    receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-    receivePort.close();
   }
 }
