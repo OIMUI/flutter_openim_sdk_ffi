@@ -15,3 +15,9 @@ set_target_properties(flutter_openim_sdk_ffi PROPERTIES
 )
 
 target_compile_definitions(flutter_openim_sdk_ffi PUBLIC DART_SHARED_LIB)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  target_link_libraries(flutter_openim_sdk_ffi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../linux/libopenim_sdk_ffi.so)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  target_link_libraries(flutter_openim_sdk_ffi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../windows/openim_sdk_ffi.dll)
+endif()
