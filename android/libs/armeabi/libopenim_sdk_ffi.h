@@ -25,10 +25,10 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 #include "include/dart_api_dl.h"
 
 typedef struct {
-    void (*onMethodChannel)(Dart_Port_DL port, const char*, const char*, const char*, double, const char*);
+    void (*onMethodChannel)(Dart_Port_DL port, const char*, const char*, const char*, double*, const char*);
 } CGO_OpenIM_Listener;
 
-static void callOnMethodChannel(CGO_OpenIM_Listener *listener, Dart_Port_DL port, const char* methodName, const char* operationID,const char* callMethodName, double errCode, const char* message) {
+static void callOnMethodChannel(CGO_OpenIM_Listener *listener, Dart_Port_DL port, const char* methodName, const char* operationID,const char* callMethodName, double* errCode, const char* message) {
     listener->onMethodChannel(port, methodName, operationID, callMethodName, errCode, message);
 }
 
@@ -52,8 +52,8 @@ typedef int GoInt32;
 typedef unsigned int GoUint32;
 typedef long long GoInt64;
 typedef unsigned long long GoUint64;
-typedef GoInt64 GoInt;
-typedef GoUint64 GoUint;
+typedef GoInt32 GoInt;
+typedef GoUint32 GoUint;
 typedef size_t GoUintptr;
 typedef float GoFloat32;
 typedef double GoFloat64;
@@ -65,6 +65,12 @@ typedef _Dcomplex GoComplex128;
 typedef float _Complex GoComplex64;
 typedef double _Complex GoComplex128;
 #endif
+
+/*
+  static assertion to make sure the file is being used on architecture
+  at least with matching size of GoInt.
+*/
+typedef char _check_for_32_bit_pointer_matching_GoInt[sizeof(void*)==32/8 ? 1:-1];
 
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
