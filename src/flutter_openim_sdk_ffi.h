@@ -21,11 +21,7 @@
 #ifdef _WIN32
     #include "openim_sdk_ffi_windows.h"
 #elif __linux__
-    #ifdef __ANDROID__
-        #include "openim_sdk_ffi_android.h"
-    #else
-        #include "openim_sdk_ffi_linux.h"
-    #endif
+    #include "openim_sdk_ffi_android.h"
 #elif __APPLE__
     #include "TargetConditionals.h"
     #if TARGET_OS_MAC
