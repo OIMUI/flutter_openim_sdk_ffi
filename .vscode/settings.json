@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.wpy": "vue",
+        "openim_sdk_ffi_windows.h": "c",
+        "openim_sdk_ffi_ios.h": "c"
+    }
+}
