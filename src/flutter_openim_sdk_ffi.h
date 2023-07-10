@@ -23,12 +23,7 @@
 #elif __linux__
     #include "openim_sdk_ffi_android.h"
 #elif __APPLE__
-    #include "TargetConditionals.h"
-    #if TARGET_OS_MAC
-        #include "openim_sdk_ffi_macos.h"
-    #elif TARGET_OS_IPHONE
-        #include "openim_sdk_ffi_ios.h"
-    #endif
+    #include "openim_sdk_ffi_apple.h"
 #endif
 
 typedef void (*PrintCallback)(const char*);

@@ -8,12 +8,18 @@
 #else
 #include <dlfcn.h>
 #include <pthread.h>
+#include <jni.h>
+
 #endif
 
 // 定义回调函数
 PrintCallback printCallback;
 
 static CGO_OpenIM_Listener g_listener;
+
+#ifdef __ANDROID__
+static JNIEnv *env;
+#endif
 
 // 定义参数结构体
 typedef struct {
@@ -194,3 +200,45 @@ FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isol
 
     printMessage("注册dart回调成功");
 }
+#ifdef __ANDROID__
+void onNativeMethodChannelFunc(char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
+    // 将Java字符串转换为C字符串
+    const char *cMethodName = (*env)->GetStringUTFChars(env, methodName, NULL);
+    const char *cOperationID = (*env)->GetStringUTFChars(env, operationID, NULL);
+    const char *cCallMethodName = (*env)->GetStringUTFChars(env, callMethodName, NULL);
+    const char *cMessage = (*env)->GetStringUTFChars(env, message, NULL);
+
+    // 调用Java方法
+    jclass cls = (*env)->FindClass(env, "OpenIMSDKFFi");
+    jmethodID mid = (*env)->GetStaticMethodID(env, cls, "myMethod", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DLjava/lang/String;)V");
+    (*env)->CallStaticVoidMethod(mid, methodName, operationID, callMethodName, errCode, message);
+
+    // 释放字符串的内存
+    (*env)->ReleaseStringUTFChars(env, methodName, cMethodName);
+    (*env)->ReleaseStringUTFChars(env, operationID, cOperationID);
+    (*env)->ReleaseStringUTFChars(env, callMethodName, cCallMethodName);
+    (*env)->ReleaseStringUTFChars(env, message, cMessage);
+}
+#endif
+
+void Native_RegisterCallback() {
+    g_listener.onNativeMethodChannel = onNativeMethodChannelFunc;
+    void* handle = dlopen("libopenim_sdk_ffi.dylib", RTLD_LAZY);
+    void (*NativeRegisterCallback)(CGO_OpenIM_Listener*) = dlsym(handle, "NativeRegisterCallback");
+    NativeRegisterCallback(&g_listener);
+    printf("注册Native回调成功");
+}
+
+// JNIEXPORT void JNICALL
+// Java_io_openim_flutter_1openim_1sdk_1ffi_OpenIMSDKFFi_registerCallback(JNIEnv *jniEnv, jobject thiz) {
+//     env = jniEnv;
+//     g_listener.onNativeMethodChannel = onNativeMethodChannelFunc;
+//     void* handle = dlopen("libopenim_sdk_ffi.so", RTLD_LAZY);
+//     void (*NativeRegisterCallback)(CGO_OpenIM_Listener*) = dlsym(handle, "NativeRegisterCallback");
+//     NativeRegisterCallback(&g_listener);
+// }
+
+// JNIEXPORT void JNICALL
+// Java_io_openim_flutter_1openim_1sdk_1ffi_OpenIMSDKFFi_InitSDK(JNIEnv *env, jclass clazz) {
+//     // TODO: implement InitSDK()
+// }

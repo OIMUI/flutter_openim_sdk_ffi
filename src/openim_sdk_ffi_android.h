@@ -26,10 +26,14 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 typedef struct {
     void (*onMethodChannel)(Dart_Port_DL port, char*, char*, char*, double*, char*);
+	void (*onNativeMethodChannel)(char*, char*, char*, double*, char*);
 } CGO_OpenIM_Listener;
 
 static void callOnMethodChannel(CGO_OpenIM_Listener *listener, Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
     listener->onMethodChannel(port, methodName, operationID, callMethodName, errCode, message);
+}
+static void callOnNativeMethodChannel(CGO_OpenIM_Listener *listener, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
+    listener->onNativeMethodChannel(methodName, operationID, callMethodName, errCode, message);
 }
 
 #line 1 "cgo-generated-wrapper"
@@ -83,6 +87,7 @@ extern "C" {
 #endif
 
 extern void RegisterCallback(CGO_OpenIM_Listener* callback, Dart_Port_DL port);
+extern void NativeRegisterCallback(CGO_OpenIM_Listener* callback);
 extern char* GetSdkVersion();
 extern _Bool InitSDK(char* operationID, char* config);
 extern void Login(char* operationID, char* userID, char* token);
