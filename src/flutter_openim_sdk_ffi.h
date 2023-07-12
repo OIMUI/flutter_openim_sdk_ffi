@@ -4,6 +4,14 @@
 #include "./include/dart_api_dl.h"
 #include "cJSON/cJSON.h"
 
+#ifdef _WIN32
+    #include "openim_sdk_ffi_windows.h"
+#elif __linux__
+    #include "openim_sdk_ffi_android.h"
+#elif __APPLE__
+    #include "openim_sdk_ffi_apple.h"
+#endif
+
 #if _WIN32
 #include <windows.h>
 #else
@@ -18,13 +26,6 @@
 #endif
 
 
-#ifdef _WIN32
-    #include "openim_sdk_ffi_windows.h"
-#elif __linux__
-    #include "openim_sdk_ffi_android.h"
-#elif __APPLE__
-    #include "openim_sdk_ffi_apple.h"
-#endif
 
 typedef void (*PrintCallback)(const char*);
 

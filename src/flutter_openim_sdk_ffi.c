@@ -8,7 +8,10 @@
 #else
 #include <dlfcn.h>
 #include <pthread.h>
+#endif
 
+#ifdef __ANDROID__
+#include "flutter_openim_sdk_ffi_android.c"
 #endif
 
 // 定义回调函数
@@ -16,9 +19,6 @@ PrintCallback printCallback;
 
 static CGO_OpenIM_Listener g_listener;
 
-#ifdef __ANDROID__
-#include "flutter_openim_sdk_ffi_android.c"
-#endif
 
 // 定义参数结构体
 typedef struct {
@@ -56,7 +56,7 @@ void printMessage(const char *message)
     Dart_Port_DL port = args->port;
     char* methodName = args->methodName;
     char* operationID = args->operationID;
-    int32_t* errCode = args->errCode;
+    double* errCode = args->errCode;
     char* message = args->message;
     char* callMethodName = args->callMethodName;
 
@@ -93,7 +93,7 @@ void printMessage(const char *message)
     return 0;
 }
 
-void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, int32_t* errCode, char* message)
+void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message)
 {
     ThreadArgs* args = (ThreadArgs*)malloc(sizeof(ThreadArgs));
 
