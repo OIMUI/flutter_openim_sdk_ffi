@@ -1,9 +1,10 @@
 // The Android Gradle Plugin builds the native code with the Android NDK.
 
-group 'com.example.flutter_openim_sdk_ffi'
+group 'io.openim.flutter_openim_sdk_ffi'
 version '1.0'
 
 buildscript {
+    ext.kotlin_version = '1.6.10'
     repositories {
         google()
         mavenCentral()
@@ -12,6 +13,7 @@ buildscript {
     dependencies {
         // The Android Gradle Plugin knows how to build native code with the NDK.
         classpath 'com.android.tools.build:gradle:7.3.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -23,6 +25,7 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     // Bumping the plugin compileSdkVersion requires all clients of this plugin
@@ -65,5 +68,6 @@ android {
 }
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.code.gson:gson:2.9.0'
 }

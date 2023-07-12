@@ -3,5 +3,6 @@
         "*.wpy": "vue",
         "openim_sdk_ffi_windows.h": "c",
         "openim_sdk_ffi_ios.h": "c"
-    }
+    },
+    "cmake.sourceDirectory": "/Users/muka/Desktop/www/flutter_openim_sdk_ffi/example/linux"
 }
