@@ -1,6 +1,6 @@
 #include <jni.h>
 #include <stdio.h>
-#include <android/log.h>
+// #include <android/log.h>
 
 
 JavaVM* gJavaVM;
@@ -9,8 +9,8 @@ jobject gJavaObj;
 void onNativeMethodChannelFunc(char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
     JNIEnv* env;
     jint result = (*gJavaVM)->AttachCurrentThread(gJavaVM, &env, NULL);
-    __android_log_print(ANDROID_LOG_DEBUG, "methodName", "%s", methodName);
-    __android_log_print(ANDROID_LOG_DEBUG, "callMethodName", "%s", callMethodName);
+    // __android_log_print(ANDROID_LOG_DEBUG, "methodName", "%s", methodName);
+    // __android_log_print(ANDROID_LOG_DEBUG, "callMethodName", "%s", callMethodName);
     if (result == JNI_OK) {
         // 将参数转换为 Java 字符串对象
         jstring methodNameStr = (*env)->NewStringUTF(env, methodName);
