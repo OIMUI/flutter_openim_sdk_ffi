@@ -10,15 +10,16 @@
 #include <pthread.h>
 #endif
 
-#ifdef __ANDROID__
-#include "flutter_openim_sdk_ffi_android.c"
-#endif
-
 // 定义回调函数
 PrintCallback printCallback;
 
 static CGO_OpenIM_Listener g_listener;
 
+static void* dlfHandle;
+
+#ifdef __ANDROID__
+#include "flutter_openim_sdk_ffi_android.c"
+#endif
 
 // 定义参数结构体
 typedef struct {
@@ -29,7 +30,6 @@ typedef struct {
     double* errCode;
     char* message;
 } ThreadArgs;
-
 
 // 设置回调函数
 void setPrintCallback(PrintCallback callback)
@@ -189,11 +189,12 @@ FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
 
 // 在Dart中注册回调函数
 FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isolate_send_port) {
+    dlfHandle = handle;
     g_listener.onMethodChannel = onMethodChannelFunc;
     #if defined(_WIN32) || defined(_WIN64)
-        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = GetProcAddress(handle, "RegisterCallback");
+        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = GetProcAddress(dlfHandle, "RegisterCallback");
     #else
-        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(handle, "RegisterCallback");
+        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(dlfHandle, "RegisterCallback");
     #endif
     RegisterCallback(&g_listener, isolate_send_port);
 

@@ -1,14 +1,16 @@
 #include <jni.h>
 #include <stdio.h>
+#include <android/log.h>
 
 
-static void* dlfHandle;
 JavaVM* gJavaVM;
 jobject gJavaObj;
 
 void onNativeMethodChannelFunc(char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
     JNIEnv* env;
     jint result = (*gJavaVM)->AttachCurrentThread(gJavaVM, &env, NULL);
+    __android_log_print(ANDROID_LOG_DEBUG, "methodName", "%s", methodName);
+    __android_log_print(ANDROID_LOG_DEBUG, "callMethodName", "%s", callMethodName);
     if (result == JNI_OK) {
         // 将参数转换为 Java 字符串对象
         jstring methodNameStr = (*env)->NewStringUTF(env, methodName);
@@ -48,12 +50,17 @@ void onNativeMethodChannelFunc(char* methodName, char* operationID, char* callMe
     }
 }
 
+
+JNIEXPORT void JNICALL
+Java_io_openim_flutter_1openim_1sdk_1ffi_OpenIMSDKFFi_init(JNIEnv *env, jobject thiz) {
+    dlfHandle = dlopen("libopenim_sdk_ffi.so", RTLD_LAZY);
+}
+
  JNIEXPORT void JNICALL
  Java_io_openim_flutter_1openim_1sdk_1ffi_OpenIMSDKFFi_registerCallback(JNIEnv *env, jobject thiz) {
      (*env)->GetJavaVM(env, &gJavaVM);
      gJavaObj = (*env)->NewGlobalRef(env, thiz);
      g_listener.onNativeMethodChannel = onNativeMethodChannelFunc;
-     dlfHandle = dlopen("libopenim_sdk_ffi.so", RTLD_LAZY);
      void (*NativeRegisterCallback)(CGO_OpenIM_Listener*) = dlsym(dlfHandle, "NativeRegisterCallback");
      NativeRegisterCallback(&g_listener);
  }
@@ -95,5 +102,15 @@ Java_io_openim_flutter_1openim_1sdk_1ffi_OpenIMSDKFFi_GetSelfUserInfo(JNIEnv *en
     const char *native_operation_id = (*env)->GetStringUTFChars(env, operation_id, 0);
     bool (*GetSelfUserInfo)(const char*) = dlsym(dlfHandle, "GetSelfUserInfo");
     GetSelfUserInfo(native_operation_id);
+    (*env)->ReleaseStringUTFChars(env, operation_id, native_operation_id);
+}
+
+JNIEXPORT void JNICALL
+Java_io_openim_flutter_1openim_1sdk_1ffi_OpenIMSDKFFi_GetTotalUnreadMsgCount(JNIEnv *env,
+                                                                             jobject thiz,
+                                                                             jstring operation_id) {
+    const char *native_operation_id = (*env)->GetStringUTFChars(env, operation_id, 0);
+    bool (*GetTotalUnreadMsgCount)(const char*) = dlsym(dlfHandle, "GetTotalUnreadMsgCount");
+    GetTotalUnreadMsgCount(native_operation_id);
     (*env)->ReleaseStringUTFChars(env, operation_id, native_operation_id);
 }

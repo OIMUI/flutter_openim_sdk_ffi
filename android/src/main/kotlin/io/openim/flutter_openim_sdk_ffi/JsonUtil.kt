@@ -17,7 +17,7 @@ object JsonUtil {
     /**
      * 将gsonString转成泛型bean
      */
-    fun <T> toObj(gsonString: String?, cls: Class<T>): T? {
+    fun <T> toObj(gsonString: String, cls: Class<T>): T {
         return gson.fromJson(gsonString, cls)
     }
 
@@ -25,13 +25,11 @@ object JsonUtil {
      * 转成list
      * 解决泛型在编译期类型被擦除导致报错
      */
-    fun <T> toArray(json: String?, cls: Class<T>): List<T>? {
-        val list: MutableList<T>? = ArrayList()
-        if (json != null) {
-            val array = JsonParser.parseString(json).asJsonArray
-            for (elem in array) {
-                list?.add(gson.fromJson(elem, cls))
-            }
+    fun <T> toArray(json: String, cls: Class<T>): List<T> {
+        val list: MutableList<T> = ArrayList()
+        val array = JsonParser.parseString(json).asJsonArray
+        for (elem in array) {
+            list.add(gson.fromJson(elem, cls))
         }
         return list
     }

@@ -211,7 +211,12 @@ class OpenIMManager {
           _sendPortMap.remove(msg.operationID!);
         }
         break;
-
+      case _PortMethod.getTotalUnreadMsgCount:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: int.parse(msg.data)));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
       default:
         if (msg.operationID != null) {
           _sendPortMap[msg.operationID!]?.send(_PortResult(data: msg.data));
@@ -266,8 +271,10 @@ class OpenIMManager {
           switch (data.method) {
             case 'OnError':
               if (data.operationID != null) {
-                _sendPortMap[data.operationID!]
-                    ?.send(_PortResult(error: data.data, errCode: data.errCode, callMethodName: data.callMethodName));
+                _sendPortMap[data.operationID!]?.send(_PortResult(
+                    error: data.data,
+                    errCode: data.errCode is int ? (data.errCode as int).toDouble() : data.errCode,
+                    callMethodName: data.callMethodName));
                 _sendPortMap.remove(data.operationID!);
               }
               break;
