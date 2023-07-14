@@ -22,4 +22,4 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 #  target_link_libraries(flutter_openim_sdk_ffi PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../windows/openim_sdk_ffi.dll)
 endif()
 
-#target_link_libraries(flutter_openim_sdk_ffi log)
+# target_link_libraries(flutter_openim_sdk_ffi log)

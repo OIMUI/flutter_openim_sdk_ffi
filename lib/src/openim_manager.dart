@@ -1628,6 +1628,9 @@ class OpenIMManager {
   static void _methodChannel(_PortModel port, Completer completer) {
     switch (port.method) {
       case _PortMethod.initSDK:
+        if (port.data == true) {
+          _bindings.ffi_Dart_InitSDK();
+        }
         completer.complete(port.data);
         break;
       default:

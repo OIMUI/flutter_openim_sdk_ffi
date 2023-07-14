@@ -35,12 +35,7 @@ class OpenIMSDKFFi {
             listeners.remove(listener)
         }
     }
-    external fun init()
-    // 声明本地方法，用于注册Go回调函数
     external fun registerCallback()
-
-    // 初始化SDK
-    private external fun InitSDK(operationID: String, config: String): Boolean
 
     private external fun Login(operationID: String, userID: String, token: String)
 
@@ -48,20 +43,6 @@ class OpenIMSDKFFi {
 
     private external fun GetTotalUnreadMsgCount(operationID: String)
 
-    fun initSDK(context: Context): Boolean {
-        val map: MutableMap<String, Any> = ArrayMap()
-        map["platform"] = 2
-        map["api_addr"] = "http://121.40.210.13:10002"
-        map["ws_addr"] = "ws://121.40.210.13:10001"
-        map["data_dir"] = context.filesDir.path
-        map["log_level"] = 6
-        map["object_storage"] = "oss"
-        map["is_need_encryption"] = false
-        map["is_compression"] = false
-        map["encryption_key"] = ""
-        map["is_external_extensions"] = false
-        return InitSDK(System.currentTimeMillis().toString(), JsonUtil.toString(map))
-    }
 
     suspend fun login(operationID: String, uid: String, token: String): UserInfo {
         val deferred = CompletableDeferred<Any>()
@@ -93,17 +74,6 @@ class OpenIMSDKFFi {
         errCode: Double?,
         message: String?
     ) {
-        Log.d("===========", methodName)
-        operationID?.let {
-            Log.d("===========", operationID)
-        }
-        callMethodName?.let {
-            Log.d("===========", callMethodName)
-        }
-        Log.d("===========", errCode.toString())
-        message?.let {
-            Log.d("===========", message)
-        }
         when (methodName) {
             "OnSuccess" -> {
                 when (callMethodName) {
@@ -150,6 +120,12 @@ class OpenIMSDKFFi {
             "OnConnectSuccess" -> {
                 for (listener in listeners) {
                     (listener as OnConnListener).onConnectSuccess()
+                }
+            }
+
+            "OnInitSDK" -> {
+                for (listener in listeners) {
+                    (listener as OnConnListener).onInitSDK()
                 }
             }
 

@@ -17,6 +17,8 @@ static CGO_OpenIM_Listener g_listener;
 
 static void* dlfHandle;
 
+bool registerNativeCallback = false;
+
 #ifdef __ANDROID__
 #include "flutter_openim_sdk_ffi_android.c"
 #endif
@@ -191,6 +193,9 @@ FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
 FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isolate_send_port) {
     dlfHandle = handle;
     g_listener.onMethodChannel = onMethodChannelFunc;
+    #ifdef __ANDROID__
+    g_listener.onNativeMethodChannel = onNativeMethodChannelFunc;
+    #endif
     #if defined(_WIN32) || defined(_WIN64)
         void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = GetProcAddress(dlfHandle, "RegisterCallback");
     #else
@@ -200,11 +205,9 @@ FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isol
 
     printMessage("注册dart回调成功");
 }
-// void Native_RegisterCallback() {
-//     g_listener.onNativeMethodChannel = onNativeMethodChannelFunc;
-//     void* handle = dlopen("libopenim_sdk_ffi.dylib", RTLD_LAZY);
-//     void (*NativeRegisterCallback)(CGO_OpenIM_Listener*) = dlsym(handle, "NativeRegisterCallback");
-//     NativeRegisterCallback(&g_listener);
-//     printf("注册Native回调成功");
-// }
 
+FFI_PLUGIN_EXPORT void ffi_Dart_InitSDK() {
+    if (registerNativeCallback) {
+        g_listener.onNativeMethodChannel("OnInitSDK", "", "", 0, "OK");
+    }
+}

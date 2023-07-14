@@ -71,6 +71,15 @@ class FlutterOpenimSdkFfiBindings {
           'ffi_Dart_InitializeApiDL');
   late final _ffi_Dart_InitializeApiDL = _ffi_Dart_InitializeApiDLPtr
       .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+
+  void ffi_Dart_InitSDK() {
+    return _ffi_Dart_InitSDK();
+  }
+
+  late final _ffi_Dart_InitSDKPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>('ffi_Dart_InitSDK');
+  late final _ffi_Dart_InitSDK =
+      _ffi_Dart_InitSDKPtr.asFunction<void Function()>();
 }
 
 typedef PrintCallback
