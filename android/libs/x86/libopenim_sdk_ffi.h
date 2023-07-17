@@ -30,12 +30,12 @@ typedef struct {
 } CGO_OpenIM_Listener;
 
 static void callOnMethodChannel(CGO_OpenIM_Listener *listener, Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
-	if (&listener->onMethodChannel != NULL) {
+	if (listener->onMethodChannel != NULL) {
 		listener->onMethodChannel(port, methodName, operationID, callMethodName, errCode, message);
 	}
 }
 static void callOnNativeMethodChannel(CGO_OpenIM_Listener *listener, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
-	if (&listener->onNativeMethodChannel != NULL) {
+	if (listener->onNativeMethodChannel != NULL) {
 		listener->onNativeMethodChannel(methodName, operationID, callMethodName, errCode, message);
 	}
 }

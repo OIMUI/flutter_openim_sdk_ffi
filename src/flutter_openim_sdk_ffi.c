@@ -194,7 +194,10 @@ FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isol
     dlfHandle = handle;
     g_listener.onMethodChannel = onMethodChannelFunc;
     #ifdef __ANDROID__
-    g_listener.onNativeMethodChannel = onNativeMethodChannelFunc;
+    if (registerNativeCallback) {
+        printMessage("注册Native回调成功");
+        g_listener.onNativeMethodChannel = onNativeMethodChannelFunc;
+    }
     #endif
     #if defined(_WIN32) || defined(_WIN64)
         void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = GetProcAddress(dlfHandle, "RegisterCallback");
@@ -208,6 +211,7 @@ FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isol
 
 FFI_PLUGIN_EXPORT void ffi_Dart_InitSDK() {
     if (registerNativeCallback) {
+         printMessage("Native回调注册通知");
         g_listener.onNativeMethodChannel("OnInitSDK", "", "", 0, "OK");
     }
 }
