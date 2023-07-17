@@ -287,7 +287,7 @@ class OpenIMManager {
               task.sendPort.send(data);
               break;
             case ListenerType.onRecvNewMessage:
-              data.data = IMUtils.toList(data.data, (map) => Message.fromJson(map));
+              data.data = IMUtils.toObj(data.data, (map) => Message.fromJson(map));
               task.sendPort.send(data);
               break;
             case ListenerType.onSelfInfoUpdated:
