@@ -21,7 +21,6 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 #line 3 "openim_sdk_ffi.go"
 
-#include <stdio.h>
 #include "include/dart_api_dl.h"
 
 typedef struct {

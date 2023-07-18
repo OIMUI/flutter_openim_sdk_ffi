@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                   onPressed: () async {
                     print(await OpenIM.version);
-                    OpenIM.iMManager.login(uid: '2131', token: '1231');
+                    // OpenIM.iMManager.login(uid: '2131', token: '1231');
                   },
                   child: Text('version'),
                 )
