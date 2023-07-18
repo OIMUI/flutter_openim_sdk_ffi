@@ -261,13 +261,15 @@ class OpenIMManager {
       );
 
       _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
-
+      if (status) {
+        _bindings.ffi_Dart_InitSDK();
+      }
       task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
       receivePort.listen((msg) {
         if (msg is String) {
           _PortModel data = _PortModel.fromJson(jsonDecode(msg));
-          // print(data.toJson());
+
           switch (data.method) {
             case 'OnError':
               if (data.operationID != null) {
@@ -1628,9 +1630,6 @@ class OpenIMManager {
   static void _methodChannel(_PortModel port, Completer completer) {
     switch (port.method) {
       case _PortMethod.initSDK:
-        if (port.data == true) {
-          _bindings.ffi_Dart_InitSDK();
-        }
         completer.complete(port.data);
         break;
       default:
