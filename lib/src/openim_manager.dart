@@ -211,7 +211,12 @@ class OpenIMManager {
           _sendPortMap.remove(msg.operationID!);
         }
         break;
-
+      case _PortMethod.getTotalUnreadMsgCount:
+        if (msg.operationID != null) {
+          _sendPortMap[msg.operationID!]?.send(_PortResult(data: int.parse(msg.data)));
+          _sendPortMap.remove(msg.operationID!);
+        }
+        break;
       default:
         if (msg.operationID != null) {
           _sendPortMap[msg.operationID!]?.send(_PortResult(data: msg.data));
@@ -256,18 +261,22 @@ class OpenIMManager {
       );
 
       _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
-
+      if (status) {
+        _bindings.ffi_Dart_InitSDK();
+      }
       task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
       receivePort.listen((msg) {
         if (msg is String) {
           _PortModel data = _PortModel.fromJson(jsonDecode(msg));
-          // print(data.toJson());
+
           switch (data.method) {
             case 'OnError':
               if (data.operationID != null) {
-                _sendPortMap[data.operationID!]
-                    ?.send(_PortResult(error: data.data, errCode: data.errCode, callMethodName: data.callMethodName));
+                _sendPortMap[data.operationID!]?.send(_PortResult(
+                    error: data.data,
+                    errCode: data.errCode is int ? (data.errCode as int).toDouble() : data.errCode,
+                    callMethodName: data.callMethodName));
                 _sendPortMap.remove(data.operationID!);
               }
               break;
@@ -280,7 +289,7 @@ class OpenIMManager {
               task.sendPort.send(data);
               break;
             case ListenerType.onRecvNewMessage:
-              data.data = IMUtils.toList(data.data, (map) => Message.fromJson(map));
+              data.data = IMUtils.toObj(data.data, (map) => Message.fromJson(map));
               task.sendPort.send(data);
               break;
             case ListenerType.onSelfInfoUpdated:

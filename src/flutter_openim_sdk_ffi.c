@@ -15,6 +15,17 @@ PrintCallback printCallback;
 
 static CGO_OpenIM_Listener g_listener;
 
+static void* dlfHandle;
+
+bool registerNativeCallback = false;
+
+#ifdef __ANDROID__
+#include "flutter_openim_sdk_ffi_android.c"
+#endif
+#ifdef __APPLE__
+#include "flutter_openim_sdk_ffi_ios.c"
+#endif
+
 // 定义参数结构体
 typedef struct {
     Dart_Port_DL port;
@@ -24,7 +35,6 @@ typedef struct {
     double* errCode;
     char* message;
 } ThreadArgs;
-
 
 // 设置回调函数
 void setPrintCallback(PrintCallback callback)
@@ -51,7 +61,7 @@ void printMessage(const char *message)
     Dart_Port_DL port = args->port;
     char* methodName = args->methodName;
     char* operationID = args->operationID;
-    int32_t* errCode = args->errCode;
+    double* errCode = args->errCode;
     char* message = args->message;
     char* callMethodName = args->callMethodName;
 
@@ -88,7 +98,7 @@ void printMessage(const char *message)
     return 0;
 }
 
-void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, int32_t* errCode, char* message)
+void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message)
 {
     ThreadArgs* args = (ThreadArgs*)malloc(sizeof(ThreadArgs));
 
@@ -184,13 +194,27 @@ FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
 
 // 在Dart中注册回调函数
 FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isolate_send_port) {
+    dlfHandle = handle;
     g_listener.onMethodChannel = onMethodChannelFunc;
+    #if defined(__ANDROID__)
+        if (registerNativeCallback) {
+            printMessage("注册Native回调成功\n");
+            g_listener.onNativeMethodChannel = onNativeMethodChannelFunc;
+        }
+    #endif
     #if defined(_WIN32) || defined(_WIN64)
-        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = GetProcAddress(handle, "RegisterCallback");
+        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = GetProcAddress(dlfHandle, "RegisterCallback");
     #else
-        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(handle, "RegisterCallback");
+        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(dlfHandle, "RegisterCallback");
     #endif
     RegisterCallback(&g_listener, isolate_send_port);
 
     printMessage("注册dart回调成功");
+}
+
+FFI_PLUGIN_EXPORT void ffi_Dart_InitSDK() {
+    if (registerNativeCallback) {
+        printf("Native回调注册通知\n");
+        g_listener.onNativeMethodChannel("OnInitSDK", "", "", 0, "OK");
+    }
 }

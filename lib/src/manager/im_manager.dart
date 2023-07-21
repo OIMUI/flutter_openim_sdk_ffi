@@ -33,7 +33,6 @@ class IMManager {
   }
 
   void _nativeCallback(_PortModel channel) {
-    print(channel.toJson());
     switch (channel.method) {
       case ListenerType.onConnectFailed:
         OpenIMManager._onEvent((listener) => listener.onConnectFailed(1, ''));

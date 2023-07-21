@@ -192,7 +192,7 @@ class MessageManager {
 
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode ?? 0, result.data ?? '', methodName: result.callMethodName);
     }
   }
 
