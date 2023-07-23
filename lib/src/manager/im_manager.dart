@@ -9,7 +9,6 @@ class IMManager {
 
   // late OfflinePushManager offlinePushManager;
   late SignalingManager signalingManager;
-  late WorkMomentsManager workMomentsManager;
   late OrganizationManager organizationManager;
 
   late String uid;
@@ -28,7 +27,6 @@ class IMManager {
     userManager = UserManager();
     // offlinePushManager = OfflinePushManager(_channel);
     signalingManager = SignalingManager();
-    workMomentsManager = WorkMomentsManager();
     organizationManager = OrganizationManager();
   }
 
@@ -107,9 +105,9 @@ class IMManager {
         OpenIMManager._onEvent((listener) => listener.onJoinedGroupDeleted(channel.data));
         break;
 
-      case ListenerType.onRecvMessageRevoked:
-        OpenIMManager._onEvent((listener) => listener.onRecvMessageRevoked(channel.data));
-        break;
+      // case ListenerType.onRecvMessageRevoked:
+      //   OpenIMManager._onEvent((listener) => listener.onRecvMessageRevoked(channel.data));
+      //   break;
       case ListenerType.onRecvC2CReadReceipt:
         OpenIMManager._onEvent((listener) => listener.onRecvC2CMessageReadReceipt(channel.data));
         break;
@@ -128,12 +126,12 @@ class IMManager {
       //   OpenIMManager._onEvent((listener) => listener.onRecvMessageExtensionsAdded(channel.data));
       //   break;
 
-      case ListenerType.onBlacklistAdded:
-        OpenIMManager._onEvent((listener) => listener.onBlacklistAdded(channel.data));
-        break;
-      case ListenerType.onBlacklistDeleted:
-        OpenIMManager._onEvent((listener) => listener.onBlacklistDeleted(channel.data));
-        break;
+      // case ListenerType.onBlacklistAdded:
+      //   OpenIMManager._onEvent((listener) => listener.onBlacklistAdded(channel.data));
+      //   break;
+      // case ListenerType.onBlacklistDeleted:
+      //   OpenIMManager._onEvent((listener) => listener.onBlacklistDeleted(channel.data));
+      //   break;
       case ListenerType.onFriendApplicationAccepted:
         OpenIMManager._onEvent((listener) => listener.onFriendApplicationAccepted(channel.data));
         break;
@@ -177,7 +175,7 @@ class IMManager {
       case ListenerType.onInviteeRejectedByOtherDevice:
         OpenIMManager._onEvent((listener) => listener.onInviteeRejectedByOtherDevice(channel.data));
         break;
-      case ListenerType.onHangup:
+      case ListenerType.onHangUp:
         OpenIMManager._onEvent((listener) => listener.onHangup(channel.data));
         break;
       case ListenerType.onRoomParticipantConnected:
@@ -189,16 +187,16 @@ class IMManager {
       // case ListenerType.onStreamChange:
       //   OpenIMManager._onEvent((listener) => listener.onStreamChangedEvent(channel.data));
       //   break;
-      case ListenerType.onReceiveCustomSignal:
-        OpenIMManager._onEvent((listener) => listener.onReceiveCustomSignal(channel.data));
-        break;
+      // case ListenerType.onReceiveCustomSignal:
+      //   OpenIMManager._onEvent((listener) => listener.onReceiveCustomSignal(channel.data));
+      //   break;
 
-      case ListenerType.onRecvNewNotification:
-        OpenIMManager._onEvent((listener) => listener.onRecvNewNotification());
-        break;
-      case ListenerType.onOrganizationUpdated:
-        OpenIMManager._onEvent((listener) => listener.onOrganizationUpdated());
-        break;
+      // case ListenerType.onRecvNewNotification:
+      //   OpenIMManager._onEvent((listener) => listener.onRecvNewNotification());
+      //   break;
+      // case ListenerType.onOrganizationUpdated:
+      //   OpenIMManager._onEvent((listener) => listener.onOrganizationUpdated());
+      //   break;
       case ListenerType.onRecvCustomBusinessMessage:
         OpenIMManager._onEvent((listener) => listener.onRecvCustomBusinessMessage(channel.data));
         break;
@@ -233,7 +231,7 @@ class IMManager {
     String? operationID,
     Future<UserInfo> Function()? defaultValue,
   }) async {
-    this.isLogined = true;
+    isLogined = true;
     this.uid = uid;
     this.token = token;
     ReceivePort receivePort = ReceivePort();
@@ -392,7 +390,7 @@ class IMManager {
     ReceivePort receivePort = ReceivePort();
 
     OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.networkChanged,
+      method: _PortMethod.networkStatusChanged,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
       },

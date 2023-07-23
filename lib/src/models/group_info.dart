@@ -94,24 +94,24 @@ class GroupInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['groupID'] = this.groupID;
-    data['groupName'] = this.groupName;
-    data['notification'] = this.notification;
-    data['introduction'] = this.introduction;
-    data['faceURL'] = this.faceURL;
-    data['ownerUserID'] = this.ownerUserID;
-    data['createTime'] = this.createTime;
-    data['memberCount'] = this.memberCount;
-    data['status'] = this.status;
-    data['creatorUserID'] = this.creatorUserID;
-    data['groupType'] = this.groupType;
-    data['ex'] = this.ex;
-    data['needVerification'] = this.needVerification;
-    data['lookMemberInfo'] = this.lookMemberInfo;
-    data['applyMemberFriend'] = this.applyMemberFriend;
-    data['notificationUpdateTime'] = this.notificationUpdateTime;
-    data['notificationUserID'] = this.notificationUserID;
+    final data = <String, dynamic>{};
+    data['groupID'] = groupID;
+    data['groupName'] = groupName;
+    data['notification'] = notification;
+    data['introduction'] = introduction;
+    data['faceURL'] = faceURL;
+    data['ownerUserID'] = ownerUserID;
+    data['createTime'] = createTime;
+    data['memberCount'] = memberCount;
+    data['status'] = status;
+    data['creatorUserID'] = creatorUserID;
+    data['groupType'] = groupType;
+    data['ex'] = ex;
+    data['needVerification'] = needVerification;
+    data['lookMemberInfo'] = lookMemberInfo;
+    data['applyMemberFriend'] = applyMemberFriend;
+    data['notificationUpdateTime'] = notificationUpdateTime;
+    data['notificationUserID'] = notificationUserID;
     return data;
   }
 
@@ -195,19 +195,19 @@ class GroupMembersInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['groupID'] = this.groupID;
-    data['userID'] = this.userID;
-    data['roleLevel'] = this.roleLevel;
-    data['joinTime'] = this.joinTime;
-    data['nickname'] = this.nickname;
-    data['faceURL'] = this.faceURL;
-    data['ex'] = this.ex;
-    data['joinSource'] = this.joinSource;
-    data['operatorUserID'] = this.operatorUserID;
-    data['muteEndTime'] = this.muteEndTime;
-    data['appMangerLevel'] = this.appMangerLevel;
-    data['inviterUserID'] = this.inviterUserID;
+    final data = <String, dynamic>{};
+    data['groupID'] = groupID;
+    data['userID'] = userID;
+    data['roleLevel'] = roleLevel;
+    data['joinTime'] = joinTime;
+    data['nickname'] = nickname;
+    data['faceURL'] = faceURL;
+    data['ex'] = ex;
+    data['joinSource'] = joinSource;
+    data['operatorUserID'] = operatorUserID;
+    data['muteEndTime'] = muteEndTime;
+    data['appMangerLevel'] = appMangerLevel;
+    data['inviterUserID'] = inviterUserID;
     return data;
   }
 
@@ -236,9 +236,9 @@ class GroupMemberRole {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['userID'] = this.userID;
-    data['roleLevel'] = this.roleLevel;
+    final data = <String, dynamic>{};
+    data['userID'] = userID;
+    data['roleLevel'] = roleLevel;
     return data;
   }
 }
@@ -372,31 +372,31 @@ class GroupApplicationInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['groupID'] = this.groupID;
-    data['groupName'] = this.groupName;
-    data['notification'] = this.notification;
-    data['introduction'] = this.introduction;
-    data['groupFaceURL'] = this.groupFaceURL;
-    data['createTime'] = this.createTime;
-    data['status'] = this.status;
-    data['creatorUserID'] = this.creatorUserID;
-    data['groupType'] = this.groupType;
-    data['ownerUserID'] = this.ownerUserID;
-    data['memberCount'] = this.memberCount;
-    data['userID'] = this.userID;
-    data['nickname'] = this.nickname;
-    data['userFaceURL'] = this.userFaceURL;
-    data['gender'] = this.gender;
-    data['handleResult'] = this.handleResult;
-    data['reqMsg'] = this.reqMsg;
-    data['handledMsg'] = this.handledMsg;
-    data['reqTime'] = this.reqTime;
-    data['handleUserID'] = this.handleUserID;
-    data['handledTime'] = this.handledTime;
-    data['ex'] = this.ex;
-    data['inviterUserID'] = this.inviterUserID;
-    data['joinSource'] = this.joinSource;
+    final data = <String, dynamic>{};
+    data['groupID'] = groupID;
+    data['groupName'] = groupName;
+    data['notification'] = notification;
+    data['introduction'] = introduction;
+    data['groupFaceURL'] = groupFaceURL;
+    data['createTime'] = createTime;
+    data['status'] = status;
+    data['creatorUserID'] = creatorUserID;
+    data['groupType'] = groupType;
+    data['ownerUserID'] = ownerUserID;
+    data['memberCount'] = memberCount;
+    data['userID'] = userID;
+    data['nickname'] = nickname;
+    data['userFaceURL'] = userFaceURL;
+    data['gender'] = gender;
+    data['handleResult'] = handleResult;
+    data['reqMsg'] = reqMsg;
+    data['handledMsg'] = handledMsg;
+    data['reqTime'] = reqTime;
+    data['handleUserID'] = handleUserID;
+    data['handledTime'] = handledTime;
+    data['ex'] = ex;
+    data['inviterUserID'] = inviterUserID;
+    data['joinSource'] = joinSource;
     return data;
   }
 }
@@ -413,9 +413,9 @@ class GroupInviteResult {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['userID'] = this.userID;
-    data['result'] = this.result;
+    final data = <String, dynamic>{};
+    data['userID'] = userID;
+    data['result'] = result;
     return data;
   }
 }

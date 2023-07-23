@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 part of flutter_openim_sdk_ffi;
 
 /// 当前flutter平台仅支持Android/ios

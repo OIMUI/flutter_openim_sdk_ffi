@@ -371,9 +371,4 @@ class ConversationManager {
         return 1;
       }
     });
-
-  static Map _buildParam(Map param) {
-    param["ManagerName"] = "conversationManager";
-    return param;
-  }
 }

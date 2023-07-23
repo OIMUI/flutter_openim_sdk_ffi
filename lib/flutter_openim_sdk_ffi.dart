@@ -18,7 +18,6 @@ import 'openim_sdk_ffi_bindings_generated.dart';
 import 'src/utils.dart';
 
 part './src/openim.dart';
-part './src/models/workmoments_info.dart';
 part './src/models/conversation_info.dart';
 part './src/models/group_info.dart';
 part './src/models/meeting_info.dart';
@@ -53,9 +52,7 @@ part './src/manager/im_message_manager.dart';
 part './src/manager/im_organization_manager.dart';
 part './src/manager/im_signaling_manager.dart';
 part './src/manager/im_user_manager.dart';
-part './src/manager/im_workmoments_manager.dart';
 
 part './src/openim_error.dart';
 
-part './src/struct/struct.dart';
 part 'src/callback/callback.dart';

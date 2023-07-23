@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-05 00:08:27
+ * Last Modified: 2023-07-24 00:33:14
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -135,11 +135,6 @@ class _PortMethod {
   static const String getDepartmentInfo = 'GetDepartmentInfo';
   static const String searchOrganization = 'SearchOrganization';
 
-  /// WorkMomentsManager
-  static const String getWorkMomentsUnReadCount = 'GetWorkMomentsUnReadCount';
-  static const String getWorkMomentsNotification = 'GetWorkMomentsNotification';
-  static const String clearWorkMomentsNotification = 'ClearWorkMomentsNotification';
-
   /// SignalingManager
   static const String signalingInvite = 'SignalingInvite';
   static const String signalingInviteInGroup = 'SignalingInviteInGroup';
@@ -187,7 +182,7 @@ class _PortMethod {
   static const String searchGroupMembers = 'SearchGroupMembers';
   static const String setGroupMemberInfo = 'SetGroupMemberInfo';
 
-  static const String networkChanged = 'NetworkChanged';
+  static const String networkStatusChanged = 'NetworkStatusChanged';
   static const String setAppBackgroundStatus = 'SetAppBackgroundStatus';
   static const String updateFcmToken = 'UpdateFcmToken';
   static const String uploadImage = 'UploadImage';

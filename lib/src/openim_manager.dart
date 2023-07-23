@@ -316,10 +316,6 @@ class OpenIMManager {
               task.sendPort.send(data);
               break;
 
-            case ListenerType.onBlacklistAdded:
-            case ListenerType.onBlacklistDeleted:
-              data.data = IMUtils.toObj(data.data, (map) => BlacklistInfo.fromJson(map));
-              break;
             case ListenerType.onFriendAdded:
             case ListenerType.onFriendDeleted:
             case ListenerType.onFriendInfoChanged:
@@ -332,14 +328,14 @@ class OpenIMManager {
               data.data = IMUtils.toObj(data.data, (map) => FriendApplicationInfo.fromJson(map));
               task.sendPort.send(data);
               break;
-            case ListenerType.onRecvC2CMessageReadReceipt:
-            case ListenerType.onRecvGroupMessageReadReceipt:
-              data.data = IMUtils.toList(data.data, (map) => ReadReceiptInfo.fromJson(map));
-              break;
-            case ListenerType.onRecvMessageRevokedV2:
-              data.data = IMUtils.toObj(data.data, (map) => RevokedInfo.fromJson(map));
-              task.sendPort.send(data);
-              break;
+            // case ListenerType.onRecvC2CMessageReadReceipt:
+            // case ListenerType.onRecvGroupMessageReadReceipt:
+            //   data.data = IMUtils.toList(data.data, (map) => ReadReceiptInfo.fromJson(map));
+            //   break;
+            // case ListenerType.onRecvMessageRevokedV2:
+            //   data.data = IMUtils.toObj(data.data, (map) => RevokedInfo.fromJson(map));
+            //   task.sendPort.send(data);
+            //   break;
             case ListenerType.onRecvMessageExtensionsChanged:
             case ListenerType.onRecvMessageExtensionsAdded:
               data.data = IMUtils.toList(data.data, (map) => KeyValue.fromJson(map));
@@ -357,7 +353,7 @@ class OpenIMManager {
             case ListenerType.onReceiveNewInvitation:
             case ListenerType.onInviteeAcceptedByOtherDevice:
             case ListenerType.onInviteeRejectedByOtherDevice:
-            case ListenerType.onHangup:
+            case ListenerType.onHangUp:
               data.data = IMUtils.toList(data.data, (map) => SignalingInfo.fromJson(map));
               task.sendPort.send(data);
               break;
@@ -366,14 +362,14 @@ class OpenIMManager {
               data.data = IMUtils.toObj(data.data, (map) => RoomCallingInfo.fromJson(map));
               task.sendPort.send(data);
               break;
-            case ListenerType.onMeetingStreamChanged:
-              data.data = IMUtils.toObj(data.data, (map) => MeetingStreamEvent.fromJson(map));
-              task.sendPort.send(data);
-              break;
-            case ListenerType.onReceiveCustomSignal:
-              data.data = IMUtils.toObj(data.data, (map) => CustomSignaling.fromJson(map));
-              task.sendPort.send(data);
-              break;
+            // case ListenerType.onMeetingStreamChanged:
+            //   data.data = IMUtils.toObj(data.data, (map) => MeetingStreamEvent.fromJson(map));
+            //   task.sendPort.send(data);
+            //   break;
+            // case ListenerType.onReceiveCustomSignal:
+            //   data.data = IMUtils.toObj(data.data, (map) => CustomSignaling.fromJson(map));
+            //   task.sendPort.send(data);
+            //   break;
 
             case ListenerType.onRecvC2CReadReceipt:
             case ListenerType.onRecvGroupReadReceipt:
@@ -443,14 +439,7 @@ class OpenIMManager {
             _imBindings.GetConversationListSplit(operationID, msg.data['offset'], msg.data['count']);
             calloc.free(operationID);
             break;
-          case _PortMethod.getHistoryMessageList:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final options = json.encode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            _imBindings.GetHistoryMessageList(operationID, options);
-            calloc.free(operationID);
-            calloc.free(options);
-            break;
+
           case _PortMethod.sendMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
@@ -459,7 +448,7 @@ class OpenIMManager {
             final offlinePushInfo = jsonEncode(msg.data['offlinePushInfo']).toNativeUtf8().cast<ffi.Char>();
             final clientMsgID = jsonEncode(msg.data['message']['clientMsgID']).toNativeUtf8().cast<ffi.Char>();
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            _imBindings.SendMessage(operationID, message, userID, groupID, offlinePushInfo, clientMsgID);
+            _imBindings.SendMessage(operationID, message, userID, groupID, offlinePushInfo);
             calloc.free(operationID);
             calloc.free(message);
             calloc.free(userID);
@@ -474,7 +463,7 @@ class OpenIMManager {
             final offlinePushInfo = jsonEncode(msg.data['offlinePushInfo']).toNativeUtf8().cast<ffi.Char>();
             final clientMsgID = jsonEncode(msg.data['message']['clientMsgID']).toNativeUtf8().cast<ffi.Char>();
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            _imBindings.SendMessageNotOss(operationID, message, userID, groupID, offlinePushInfo, clientMsgID);
+            _imBindings.SendMessageNotOss(operationID, message, userID, groupID, offlinePushInfo);
             calloc.free(operationID);
             calloc.free(message);
             calloc.free(userID);
@@ -482,22 +471,7 @@ class OpenIMManager {
             calloc.free(offlinePushInfo);
             calloc.free(clientMsgID);
             break;
-          case _PortMethod.revokeMessage:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.RevokeMessage(operationID, message);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(message);
-            break;
-          case _PortMethod.deleteMessageFromLocalStorage:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.DeleteMessageFromLocalStorage(operationID, message);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(message);
-            break;
+
           case _PortMethod.insertSingleMessageToLocalStorage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
@@ -522,26 +496,7 @@ class OpenIMManager {
             calloc.free(groupID);
             calloc.free(senderID);
             break;
-          case _PortMethod.markC2CMessageAsRead:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final userID = (msg.data['userID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final messageIDList = jsonEncode(msg.data['messageIDList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.MarkC2CMessageAsRead(operationID, userID, messageIDList);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(userID);
-            calloc.free(messageIDList);
-            break;
-          case _PortMethod.markGroupMessageAsRead:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final groupID = (msg.data['groupID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final messageIDList = jsonEncode(msg.data['messageIDList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.MarkGroupMessageAsRead(operationID, groupID, messageIDList);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(groupID);
-            calloc.free(messageIDList);
-            break;
+
           case _PortMethod.typingStatusUpdate:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final userID = (msg.data['userID'] as String).toNativeUtf8().cast<ffi.Char>();
@@ -717,22 +672,7 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(data);
             break;
-          case _PortMethod.clearC2CHistoryMessage:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.ClearC2CHistoryMessage(operationID, uid);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(uid);
-            break;
-          case _PortMethod.clearGroupHistoryMessage:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.ClearGroupHistoryMessage(operationID, gid);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(gid);
-            break;
+
           case _PortMethod.searchLocalMessages:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final searchParam = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
@@ -741,14 +681,7 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(searchParam);
             break;
-          case _PortMethod.deleteMessageFromLocalAndSvr:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.DeleteMessageFromLocalAndSvr(operationID, message);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(message);
-            break;
+
           case _PortMethod.deleteAllMsgFromLocal:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             _imBindings.DeleteAllMsgFromLocal(operationID);
@@ -761,48 +694,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             calloc.free(operationID);
             break;
-          case _PortMethod.markMessageAsReadByConID:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final conversationID = (msg.data['conversationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final messageIDList = jsonEncode(msg.data['messageIDList']).toNativeUtf8().cast<ffi.Char>();
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            _imBindings.MarkMessageAsReadByConID(operationID, conversationID, messageIDList);
-            calloc.free(operationID);
-            calloc.free(conversationID);
-            calloc.free(messageIDList);
-            break;
-          case _PortMethod.clearC2CHistoryMessageFromLocalAndSvr:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.ClearC2CHistoryMessageFromLocalAndSvr(operationID, uid);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(uid);
-            break;
-          case _PortMethod.clearGroupHistoryMessageFromLocalAndSvr:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.ClearGroupHistoryMessageFromLocalAndSvr(operationID, gid);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(gid);
-            break;
-          case _PortMethod.getHistoryMessageListReverse:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final getMessageOptions = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetHistoryMessageListReverse(operationID, getMessageOptions);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(getMessageOptions);
-            break;
-          case _PortMethod.getAdvancedHistoryMessageList:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final getMessageOptions = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetAdvancedHistoryMessageList(operationID, getMessageOptions);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(getMessageOptions);
-            break;
+
           case _PortMethod.findMessageList:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final searchParams = jsonEncode(msg.data['searchParams']).toNativeUtf8().cast<ffi.Char>();
@@ -869,62 +761,7 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(fileElem);
             break;
-          case _PortMethod.setMessageReactionExtensions:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
-            final list = jsonEncode(msg.data['list']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetMessageReactionExtensions(operationID, message, list);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(message);
-            calloc.free(list);
-            break;
-          case _PortMethod.deleteMessageReactionExtensions:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
-            final list = jsonEncode(msg.data['list']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.DeleteMessageReactionExtensions(operationID, message, list);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(message);
-            calloc.free(list);
-            break;
-          case _PortMethod.getMessageListReactionExtensions:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final messageList = jsonEncode(msg.data['messageList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetMessageListReactionExtensions(operationID, messageList);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(messageList);
-            break;
-          case _PortMethod.addMessageReactionExtensions:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
-            final list = jsonEncode(msg.data['list']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.AddMessageReactionExtensions(operationID, message, list);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(message);
-            calloc.free(list);
-            break;
-          case _PortMethod.getMessageListSomeReactionExtensions:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final message = jsonEncode(msg.data['messageList']).toNativeUtf8().cast<ffi.Char>();
-            final list = jsonEncode(msg.data['kvList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetMessageListSomeReactionExtensions(operationID, message, list);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(message);
-            calloc.free(list);
-            break;
-          case _PortMethod.deleteConversation:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final conversationID = (msg.data['conversationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.DeleteConversation(operationID, conversationID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(conversationID);
-            break;
+
           case _PortMethod.setConversationDraft:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final conversationID = (msg.data['conversationID'] as String).toNativeUtf8().cast<ffi.Char>();
@@ -949,12 +786,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             calloc.free(operationID);
             break;
-          case _PortMethod.getConversationIDBySessionType:
-            final sourceID = (msg.data['sourceID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final v = _imBindings.GetConversationIDBySessionType(sourceID, msg.data['sessionType']);
-            msg.sendPort?.send(_PortResult(data: v));
-            calloc.free(sourceID);
-            break;
+
           case _PortMethod.setConversationRecvMessageOpt:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final conversationIDList = jsonEncode(msg.data['conversationIDList']).toNativeUtf8().cast<ffi.Char>();
@@ -971,22 +803,7 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(conversationIDList);
             break;
-          case _PortMethod.setOneConversationPrivateChat:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final conversationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetOneConversationPrivateChat(operationID, conversationID, msg.data['isPrivate']);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(conversationID);
-            break;
-          case _PortMethod.deleteConversationFromLocalAndSvr:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final conversationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.DeleteConversationFromLocalAndSvr(operationID, conversationID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(conversationID);
-            break;
+
           case _PortMethod.deleteAllConversationFromLocal:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             _imBindings.DeleteAllConversationFromLocal(operationID);
@@ -1001,32 +818,14 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(conversationID);
             break;
-          case _PortMethod.getAtAllTag:
-            final v = _imBindings.GetAtAllTag();
-            msg.sendPort?.send(_PortResult(data: v));
-            break;
+
           case _PortMethod.setGlobalRecvMessageOpt:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             _imBindings.SetGlobalRecvMessageOpt(operationID, msg.data['status']);
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             calloc.free(operationID);
             break;
-          case _PortMethod.setOneConversationBurnDuration:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final conversationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetOneConversationBurnDuration(operationID, conversationID, msg.data['burnDuration']);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(conversationID);
-            break;
-          case _PortMethod.getFriendsInfo:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final uidList = jsonEncode(msg.data['uidList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetDesignatedFriendsInfo(operationID, uidList);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(uidList);
-            break;
+
           case _PortMethod.addFriend:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final userIDReqMsg = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
@@ -1035,18 +834,7 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(userIDReqMsg);
             break;
-          case _PortMethod.getRecvFriendApplicationList:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetRecvFriendApplicationList(operationID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            break;
-          case _PortMethod.getSendFriendApplicationList:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetSendFriendApplicationList(operationID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            break;
+
           case _PortMethod.getFriendList:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             _imBindings.GetFriendList(operationID);
@@ -1123,136 +911,7 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(ops);
             break;
-          case _PortMethod.getSubDepartment:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final departmentID = (msg.data['departmentID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetSubDepartment(operationID, departmentID, msg.data['offset'], msg.data['count']);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(departmentID);
-            break;
-          case _PortMethod.getDepartmentMember:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final departmentID = (msg.data['departmentID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetDepartmentMember(operationID, departmentID, msg.data['offset'], msg.data['count']);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(departmentID);
-            break;
-          case _PortMethod.getUserInDepartment:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final userID = (msg.data['userID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetUserInDepartment(operationID, userID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(userID);
-            break;
-          case _PortMethod.getDepartmentMemberAndSubDepartment:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final departmentID = (msg.data['departmentID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetDepartmentMemberAndSubDepartment(operationID, departmentID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(departmentID);
-            break;
-          case _PortMethod.getDepartmentInfo:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final departmentID = (msg.data['departmentID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetDepartmentInfo(operationID, departmentID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(departmentID);
-            break;
-          case _PortMethod.searchOrganization:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final ops = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SearchOrganization(operationID, ops, msg.data['offset'], msg.data['count']);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(ops);
-            break;
-          case _PortMethod.getWorkMomentsUnReadCount:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetWorkMomentsUnReadCount(operationID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            break;
-          case _PortMethod.getWorkMomentsNotification:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetWorkMomentsNotification(operationID, msg.data['offset'], msg.data['count']);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            break;
-          case _PortMethod.clearWorkMomentsNotification:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.ClearWorkMomentsNotification(operationID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            break;
-          case _PortMethod.signalingInvite:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final info = jsonEncode(msg.data['info']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SignalingInvite(operationID, info);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(info);
-            break;
-          case _PortMethod.signalingInviteInGroup:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final info = jsonEncode(msg.data['info']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SignalingInviteInGroup(operationID, info);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(info);
-            break;
-          case _PortMethod.signalingAccept:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final info = jsonEncode(msg.data['info']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SignalingAccept(operationID, info);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(info);
-            break;
-          case _PortMethod.signalingReject:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final info = jsonEncode(msg.data['info']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SignalingReject(operationID, info);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(info);
-            break;
-          case _PortMethod.signalingCancel:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final info = jsonEncode(msg.data['info']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SignalingCancel(operationID, info);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(info);
-            break;
-          case _PortMethod.signalingHungUp:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final info = jsonEncode(msg.data['info']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SignalingHungUp(operationID, info);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(info);
-            break;
-          case _PortMethod.signalingGetRoomByGroupID:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final groupID = (msg.data['groupID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SignalingGetRoomByGroupID(operationID, groupID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(groupID);
-            break;
-          case _PortMethod.signalingGetTokenByRoomID:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final roomID = (msg.data['roomID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SignalingGetTokenByRoomID(operationID, roomID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(roomID);
-            break;
+
           // case _PortMethod.signalingUpdateMeetingInfo:
           //   final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
           //   final roomID = (msg.data['roomID'] as String).toNativeUtf8().cast<ffi.Char>();
@@ -1285,16 +944,7 @@ class OpenIMManager {
             calloc.free(reason);
             calloc.free(uidList);
             break;
-          case _PortMethod.getGroupMembersInfo:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final groupId = (msg.data['groupId'] as String).toNativeUtf8().cast<ffi.Char>();
-            final uidList = jsonEncode(msg.data['uidList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetGroupMembersInfo(operationID, groupId, uidList);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(groupId);
-            calloc.free(uidList);
-            break;
+
           case _PortMethod.getGroupMemberList:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final groupId = (msg.data['groupId'] as String).toNativeUtf8().cast<ffi.Char>();
@@ -1313,30 +963,13 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gInfo = jsonEncode(msg.data['gInfo']).toNativeUtf8().cast<ffi.Char>();
             final memberList = jsonEncode(msg.data['memberList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.CreateGroup(operationID, gInfo, memberList);
+            _imBindings.CreateGroup(operationID, gInfo);
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             calloc.free(operationID);
             calloc.free(gInfo);
             calloc.free(memberList);
             break;
-          case _PortMethod.setGroupInfo:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final gInfo = jsonEncode(msg.data['gInfo']).toNativeUtf8().cast<ffi.Char>();
-            final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetGroupInfo(operationID, gid, gInfo);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(gid);
-            calloc.free(gInfo);
-            break;
-          case _PortMethod.getGroupsInfo:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final gidList = jsonEncode(msg.data['gidList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetGroupsInfo(operationID, gidList);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(gidList);
-            break;
+
           case _PortMethod.joinGroup:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
@@ -1365,18 +998,7 @@ class OpenIMManager {
             calloc.free(gid);
             calloc.free(uid);
             break;
-          case _PortMethod.getRecvGroupApplicationList:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetRecvGroupApplicationList(operationID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            break;
-          case _PortMethod.getSendGroupApplicationList:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetSendGroupApplicationList(operationID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            break;
+
           case _PortMethod.acceptGroupApplication:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
@@ -1516,9 +1138,9 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(groupMemberInfo);
             break;
-          case _PortMethod.networkChanged:
+          case _PortMethod.networkStatusChanged:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.NetworkChanged(operationID);
+            _imBindings.NetworkStatusChanged(operationID);
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             calloc.free(operationID);
             break;
@@ -1536,28 +1158,7 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(fcmToken);
             break;
-          case _PortMethod.uploadImage:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final path = (msg.data['path'] as String).toNativeUtf8().cast<ffi.Char>();
-            final token = (msg.data['token'] as String).toNativeUtf8().cast<ffi.Char>();
-            final obj = (msg.data['obj'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.UploadImage(operationID, path, token, obj);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            calloc.free(path);
-            calloc.free(token);
-            calloc.free(obj);
-            break;
-          case _PortMethod.wakeUp:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.WakeUp(operationID);
-            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
-            calloc.free(operationID);
-            break;
-          case _PortMethod.getLoginStatus:
-            int v = _imBindings.GetLoginStatus();
-            msg.sendPort?.send(_PortResult(data: v));
-            break;
+
           case _PortMethod.logout:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             _imBindings.Logout(operationID);

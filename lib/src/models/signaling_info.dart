@@ -2,7 +2,7 @@ part of flutter_openim_sdk_ffi;
 
 class SignalingInfo {
   /// 操作者
-  String? opUserID;
+  String? userID;
 
   /// 邀请信息
   InvitationInfo? invitation;
@@ -11,22 +11,22 @@ class SignalingInfo {
   OfflinePushInfo? offlinePushInfo;
 
   SignalingInfo({
-    this.opUserID,
+    this.userID,
     this.invitation,
     this.offlinePushInfo,
   });
 
   SignalingInfo.fromJson(Map<String, dynamic> json) {
-    opUserID = json['opUserID'];
     invitation = json['invitation'] == null ? null : InvitationInfo.fromJson(json['invitation']);
     offlinePushInfo = json['offlinePushInfo'] == null ? null : OfflinePushInfo.fromJson(json['offlinePushInfo']);
+    userID = json['userID'] ?? invitation?.inviterUserID;
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['opUserID'] = this.opUserID;
-    data['invitation'] = this.invitation?.toJson();
-    data['offlinePushInfo'] = this.offlinePushInfo?.toJson();
+    final data = <String, dynamic>{};
+    data['userID'] = userID;
+    data['invitation'] = invitation?.toJson();
+    data['offlinePushInfo'] = offlinePushInfo?.toJson();
     return data;
   }
 }
@@ -72,7 +72,7 @@ class InvitationInfo {
 
   InvitationInfo.fromJson(Map<String, dynamic> json) {
     inviterUserID = json['inviterUserID'];
-    inviteeUserIDList = json['inviteeUserIDList'].cast<String>();
+    inviteeUserIDList = json['inviteeUserIDList']?.cast<String>();
     groupID = json['groupID'];
     roomID = json['roomID'];
     timeout = json['timeout'];
@@ -83,16 +83,16 @@ class InvitationInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['inviterUserID'] = this.inviterUserID;
-    data['inviteeUserIDList'] = this.inviteeUserIDList;
-    data['groupID'] = this.groupID;
-    data['roomID'] = this.roomID;
-    data['timeout'] = this.timeout;
-    data['initiateTime'] = this.initiateTime;
-    data['mediaType'] = this.mediaType;
-    data['sessionType'] = this.sessionType;
-    data['platformID'] = this.platformID;
+    final data = <String, dynamic>{};
+    data['inviterUserID'] = inviterUserID;
+    data['inviteeUserIDList'] = inviteeUserIDList;
+    data['groupID'] = groupID;
+    data['roomID'] = roomID;
+    data['timeout'] = timeout;
+    data['initiateTime'] = initiateTime;
+    data['mediaType'] = mediaType;
+    data['sessionType'] = sessionType;
+    data['platformID'] = platformID;
     return data;
   }
 }
@@ -122,15 +122,16 @@ class SignalingCertificate {
     token = json['token'];
     roomID = json['roomID'];
     liveURL = json['liveURL'];
+    // ignore: prefer_null_aware_operators
     busyLineUserIDList = null == json['busyLineUserIDList'] ? null : json['busyLineUserIDList'].cast<String>();
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['token'] = this.token;
-    data['roomID'] = this.roomID;
-    data['liveURL'] = this.liveURL;
-    data['busyLineUserIDList'] = this.busyLineUserIDList;
+    final data = <String, dynamic>{};
+    data['token'] = token;
+    data['roomID'] = roomID;
+    data['liveURL'] = liveURL;
+    data['busyLineUserIDList'] = busyLineUserIDList;
     return data;
   }
 }
@@ -167,17 +168,17 @@ class RoomCallingInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    if (this.invitation != null) {
-      data['invitation'] = this.invitation!.toJson();
+    final data = <String, dynamic>{};
+    if (invitation != null) {
+      data['invitation'] = invitation!.toJson();
     }
-    if (this.participant != null) {
-      data['participant'] = this.participant!.map((v) => v.toJson()).toList();
+    if (participant != null) {
+      data['participant'] = participant!.map((v) => v.toJson()).toList();
     }
-    data['roomID'] = this.roomID;
-    data['token'] = this.token;
-    data['liveURL'] = this.liveURL;
-    data['groupID'] = this.groupID;
+    data['roomID'] = roomID;
+    data['token'] = token;
+    data['liveURL'] = liveURL;
+    data['groupID'] = groupID;
     return data;
   }
 }
@@ -196,15 +197,15 @@ class Participant {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    if (this.groupInfo != null) {
-      data['groupInfo'] = this.groupInfo!.toJson();
+    final data = <String, dynamic>{};
+    if (groupInfo != null) {
+      data['groupInfo'] = groupInfo!.toJson();
     }
-    if (this.groupMemberInfo != null) {
-      data['groupMemberInfo'] = this.groupMemberInfo!.toJson();
+    if (groupMemberInfo != null) {
+      data['groupMemberInfo'] = groupMemberInfo!.toJson();
     }
-    if (this.userInfo != null) {
-      data['userInfo'] = this.userInfo!.toJson();
+    if (userInfo != null) {
+      data['userInfo'] = userInfo!.toJson();
     }
     return data;
   }
@@ -222,7 +223,7 @@ class CustomSignaling {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
+    final data = <String, dynamic>{};
     data['roomID'] = roomID;
     data['customInfo'] = customInfo;
     return data;
