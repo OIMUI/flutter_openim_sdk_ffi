@@ -8,5 +8,16 @@
         "openim_sdk_ffi_apple.h": "c",
         "dart_api_dl.h": "c"
     },
-    "cmake.sourceDirectory": "/Users/muka/Desktop/www/flutter_openim_sdk_ffi/example/linux"
+    "cmake.sourceDirectory": "/Users/muka/Desktop/www/flutter_openim_sdk_ffi/example/linux",
+    "cSpell.words": [
+        "ffigen",
+        "Logined",
+        "Memeber",
+        "minio",
+        "Noticication",
+        "nullptr",
+        "ptrdiff",
+        "Struct",
+        "Unmute"
+    ]
 }

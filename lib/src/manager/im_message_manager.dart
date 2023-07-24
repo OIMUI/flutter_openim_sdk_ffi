@@ -67,31 +67,6 @@ class MessageManager {
     return result.value;
   }
 
-  /// 撤回消息[revokeMessageV2]
-  /// [message] 被撤回的消息体
-  @deprecated
-  Future<void> revokeMessage({
-    required Message message,
-    String? operationID,
-  }) async {
-    ReceivePort receivePort = ReceivePort();
-
-    OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.revokeMessage,
-      data: {
-        'operationID': IMUtils.checkOperationID(operationID),
-        'message': message.toJson(),
-      },
-      sendPort: receivePort.sendPort,
-    ));
-    _PortResult result = await receivePort.first;
-
-    receivePort.close();
-    if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
-    }
-  }
-
   /// 删除本地消息
   /// [message] 被删除的消息体
   Future<void> deleteMessageFromLocalStorage({

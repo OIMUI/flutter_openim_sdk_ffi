@@ -49,8 +49,11 @@ class ConversationInfo {
   /// 可阅读期限 s
   int? burnDuration;
 
-  /// 附加内容
-  String? ext;
+  /// 是否开启定期销毁
+  bool? isMsgDestruct;
+
+  /// 定期销毁时间 s
+  int? msgDestructTime;
 
   /// 附加内容
   String? ex;
@@ -76,7 +79,9 @@ class ConversationInfo {
     this.isPinned,
     this.isNotInGroup,
     this.ex,
-    this.ext,
+    this.groupAtType,
+    this.isMsgDestruct,
+    this.msgDestructTime,
   });
 
   ConversationInfo.fromJson(Map<String, dynamic> json) : conversationID = json['conversationID'] {
@@ -93,7 +98,9 @@ class ConversationInfo {
       } else if (json['latestMsg'] is Map) {
         latestMsg = Message.fromJson(json['latestMsg']);
       }
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('latestMsg error: $e');
+    }
     latestMsgSendTime = json['latestMsgSendTime'];
     draftText = json['draftText'];
     draftTextTime = json['draftTextTime'];
@@ -103,30 +110,32 @@ class ConversationInfo {
     isNotInGroup = json['isNotInGroup'];
     groupAtType = json['groupAtType'];
     ex = json['ex'];
-    ext = json['ext'];
+    isMsgDestruct = json['isMsgDestruct'];
+    msgDestructTime = json['msgDestructTime'];
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['conversationID'] = this.conversationID;
-    data['conversationType'] = this.conversationType;
-    data['userID'] = this.userID;
-    data['groupID'] = this.groupID;
-    data['showName'] = this.showName;
-    data['faceURL'] = this.faceURL;
-    data['recvMsgOpt'] = this.recvMsgOpt;
-    data['unreadCount'] = this.unreadCount;
-    data['latestMsg'] = this.latestMsg?.toJson();
-    data['latestMsgSendTime'] = this.latestMsgSendTime;
-    data['draftText'] = this.draftText;
-    data['draftTextTime'] = this.draftTextTime;
-    data['isPinned'] = this.isPinned;
-    data['isPrivateChat'] = this.isPrivateChat;
-    data['burnDuration'] = this.burnDuration;
-    data['isNotInGroup'] = this.isNotInGroup;
-    data['groupAtType'] = this.groupAtType;
-    data['ex'] = this.ex;
-    data['ext'] = this.ext;
+    final data = <String, dynamic>{};
+    data['conversationID'] = conversationID;
+    data['conversationType'] = conversationType;
+    data['userID'] = userID;
+    data['groupID'] = groupID;
+    data['showName'] = showName;
+    data['faceURL'] = faceURL;
+    data['recvMsgOpt'] = recvMsgOpt;
+    data['unreadCount'] = unreadCount;
+    data['latestMsg'] = latestMsg?.toJson();
+    data['latestMsgSendTime'] = latestMsgSendTime;
+    data['draftText'] = draftText;
+    data['draftTextTime'] = draftTextTime;
+    data['isPinned'] = isPinned;
+    data['isPrivateChat'] = isPrivateChat;
+    data['burnDuration'] = burnDuration;
+    data['isNotInGroup'] = isNotInGroup;
+    data['groupAtType'] = groupAtType;
+    data['ex'] = ex;
+    data['isMsgDestruct'] = isMsgDestruct;
+    data['msgDestructTime'] = msgDestructTime;
     return data;
   }
 

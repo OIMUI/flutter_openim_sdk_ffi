@@ -22,11 +22,8 @@ class UserInfo {
   /// 手机号
   String? phoneNumber;
 
-  /// 使用[birthTime]
-  int? birth;
-
   /// 出生时间
-  String? birthTime;
+  int? birth;
 
   /// 邮箱
   String? email;
@@ -39,21 +36,6 @@ class UserInfo {
 
   /// 备注
   String? remark;
-
-  /// 用户公开的资料
-  PublicUserInfo? publicInfo;
-
-  /// 好友才能查看的资料
-  FriendInfo? friendInfo;
-
-  /// 黑名单资料
-  BlacklistInfo? blackInfo;
-
-  /// 是否好友关系
-  bool? isFriendship;
-
-  /// 是否黑名单
-  bool? isBlacklist;
 
   /// 全局免打扰 0：正常；1：不接受消息；2：接受在线消息不接受离线消息；
   int? globalRecvMsgOpt;
@@ -70,6 +52,21 @@ class UserInfo {
   /// 禁止登录
   int? forbidden;
 
+  /// 用户公开的资料
+  PublicUserInfo? publicInfo;
+
+  /// 好友才能查看的资料
+  FriendInfo? friendInfo;
+
+  /// 黑名单资料
+  BlacklistInfo? blackInfo;
+
+  /// 是否好友关系
+  bool? isFriendship;
+
+  /// 是否黑名单
+  bool? isBlacklist;
+
   UserInfo({
     this.publicInfo,
     this.friendInfo,
@@ -82,7 +79,6 @@ class UserInfo {
     this.faceURL,
     this.phoneNumber,
     this.birth,
-    this.birthTime,
     this.gender,
     this.email,
     this.ex,
@@ -121,7 +117,6 @@ class UserInfo {
     gender = json['gender'] ?? _gender;
     phoneNumber = json['phoneNumber'] ?? _phoneNumber;
     birth = json['birth'] ?? _birth;
-    birthTime = json['birthTime'] ?? _birthTime;
     email = json['email'] ?? _email;
     remark = json['remark'] ?? _remark;
     ex = json['ex'] ?? _ex;
@@ -134,29 +129,28 @@ class UserInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['publicInfo'] = this.publicInfo?.toJson();
-    data['friendInfo'] = this.friendInfo?.toJson();
-    data['blackInfo'] = this.blackInfo?.toJson();
+    final data = <String, dynamic>{};
+    data['publicInfo'] = publicInfo?.toJson();
+    data['friendInfo'] = friendInfo?.toJson();
+    data['blackInfo'] = blackInfo?.toJson();
     //
-    data['isFriendship'] = this.isFriendship;
-    data['isBlacklist'] = this.isBlacklist;
-    data['userID'] = this.userID;
-    data['nickname'] = this.nickname;
-    data['faceURL'] = this.faceURL;
-    data['gender'] = this.gender;
-    data['phoneNumber'] = this.phoneNumber;
-    data['birth'] = this.birth;
-    data['birthTime'] = this.birthTime;
-    data['email'] = this.email;
-    data['ex'] = this.ex;
-    data['createTime'] = this.createTime;
-    data['remark'] = this.remark;
-    data['globalRecvMsgOpt'] = this.globalRecvMsgOpt;
-    data['allowAddFriend'] = this.allowAddFriend;
-    data['allowBeep'] = this.allowBeep;
-    data['allowVibration'] = this.allowVibration;
-    data['forbidden'] = this.forbidden;
+    data['isFriendship'] = isFriendship;
+    data['isBlacklist'] = isBlacklist;
+    data['userID'] = userID;
+    data['nickname'] = nickname;
+    data['faceURL'] = faceURL;
+    data['gender'] = gender;
+    data['phoneNumber'] = phoneNumber;
+    data['birth'] = birth;
+    data['email'] = email;
+    data['ex'] = ex;
+    data['createTime'] = createTime;
+    data['remark'] = remark;
+    data['globalRecvMsgOpt'] = globalRecvMsgOpt;
+    data['allowAddFriend'] = allowAddFriend;
+    data['allowBeep'] = allowBeep;
+    data['allowVibration'] = allowVibration;
+    data['forbidden'] = forbidden;
     return data;
   }
 
@@ -179,8 +173,6 @@ class UserInfo {
   String? get _phoneNumber => friendInfo?.phoneNumber;
 
   int? get _birth => friendInfo?.birth;
-
-  String? get _birthTime => friendInfo?.birthTime;
 
   String? get _email => friendInfo?.email;
 
@@ -240,13 +232,13 @@ class PublicUserInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['userID'] = this.userID;
-    data['nickname'] = this.nickname;
-    data['faceURL'] = this.faceURL;
-    data['gender'] = this.gender;
-    data['appMangerLevel'] = this.appMangerLevel;
-    data['ex'] = this.ex;
+    final data = <String, dynamic>{};
+    data['userID'] = userID;
+    data['nickname'] = nickname;
+    data['faceURL'] = faceURL;
+    data['gender'] = gender;
+    data['appMangerLevel'] = appMangerLevel;
+    data['ex'] = ex;
     return data;
   }
 }
@@ -269,9 +261,6 @@ class FriendInfo {
   String? phoneNumber;
 
   /// 出生日期
-  String? birthTime;
-
-  /// 使用[birthTime]
   int? birth;
 
   /// 邮箱
@@ -299,7 +288,6 @@ class FriendInfo {
     this.gender,
     this.phoneNumber,
     this.birth,
-    this.birthTime,
     this.email,
     this.remark,
     this.ex,
@@ -320,27 +308,25 @@ class FriendInfo {
     gender = json['gender'];
     phoneNumber = json['phoneNumber'];
     birth = json['birth'];
-    birthTime = json['birthTime'];
     email = json['email'];
     ex = json['ex'];
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
+    final data = <String, dynamic>{};
     // data['ownerUserID'] = this.ownerUserID;
-    data['userID'] = this.userID;
-    data['remark'] = this.remark;
-    data['createTime'] = this.createTime;
-    data['addSource'] = this.addSource;
-    data['operatorUserID'] = this.operatorUserID;
-    data['nickname'] = this.nickname;
-    data['faceURL'] = this.faceURL;
-    data['gender'] = this.gender;
-    data['phoneNumber'] = this.phoneNumber;
-    data['birth'] = this.birth;
-    data['birthTime'] = this.birthTime;
-    data['email'] = this.email;
-    data['ex'] = this.ex;
+    data['userID'] = userID;
+    data['remark'] = remark;
+    data['createTime'] = createTime;
+    data['addSource'] = addSource;
+    data['operatorUserID'] = operatorUserID;
+    data['nickname'] = nickname;
+    data['faceURL'] = faceURL;
+    data['gender'] = gender;
+    data['phoneNumber'] = phoneNumber;
+    data['birth'] = birth;
+    data['email'] = email;
+    data['ex'] = ex;
     return data;
   }
 
@@ -401,15 +387,15 @@ class BlacklistInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['userID'] = this.userID;
-    data['nickname'] = this.nickname;
-    data['faceURL'] = this.faceURL;
-    data['gender'] = this.gender;
-    data['createTime'] = this.createTime;
-    data['addSource'] = this.addSource;
-    data['operatorUserID'] = this.operatorUserID;
-    data['ex'] = this.ex;
+    final data = <String, dynamic>{};
+    data['userID'] = userID;
+    data['nickname'] = nickname;
+    data['faceURL'] = faceURL;
+    data['gender'] = gender;
+    data['createTime'] = createTime;
+    data['addSource'] = addSource;
+    data['operatorUserID'] = operatorUserID;
+    data['ex'] = ex;
     return data;
   }
 }
@@ -430,9 +416,9 @@ class FriendshipInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['userID'] = this.userID;
-    data['result'] = this.result;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['userID'] = userID;
+    data['result'] = result;
     return data;
   }
 }
@@ -520,22 +506,22 @@ class FriendApplicationInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final data = Map<String, dynamic>();
-    data['fromUserID'] = this.fromUserID;
-    data['fromNickname'] = this.fromNickname;
-    data['fromFaceURL'] = this.fromFaceURL;
-    data['fromGender'] = this.fromGender;
-    data['toUserID'] = this.toUserID;
-    data['toNickname'] = this.toNickname;
-    data['toFaceURL'] = this.toFaceURL;
-    data['toGender'] = this.toGender;
-    data['handleResult'] = this.handleResult;
-    data['reqMsg'] = this.reqMsg;
-    data['createTime'] = this.createTime;
-    data['handlerUserID'] = this.handlerUserID;
-    data['handleMsg'] = this.handleMsg;
-    data['handleTime'] = this.handleTime;
-    data['ex'] = this.ex;
+    final data = <String, dynamic>{};
+    data['fromUserID'] = fromUserID;
+    data['fromNickname'] = fromNickname;
+    data['fromFaceURL'] = fromFaceURL;
+    data['fromGender'] = fromGender;
+    data['toUserID'] = toUserID;
+    data['toNickname'] = toNickname;
+    data['toFaceURL'] = toFaceURL;
+    data['toGender'] = toGender;
+    data['handleResult'] = handleResult;
+    data['reqMsg'] = reqMsg;
+    data['createTime'] = createTime;
+    data['handlerUserID'] = handlerUserID;
+    data['handleMsg'] = handleMsg;
+    data['handleTime'] = handleTime;
+    data['ex'] = ex;
     return data;
   }
 

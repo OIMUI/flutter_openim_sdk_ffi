@@ -10,7 +10,7 @@ import 'dart:ffi' as ffi;
 
 /// Bindings for `src/flutter_openim_sdk_ffi.h`.
 ///
-/// Regenerate bindings with `flutter pub run ffigen --config ffigen.yaml`.
+/// Regenerate bindings with `flutter pub run ffigen --config open_im.yaml`.
 ///
 class OpenimSdkFfiBindings {
   /// Holds the symbol lookup function.
@@ -33,7 +33,7 @@ class OpenimSdkFfiBindings {
     ffi.Pointer<ffi.Char> methodName,
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> callMethodName,
-    int errCode,
+    ffi.Pointer<ffi.Double> errCode,
     ffi.Pointer<ffi.Char> message,
   ) {
     return _callOnMethodChannel(
@@ -55,7 +55,7 @@ class OpenimSdkFfiBindings {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Int32,
+              ffi.Pointer<ffi.Double>,
               ffi.Pointer<ffi.Char>)>>('callOnMethodChannel');
   late final _callOnMethodChannel = _callOnMethodChannelPtr.asFunction<
       void Function(
@@ -64,1033 +64,45 @@ class OpenimSdkFfiBindings {
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
-          int,
+          ffi.Pointer<ffi.Double>,
           ffi.Pointer<ffi.Char>)>();
 
-  void RegisterCallback(
-    ffi.Pointer<CGO_OpenIM_Listener> callback,
-    int port,
-  ) {
-    return _RegisterCallback(
-      callback,
-      port,
-    );
-  }
-
-  late final _RegisterCallbackPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<CGO_OpenIM_Listener>,
-              Dart_Port_DL)>>('RegisterCallback');
-  late final _RegisterCallback = _RegisterCallbackPtr.asFunction<
-      void Function(ffi.Pointer<CGO_OpenIM_Listener>, int)>();
-
-  ffi.Pointer<ffi.Char> GetSdkVersion() {
-    return _GetSdkVersion();
-  }
-
-  late final _GetSdkVersionPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
-          'GetSdkVersion');
-  late final _GetSdkVersion =
-      _GetSdkVersionPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
-
-  bool InitSDK(
+  void callOnNativeMethodChannel(
+    ffi.Pointer<CGO_OpenIM_Listener> listener,
+    ffi.Pointer<ffi.Char> methodName,
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> config,
+    ffi.Pointer<ffi.Char> callMethodName,
+    ffi.Pointer<ffi.Double> errCode,
+    ffi.Pointer<ffi.Char> message,
   ) {
-    return _InitSDK(
+    return _callOnNativeMethodChannel(
+      listener,
+      methodName,
       operationID,
-      config,
+      callMethodName,
+      errCode,
+      message,
     );
   }
 
-  late final _InitSDKPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Bool Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('InitSDK');
-  late final _InitSDK = _InitSDKPtr.asFunction<
-      bool Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void Login(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userID,
-    ffi.Pointer<ffi.Char> token,
-  ) {
-    return _Login(
-      operationID,
-      userID,
-      token,
-    );
-  }
-
-  late final _LoginPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('Login');
-  late final _Login = _LoginPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>)>();
-
-  void WakeUp(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _WakeUp(
-      operationID,
-    );
-  }
-
-  late final _WakeUpPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'WakeUp');
-  late final _WakeUp =
-      _WakeUpPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void NetworkChanged(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _NetworkChanged(
-      operationID,
-    );
-  }
-
-  late final _NetworkChangedPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'NetworkChanged');
-  late final _NetworkChanged =
-      _NetworkChangedPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void UploadImage(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> filePath,
-    ffi.Pointer<ffi.Char> token,
-    ffi.Pointer<ffi.Char> obj,
-  ) {
-    return _UploadImage(
-      operationID,
-      filePath,
-      token,
-      obj,
-    );
-  }
-
-  late final _UploadImagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('UploadImage');
-  late final _UploadImage = _UploadImagePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void UploadFile(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> filePath,
-  ) {
-    return _UploadFile(
-      operationID,
-      filePath,
-    );
-  }
-
-  late final _UploadFilePtr = _lookup<
+  late final _callOnNativeMethodChannelPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('UploadFile');
-  late final _UploadFile = _UploadFilePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void Logout(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _Logout(
-      operationID,
-    );
-  }
-
-  late final _LogoutPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'Logout');
-  late final _Logout =
-      _LogoutPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void SetAppBackgroundStatus(
-    ffi.Pointer<ffi.Char> operationID,
-    bool isBackground,
-  ) {
-    return _SetAppBackgroundStatus(
-      operationID,
-      isBackground,
-    );
-  }
-
-  late final _SetAppBackgroundStatusPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Bool)>>('SetAppBackgroundStatus');
-  late final _SetAppBackgroundStatus = _SetAppBackgroundStatusPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, bool)>();
-
-  int GetLoginStatus() {
-    return _GetLoginStatus();
-  }
-
-  late final _GetLoginStatusPtr =
-      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('GetLoginStatus');
-  late final _GetLoginStatus = _GetLoginStatusPtr.asFunction<int Function()>();
-
-  ffi.Pointer<ffi.Char> GetLoginUser() {
-    return _GetLoginUser();
-  }
-
-  late final _GetLoginUserPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
-          'GetLoginUser');
-  late final _GetLoginUser =
-      _GetLoginUserPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
-
-  void GetUsersInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userIDList,
-  ) {
-    return _GetUsersInfo(
-      operationID,
-      userIDList,
-    );
-  }
-
-  late final _GetUsersInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('GetUsersInfo');
-  late final _GetUsersInfo = _GetUsersInfoPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void SetSelfInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userInfo,
-  ) {
-    return _SetSelfInfo(
-      operationID,
-      userInfo,
-    );
-  }
-
-  late final _SetSelfInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('SetSelfInfo');
-  late final _SetSelfInfo = _SetSelfInfoPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetSelfUserInfo(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _GetSelfUserInfo(
-      operationID,
-    );
-  }
-
-  late final _GetSelfUserInfoPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'GetSelfUserInfo');
-  late final _GetSelfUserInfo =
-      _GetSelfUserInfoPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void CreateGroup(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupBaseInfo,
-    ffi.Pointer<ffi.Char> memberList,
-  ) {
-    return _CreateGroup(
-      operationID,
-      groupBaseInfo,
-      memberList,
-    );
-  }
-
-  late final _CreateGroupPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('CreateGroup');
-  late final _CreateGroup = _CreateGroupPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>)>();
-
-  void JoinGroup(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> reqMsg,
-    int joinSource,
-  ) {
-    return _JoinGroup(
-      operationID,
-      groupID,
-      reqMsg,
-      joinSource,
-    );
-  }
-
-  late final _JoinGroupPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>, ffi.Int32)>>('JoinGroup');
-  late final _JoinGroup = _JoinGroupPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, int)>();
-
-  void QuitGroup(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-  ) {
-    return _QuitGroup(
-      operationID,
-      groupID,
-    );
-  }
-
-  late final _QuitGroupPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('QuitGroup');
-  late final _QuitGroup = _QuitGroupPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void DismissGroup(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-  ) {
-    return _DismissGroup(
-      operationID,
-      groupID,
-    );
-  }
-
-  late final _DismissGroupPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('DismissGroup');
-  late final _DismissGroup = _DismissGroupPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void ChangeGroupMute(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    bool isMute,
-  ) {
-    return _ChangeGroupMute(
-      operationID,
-      groupID,
-      isMute,
-    );
-  }
-
-  late final _ChangeGroupMutePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Bool)>>('ChangeGroupMute');
-  late final _ChangeGroupMute = _ChangeGroupMutePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, bool)>();
-
-  void ChangeGroupMemberMute(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> userID,
-    int mutedSeconds,
-  ) {
-    return _ChangeGroupMemberMute(
-      operationID,
-      groupID,
-      userID,
-      mutedSeconds,
-    );
-  }
-
-  late final _ChangeGroupMemberMutePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>, ffi.Int)>>('ChangeGroupMemberMute');
-  late final _ChangeGroupMemberMute = _ChangeGroupMemberMutePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, int)>();
-
-  void SetGroupMemberRoleLevel(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> userID,
-    int roleLevel,
-  ) {
-    return _SetGroupMemberRoleLevel(
-      operationID,
-      groupID,
-      userID,
-      roleLevel,
-    );
-  }
-
-  late final _SetGroupMemberRoleLevelPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>, ffi.Int)>>('SetGroupMemberRoleLevel');
-  late final _SetGroupMemberRoleLevel = _SetGroupMemberRoleLevelPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, int)>();
-
-  void SetGroupMemberInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupMemberInfo,
-  ) {
-    return _SetGroupMemberInfo(
-      operationID,
-      groupMemberInfo,
-    );
-  }
-
-  late final _SetGroupMemberInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SetGroupMemberInfo');
-  late final _SetGroupMemberInfo = _SetGroupMemberInfoPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetJoinedGroupList(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _GetJoinedGroupList(
-      operationID,
-    );
-  }
-
-  late final _GetJoinedGroupListPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'GetJoinedGroupList');
-  late final _GetJoinedGroupList =
-      _GetJoinedGroupListPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void GetGroupsInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupIDList,
-  ) {
-    return _GetGroupsInfo(
-      operationID,
-      groupIDList,
-    );
-  }
-
-  late final _GetGroupsInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('GetGroupsInfo');
-  late final _GetGroupsInfo = _GetGroupsInfoPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void SearchGroups(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> searchParam,
-  ) {
-    return _SearchGroups(
-      operationID,
-      searchParam,
-    );
-  }
-
-  late final _SearchGroupsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('SearchGroups');
-  late final _SearchGroups = _SearchGroupsPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void SetGroupInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> groupInfo,
-  ) {
-    return _SetGroupInfo(
-      operationID,
-      groupID,
-      groupInfo,
-    );
-  }
-
-  late final _SetGroupInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SetGroupInfo');
-  late final _SetGroupInfo = _SetGroupInfoPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>)>();
-
-  void SetGroupVerification(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    int verification,
-  ) {
-    return _SetGroupVerification(
-      operationID,
-      groupID,
-      verification,
-    );
-  }
-
-  late final _SetGroupVerificationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Int32)>>('SetGroupVerification');
-  late final _SetGroupVerification = _SetGroupVerificationPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
-
-  void SetGroupLookMemberInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    int rule,
-  ) {
-    return _SetGroupLookMemberInfo(
-      operationID,
-      groupID,
-      rule,
-    );
-  }
-
-  late final _SetGroupLookMemberInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Int32)>>('SetGroupLookMemberInfo');
-  late final _SetGroupLookMemberInfo = _SetGroupLookMemberInfoPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
-
-  void SetGroupApplyMemberFriend(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    int rule,
-  ) {
-    return _SetGroupApplyMemberFriend(
-      operationID,
-      groupID,
-      rule,
-    );
-  }
-
-  late final _SetGroupApplyMemberFriendPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Int32)>>('SetGroupApplyMemberFriend');
-  late final _SetGroupApplyMemberFriend =
-      _SetGroupApplyMemberFriendPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
-
-  void GetGroupMemberList(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    int filter,
-    int offset,
-    int count,
-  ) {
-    return _GetGroupMemberList(
-      operationID,
-      groupID,
-      filter,
-      offset,
-      count,
-    );
-  }
-
-  late final _GetGroupMemberListPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Int32, ffi.Int32, ffi.Int32)>>('GetGroupMemberList');
-  late final _GetGroupMemberList = _GetGroupMemberListPtr.asFunction<
-      void Function(
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int, int)>();
-
-  void GetGroupMemberOwnerAndAdmin(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-  ) {
-    return _GetGroupMemberOwnerAndAdmin(
-      operationID,
-      groupID,
-    );
-  }
-
-  late final _GetGroupMemberOwnerAndAdminPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetGroupMemberOwnerAndAdmin');
-  late final _GetGroupMemberOwnerAndAdmin =
-      _GetGroupMemberOwnerAndAdminPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetGroupMemberListByJoinTimeFilter(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    int offset,
-    int count,
-    int joinTimeBegin,
-    int joinTimeEnd,
-    ffi.Pointer<ffi.Char> filterUserIDList,
-  ) {
-    return _GetGroupMemberListByJoinTimeFilter(
-      operationID,
-      groupID,
-      offset,
-      count,
-      joinTimeBegin,
-      joinTimeEnd,
-      filterUserIDList,
-    );
-  }
-
-  late final _GetGroupMemberListByJoinTimeFilterPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Int32,
-              ffi.Int32,
-              ffi.Int64,
-              ffi.Int64,
-              ffi.Pointer<ffi.Char>)>>('GetGroupMemberListByJoinTimeFilter');
-  late final _GetGroupMemberListByJoinTimeFilter =
-      _GetGroupMemberListByJoinTimeFilterPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int,
-              int, int, ffi.Pointer<ffi.Char>)>();
-
-  void GetGroupMembersInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> userIDList,
-  ) {
-    return _GetGroupMembersInfo(
-      operationID,
-      groupID,
-      userIDList,
-    );
-  }
-
-  late final _GetGroupMembersInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetGroupMembersInfo');
-  late final _GetGroupMembersInfo = _GetGroupMembersInfoPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>)>();
-
-  void KickGroupMember(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> reason,
-    ffi.Pointer<ffi.Char> userIDList,
-  ) {
-    return _KickGroupMember(
-      operationID,
-      groupID,
-      reason,
-      userIDList,
-    );
-  }
-
-  late final _KickGroupMemberPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
+              ffi.Pointer<CGO_OpenIM_Listener>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('KickGroupMember');
-  late final _KickGroupMember = _KickGroupMemberPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void TransferGroupOwner(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> newOwnerUserID,
-  ) {
-    return _TransferGroupOwner(
-      operationID,
-      groupID,
-      newOwnerUserID,
-    );
-  }
-
-  late final _TransferGroupOwnerPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('TransferGroupOwner');
-  late final _TransferGroupOwner = _TransferGroupOwnerPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>)>();
-
-  void InviteUserToGroup(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> reason,
-    ffi.Pointer<ffi.Char> userIDList,
-  ) {
-    return _InviteUserToGroup(
-      operationID,
-      groupID,
-      reason,
-      userIDList,
-    );
-  }
-
-  late final _InviteUserToGroupPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Char>)>>('callOnNativeMethodChannel');
+  late final _callOnNativeMethodChannel =
+      _callOnNativeMethodChannelPtr.asFunction<
+          void Function(
+              ffi.Pointer<CGO_OpenIM_Listener>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('InviteUserToGroup');
-  late final _InviteUserToGroup = _InviteUserToGroupPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetRecvGroupApplicationList(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _GetRecvGroupApplicationList(
-      operationID,
-    );
-  }
-
-  late final _GetRecvGroupApplicationListPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'GetRecvGroupApplicationList');
-  late final _GetRecvGroupApplicationList = _GetRecvGroupApplicationListPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void GetSendGroupApplicationList(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _GetSendGroupApplicationList(
-      operationID,
-    );
-  }
-
-  late final _GetSendGroupApplicationListPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'GetSendGroupApplicationList');
-  late final _GetSendGroupApplicationList = _GetSendGroupApplicationListPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void AcceptGroupApplication(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> fromUserID,
-    ffi.Pointer<ffi.Char> handleMsg,
-  ) {
-    return _AcceptGroupApplication(
-      operationID,
-      groupID,
-      fromUserID,
-      handleMsg,
-    );
-  }
-
-  late final _AcceptGroupApplicationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('AcceptGroupApplication');
-  late final _AcceptGroupApplication = _AcceptGroupApplicationPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void RefuseGroupApplication(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> fromUserID,
-    ffi.Pointer<ffi.Char> handleMsg,
-  ) {
-    return _RefuseGroupApplication(
-      operationID,
-      groupID,
-      fromUserID,
-      handleMsg,
-    );
-  }
-
-  late final _RefuseGroupApplicationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('RefuseGroupApplication');
-  late final _RefuseGroupApplication = _RefuseGroupApplicationPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void SetGroupMemberNickname(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> userID,
-    ffi.Pointer<ffi.Char> groupMemberNickname,
-  ) {
-    return _SetGroupMemberNickname(
-      operationID,
-      groupID,
-      userID,
-      groupMemberNickname,
-    );
-  }
-
-  late final _SetGroupMemberNicknamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SetGroupMemberNickname');
-  late final _SetGroupMemberNickname = _SetGroupMemberNicknamePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void SearchGroupMembers(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> searchParam,
-  ) {
-    return _SearchGroupMembers(
-      operationID,
-      searchParam,
-    );
-  }
-
-  late final _SearchGroupMembersPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SearchGroupMembers');
-  late final _SearchGroupMembers = _SearchGroupMembersPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  /// //////////////////////////friend/////////////////////////////////////
-  void GetDesignatedFriendsInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userIDList,
-  ) {
-    return _GetDesignatedFriendsInfo(
-      operationID,
-      userIDList,
-    );
-  }
-
-  late final _GetDesignatedFriendsInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetDesignatedFriendsInfo');
-  late final _GetDesignatedFriendsInfo =
-      _GetDesignatedFriendsInfoPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetFriendList(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _GetFriendList(
-      operationID,
-    );
-  }
-
-  late final _GetFriendListPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'GetFriendList');
-  late final _GetFriendList =
-      _GetFriendListPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void SearchFriends(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> searchParam,
-  ) {
-    return _SearchFriends(
-      operationID,
-      searchParam,
-    );
-  }
-
-  late final _SearchFriendsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('SearchFriends');
-  late final _SearchFriends = _SearchFriendsPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void CheckFriend(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userIDList,
-  ) {
-    return _CheckFriend(
-      operationID,
-      userIDList,
-    );
-  }
-
-  late final _CheckFriendPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('CheckFriend');
-  late final _CheckFriend = _CheckFriendPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void AddFriend(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userIDReqMsg,
-  ) {
-    return _AddFriend(
-      operationID,
-      userIDReqMsg,
-    );
-  }
-
-  late final _AddFriendPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('AddFriend');
-  late final _AddFriend = _AddFriendPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void SetFriendRemark(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userIDRemark,
-  ) {
-    return _SetFriendRemark(
-      operationID,
-      userIDRemark,
-    );
-  }
-
-  late final _SetFriendRemarkPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SetFriendRemark');
-  late final _SetFriendRemark = _SetFriendRemarkPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void DeleteFriend(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> friendUserID,
-  ) {
-    return _DeleteFriend(
-      operationID,
-      friendUserID,
-    );
-  }
-
-  late final _DeleteFriendPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('DeleteFriend');
-  late final _DeleteFriend = _DeleteFriendPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetRecvFriendApplicationList(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _GetRecvFriendApplicationList(
-      operationID,
-    );
-  }
-
-  late final _GetRecvFriendApplicationListPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'GetRecvFriendApplicationList');
-  late final _GetRecvFriendApplicationList = _GetRecvFriendApplicationListPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void GetSendFriendApplicationList(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _GetSendFriendApplicationList(
-      operationID,
-    );
-  }
-
-  late final _GetSendFriendApplicationListPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'GetSendFriendApplicationList');
-  late final _GetSendFriendApplicationList = _GetSendFriendApplicationListPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void AcceptFriendApplication(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userIDHandleMsg,
-  ) {
-    return _AcceptFriendApplication(
-      operationID,
-      userIDHandleMsg,
-    );
-  }
-
-  late final _AcceptFriendApplicationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('AcceptFriendApplication');
-  late final _AcceptFriendApplication = _AcceptFriendApplicationPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void RefuseFriendApplication(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userIDHandleMsg,
-  ) {
-    return _RefuseFriendApplication(
-      operationID,
-      userIDHandleMsg,
-    );
-  }
-
-  late final _RefuseFriendApplicationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('RefuseFriendApplication');
-  late final _RefuseFriendApplication = _RefuseFriendApplicationPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void AddBlack(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> blackUserID,
-  ) {
-    return _AddBlack(
-      operationID,
-      blackUserID,
-    );
-  }
-
-  late final _AddBlackPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('AddBlack');
-  late final _AddBlack = _AddBlackPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetBlackList(
-    ffi.Pointer<ffi.Char> operationID,
-  ) {
-    return _GetBlackList(
-      operationID,
-    );
-  }
-
-  late final _GetBlackListPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'GetBlackList');
-  late final _GetBlackList =
-      _GetBlackListPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  void RemoveBlack(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> removeUserID,
-  ) {
-    return _RemoveBlack(
-      operationID,
-      removeUserID,
-    );
-  }
-
-  late final _RemoveBlackPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('RemoveBlack');
-  late final _RemoveBlack = _RemoveBlackPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Char>)>();
 
   void GetAllConversationList(
     ffi.Pointer<ffi.Char> operationID,
@@ -1120,8 +132,8 @@ class OpenimSdkFfiBindings {
 
   late final _GetConversationListSplitPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32,
-              ffi.Int32)>>('GetConversationListSplit');
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int,
+              ffi.Int)>>('GetConversationListSplit');
   late final _GetConversationListSplit = _GetConversationListSplitPtr
       .asFunction<void Function(ffi.Pointer<ffi.Char>, int, int)>();
 
@@ -1139,7 +151,7 @@ class OpenimSdkFfiBindings {
 
   late final _GetOneConversationPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int,
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32,
               ffi.Pointer<ffi.Char>)>>('GetOneConversation');
   late final _GetOneConversation = _GetOneConversationPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>)>();
@@ -1161,86 +173,6 @@ class OpenimSdkFfiBindings {
   late final _GetMultipleConversation = _GetMultipleConversationPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void SetOneConversationPrivateChat(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> conversationID,
-    bool isPrivate,
-  ) {
-    return _SetOneConversationPrivateChat(
-      operationID,
-      conversationID,
-      isPrivate,
-    );
-  }
-
-  late final _SetOneConversationPrivateChatPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Bool)>>('SetOneConversationPrivateChat');
-  late final _SetOneConversationPrivateChat =
-      _SetOneConversationPrivateChatPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, bool)>();
-
-  void SetOneConversationBurnDuration(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> conversationID,
-    int burnDuration,
-  ) {
-    return _SetOneConversationBurnDuration(
-      operationID,
-      conversationID,
-      burnDuration,
-    );
-  }
-
-  late final _SetOneConversationBurnDurationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Int32)>>('SetOneConversationBurnDuration');
-  late final _SetOneConversationBurnDuration =
-      _SetOneConversationBurnDurationPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
-
-  void SetOneConversationRecvMessageOpt(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> conversationID,
-    int opt,
-  ) {
-    return _SetOneConversationRecvMessageOpt(
-      operationID,
-      conversationID,
-      opt,
-    );
-  }
-
-  late final _SetOneConversationRecvMessageOptPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Int)>>('SetOneConversationRecvMessageOpt');
-  late final _SetOneConversationRecvMessageOpt =
-      _SetOneConversationRecvMessageOptPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
-
-  void SetConversationRecvMessageOpt(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> conversationIDList,
-    int opt,
-  ) {
-    return _SetConversationRecvMessageOpt(
-      operationID,
-      conversationIDList,
-      opt,
-    );
-  }
-
-  late final _SetConversationRecvMessageOptPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Int)>>('SetConversationRecvMessageOpt');
-  late final _SetConversationRecvMessageOpt =
-      _SetConversationRecvMessageOptPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
-
   void SetGlobalRecvMessageOpt(
     ffi.Pointer<ffi.Char> operationID,
     int opt,
@@ -1257,6 +189,46 @@ class OpenimSdkFfiBindings {
               ffi.Pointer<ffi.Char>, ffi.Int)>>('SetGlobalRecvMessageOpt');
   late final _SetGlobalRecvMessageOpt = _SetGlobalRecvMessageOptPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, int)>();
+
+  void SetConversationMsgDestructTime(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> conversationID,
+    int msgDestructTime,
+  ) {
+    return _SetConversationMsgDestructTime(
+      operationID,
+      conversationID,
+      msgDestructTime,
+    );
+  }
+
+  late final _SetConversationMsgDestructTimePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Int64)>>('SetConversationMsgDestructTime');
+  late final _SetConversationMsgDestructTime =
+      _SetConversationMsgDestructTimePtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
+
+  void SetConversationIsMsgDestruct(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> conversationID,
+    bool isMsgDestruct,
+  ) {
+    return _SetConversationIsMsgDestruct(
+      operationID,
+      conversationID,
+      isMsgDestruct,
+    );
+  }
+
+  late final _SetConversationIsMsgDestructPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Bool)>>('SetConversationIsMsgDestruct');
+  late final _SetConversationIsMsgDestruct =
+      _SetConversationIsMsgDestructPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, bool)>();
 
   void HideConversation(
     ffi.Pointer<ffi.Char> operationID,
@@ -1292,23 +264,6 @@ class OpenimSdkFfiBindings {
   late final _GetConversationRecvMessageOpt =
       _GetConversationRecvMessageOptPtr.asFunction<
           void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void DeleteConversation(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> conversationID,
-  ) {
-    return _DeleteConversation(
-      operationID,
-      conversationID,
-    );
-  }
-
-  late final _DeleteConversationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('DeleteConversation');
-  late final _DeleteConversation = _DeleteConversationPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   void DeleteAllConversationFromLocal(
     ffi.Pointer<ffi.Char> operationID,
@@ -1382,6 +337,66 @@ class OpenimSdkFfiBindings {
   late final _PinConversation = _PinConversationPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, bool)>();
 
+  void SetConversationPrivateChat(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> conversationID,
+    bool isPrivate,
+  ) {
+    return _SetConversationPrivateChat(
+      operationID,
+      conversationID,
+      isPrivate,
+    );
+  }
+
+  late final _SetConversationPrivateChatPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Bool)>>('SetConversationPrivateChat');
+  late final _SetConversationPrivateChat =
+      _SetConversationPrivateChatPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, bool)>();
+
+  void SetConversationBurnDuration(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> conversationID,
+    int duration,
+  ) {
+    return _SetConversationBurnDuration(
+      operationID,
+      conversationID,
+      duration,
+    );
+  }
+
+  late final _SetConversationBurnDurationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Int32)>>('SetConversationBurnDuration');
+  late final _SetConversationBurnDuration =
+      _SetConversationBurnDurationPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
+
+  void SetConversationRecvMessageOpt(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> conversationID,
+    int opt,
+  ) {
+    return _SetConversationRecvMessageOpt(
+      operationID,
+      conversationID,
+      opt,
+    );
+  }
+
+  late final _SetConversationRecvMessageOptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('SetConversationRecvMessageOpt');
+  late final _SetConversationRecvMessageOpt =
+      _SetConversationRecvMessageOptPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
+
   void GetTotalUnreadMsgCount(
     ffi.Pointer<ffi.Char> operationID,
   ) {
@@ -1395,6 +410,21 @@ class OpenimSdkFfiBindings {
           'GetTotalUnreadMsgCount');
   late final _GetTotalUnreadMsgCount = _GetTotalUnreadMsgCountPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>)>();
+
+  ffi.Pointer<ffi.Char> GetAtAllTag(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _GetAtAllTag(
+      operationID,
+    );
+  }
+
+  late final _GetAtAllTagPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>)>>('GetAtAllTag');
+  late final _GetAtAllTag = _GetAtAllTagPtr.asFunction<
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
 
   ffi.Pointer<ffi.Char> CreateAdvancedTextMessage(
     ffi.Pointer<ffi.Char> operationID,
@@ -1418,24 +448,6 @@ class OpenimSdkFfiBindings {
       _CreateAdvancedTextMessagePtr.asFunction<
           ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  ffi.Pointer<ffi.Char> CreateTextMessage(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> text,
-  ) {
-    return _CreateTextMessage(
-      operationID,
-      text,
-    );
-  }
-
-  late final _CreateTextMessagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('CreateTextMessage');
-  late final _CreateTextMessage = _CreateTextMessagePtr.asFunction<
-      ffi.Pointer<ffi.Char> Function(
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   ffi.Pointer<ffi.Char> CreateTextAtMessage(
     ffi.Pointer<ffi.Char> operationID,
@@ -1468,6 +480,24 @@ class OpenimSdkFfiBindings {
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>)>();
+
+  ffi.Pointer<ffi.Char> CreateTextMessage(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> text,
+  ) {
+    return _CreateTextMessage(
+      operationID,
+      text,
+    );
+  }
+
+  late final _CreateTextMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('CreateTextMessage');
+  late final _CreateTextMessage = _CreateTextMessagePtr.asFunction<
+      ffi.Pointer<ffi.Char> Function(
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   ffi.Pointer<ffi.Char> CreateLocationMessage(
     ffi.Pointer<ffi.Char> operationID,
@@ -1645,12 +675,12 @@ class OpenimSdkFfiBindings {
 
   ffi.Pointer<ffi.Char> CreateSoundMessageFromFullPath(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> soundPath,
+    ffi.Pointer<ffi.Char> soundFullPath,
     int duration,
   ) {
     return _CreateSoundMessageFromFullPath(
       operationID,
-      soundPath,
+      soundFullPath,
       duration,
     );
   }
@@ -1865,13 +895,13 @@ class OpenimSdkFfiBindings {
 
   ffi.Pointer<ffi.Char> CreateMergerMessage(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> mergerElemList,
+    ffi.Pointer<ffi.Char> messageList,
     ffi.Pointer<ffi.Char> title,
     ffi.Pointer<ffi.Char> summaryList,
   ) {
     return _CreateMergerMessage(
       operationID,
-      mergerElemList,
+      messageList,
       title,
       summaryList,
     );
@@ -1913,11 +943,11 @@ class OpenimSdkFfiBindings {
 
   ffi.Pointer<ffi.Char> CreateForwardMessage(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> message,
+    ffi.Pointer<ffi.Char> m,
   ) {
     return _CreateForwardMessage(
       operationID,
-      message,
+      m,
     );
   }
 
@@ -1929,13 +959,33 @@ class OpenimSdkFfiBindings {
       ffi.Pointer<ffi.Char> Function(
           ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
+  GoString GetConversationIDBySessionType(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> sourceID,
+    int sessionType,
+  ) {
+    return _GetConversationIDBySessionType(
+      operationID,
+      sourceID,
+      sessionType,
+    );
+  }
+
+  late final _GetConversationIDBySessionTypePtr = _lookup<
+      ffi.NativeFunction<
+          GoString Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Int)>>('GetConversationIDBySessionType');
+  late final _GetConversationIDBySessionType =
+      _GetConversationIDBySessionTypePtr.asFunction<
+          GoString Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
+
   void SendMessage(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> message,
     ffi.Pointer<ffi.Char> recvID,
     ffi.Pointer<ffi.Char> groupID,
     ffi.Pointer<ffi.Char> offlinePushInfo,
-    ffi.Pointer<ffi.Char> clientMsgID,
   ) {
     return _SendMessage(
       operationID,
@@ -1943,7 +993,6 @@ class OpenimSdkFfiBindings {
       recvID,
       groupID,
       offlinePushInfo,
-      clientMsgID,
     );
   }
 
@@ -1954,11 +1003,9 @@ class OpenimSdkFfiBindings {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>)>>('SendMessage');
   late final _SendMessage = _SendMessagePtr.asFunction<
       void Function(
-          ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
@@ -1971,7 +1018,6 @@ class OpenimSdkFfiBindings {
     ffi.Pointer<ffi.Char> recvID,
     ffi.Pointer<ffi.Char> groupID,
     ffi.Pointer<ffi.Char> offlinePushInfo,
-    ffi.Pointer<ffi.Char> clientMsgID,
   ) {
     return _SendMessageNotOss(
       operationID,
@@ -1979,7 +1025,6 @@ class OpenimSdkFfiBindings {
       recvID,
       groupID,
       offlinePushInfo,
-      clientMsgID,
     );
   }
 
@@ -1990,11 +1035,9 @@ class OpenimSdkFfiBindings {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>)>>('SendMessageNotOss');
   late final _SendMessageNotOss = _SendMessageNotOssPtr.asFunction<
       void Function(
-          ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
@@ -2018,110 +1061,25 @@ class OpenimSdkFfiBindings {
   late final _FindMessageList = _FindMessageListPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void GetHistoryMessageList(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> getMessageOptions,
-  ) {
-    return _GetHistoryMessageList(
-      operationID,
-      getMessageOptions,
-    );
-  }
-
-  late final _GetHistoryMessageListPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetHistoryMessageList');
-  late final _GetHistoryMessageList = _GetHistoryMessageListPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetAdvancedHistoryMessageList(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> getMessageOptions,
-  ) {
-    return _GetAdvancedHistoryMessageList(
-      operationID,
-      getMessageOptions,
-    );
-  }
-
-  late final _GetAdvancedHistoryMessageListPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetAdvancedHistoryMessageList');
-  late final _GetAdvancedHistoryMessageList =
-      _GetAdvancedHistoryMessageListPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetAdvancedHistoryMessageListReverse(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> getMessageOptions,
-  ) {
-    return _GetAdvancedHistoryMessageListReverse(
-      operationID,
-      getMessageOptions,
-    );
-  }
-
-  late final _GetAdvancedHistoryMessageListReversePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetAdvancedHistoryMessageListReverse');
-  late final _GetAdvancedHistoryMessageListReverse =
-      _GetAdvancedHistoryMessageListReversePtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetHistoryMessageListReverse(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> getMessageOptions,
-  ) {
-    return _GetHistoryMessageListReverse(
-      operationID,
-      getMessageOptions,
-    );
-  }
-
-  late final _GetHistoryMessageListReversePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetHistoryMessageListReverse');
-  late final _GetHistoryMessageListReverse =
-      _GetHistoryMessageListReversePtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
   void RevokeMessage(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> message,
+    ffi.Pointer<ffi.Char> conversationID,
+    ffi.Pointer<ffi.Char> clientMsgID,
   ) {
     return _RevokeMessage(
       operationID,
-      message,
+      conversationID,
+      clientMsgID,
     );
   }
 
   late final _RevokeMessagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('RevokeMessage');
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('RevokeMessage');
   late final _RevokeMessage = _RevokeMessagePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void NewRevokeMessage(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> message,
-  ) {
-    return _NewRevokeMessage(
-      operationID,
-      message,
-    );
-  }
-
-  late final _NewRevokeMessagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('NewRevokeMessage');
-  late final _NewRevokeMessage = _NewRevokeMessagePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   void TypingStatusUpdate(
     ffi.Pointer<ffi.Char> operationID,
@@ -2143,136 +1101,103 @@ class OpenimSdkFfiBindings {
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>)>();
 
-  void MarkC2CMessageAsRead(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userID,
-    ffi.Pointer<ffi.Char> msgIDList,
-  ) {
-    return _MarkC2CMessageAsRead(
-      operationID,
-      userID,
-      msgIDList,
-    );
-  }
-
-  late final _MarkC2CMessageAsReadPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('MarkC2CMessageAsRead');
-  late final _MarkC2CMessageAsRead = _MarkC2CMessageAsReadPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>)>();
-
-  void MarkMessageAsReadByConID(
+  /// mark as read
+  void MarkConversationMessageAsRead(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> conversationID,
-    ffi.Pointer<ffi.Char> msgIDList,
   ) {
-    return _MarkMessageAsReadByConID(
+    return _MarkConversationMessageAsRead(
       operationID,
       conversationID,
-      msgIDList,
     );
   }
 
-  late final _MarkMessageAsReadByConIDPtr = _lookup<
+  late final _MarkConversationMessageAsReadPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('MarkConversationMessageAsRead');
+  late final _MarkConversationMessageAsRead =
+      _MarkConversationMessageAsReadPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void MarkMessagesAsReadByMsgID(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> conversationID,
+    ffi.Pointer<ffi.Char> clientMsgIDs,
+  ) {
+    return _MarkMessagesAsReadByMsgID(
+      operationID,
+      conversationID,
+      clientMsgIDs,
+    );
+  }
+
+  late final _MarkMessagesAsReadByMsgIDPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('MarkMessageAsReadByConID');
-  late final _MarkMessageAsReadByConID =
-      _MarkMessageAsReadByConIDPtr.asFunction<
+              ffi.Pointer<ffi.Char>)>>('MarkMessagesAsReadByMsgID');
+  late final _MarkMessagesAsReadByMsgID =
+      _MarkMessagesAsReadByMsgIDPtr.asFunction<
           void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>)>();
 
-  void MarkGroupMessageHasRead(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-  ) {
-    return _MarkGroupMessageHasRead(
-      operationID,
-      groupID,
-    );
-  }
-
-  late final _MarkGroupMessageHasReadPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('MarkGroupMessageHasRead');
-  late final _MarkGroupMessageHasRead = _MarkGroupMessageHasReadPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void MarkGroupMessageAsRead(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> msgIDList,
-  ) {
-    return _MarkGroupMessageAsRead(
-      operationID,
-      groupID,
-      msgIDList,
-    );
-  }
-
-  late final _MarkGroupMessageAsReadPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('MarkGroupMessageAsRead');
-  late final _MarkGroupMessageAsRead = _MarkGroupMessageAsReadPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>)>();
-
   void DeleteMessageFromLocalStorage(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> message,
+    ffi.Pointer<ffi.Char> conversationID,
+    ffi.Pointer<ffi.Char> clientMsgID,
   ) {
     return _DeleteMessageFromLocalStorage(
       operationID,
-      message,
+      conversationID,
+      clientMsgID,
     );
   }
 
   late final _DeleteMessageFromLocalStoragePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>)>>('DeleteMessageFromLocalStorage');
   late final _DeleteMessageFromLocalStorage =
       _DeleteMessageFromLocalStoragePtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
 
-  void DeleteMessageFromLocalAndSvr(
+  void DeleteMessage(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> message,
+    ffi.Pointer<ffi.Char> conversationID,
+    ffi.Pointer<ffi.Char> clientMsgID,
   ) {
-    return _DeleteMessageFromLocalAndSvr(
+    return _DeleteMessage(
       operationID,
-      message,
+      conversationID,
+      clientMsgID,
     );
   }
 
-  late final _DeleteMessageFromLocalAndSvrPtr = _lookup<
+  late final _DeleteMessagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('DeleteMessageFromLocalAndSvr');
-  late final _DeleteMessageFromLocalAndSvr =
-      _DeleteMessageFromLocalAndSvrPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('DeleteMessage');
+  late final _DeleteMessage = _DeleteMessagePtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
-  void DeleteConversationFromLocalAndSvr(
+  void DeleteConversationFromLocal(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> conversationID,
   ) {
-    return _DeleteConversationFromLocalAndSvr(
+    return _DeleteConversationFromLocal(
       operationID,
       conversationID,
     );
   }
 
-  late final _DeleteConversationFromLocalAndSvrPtr = _lookup<
+  late final _DeleteConversationFromLocalPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('DeleteConversationFromLocalAndSvr');
-  late final _DeleteConversationFromLocalAndSvr =
-      _DeleteConversationFromLocalAndSvrPtr.asFunction<
+              ffi.Pointer<ffi.Char>)>>('DeleteConversationFromLocal');
+  late final _DeleteConversationFromLocal =
+      _DeleteConversationFromLocalPtr.asFunction<
           void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   void DeleteAllMsgFromLocalAndSvr(
@@ -2303,75 +1228,40 @@ class OpenimSdkFfiBindings {
   late final _DeleteAllMsgFromLocal = _DeleteAllMsgFromLocalPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>)>();
 
-  void ClearC2CHistoryMessage(
+  void ClearConversationAndDeleteAllMsg(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userID,
+    ffi.Pointer<ffi.Char> conversationID,
   ) {
-    return _ClearC2CHistoryMessage(
+    return _ClearConversationAndDeleteAllMsg(
       operationID,
-      userID,
+      conversationID,
     );
   }
 
-  late final _ClearC2CHistoryMessagePtr = _lookup<
+  late final _ClearConversationAndDeleteAllMsgPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('ClearC2CHistoryMessage');
-  late final _ClearC2CHistoryMessage = _ClearC2CHistoryMessagePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void ClearC2CHistoryMessageFromLocalAndSvr(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> userID,
-  ) {
-    return _ClearC2CHistoryMessageFromLocalAndSvr(
-      operationID,
-      userID,
-    );
-  }
-
-  late final _ClearC2CHistoryMessageFromLocalAndSvrPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('ClearC2CHistoryMessageFromLocalAndSvr');
-  late final _ClearC2CHistoryMessageFromLocalAndSvr =
-      _ClearC2CHistoryMessageFromLocalAndSvrPtr.asFunction<
+              ffi.Pointer<ffi.Char>)>>('ClearConversationAndDeleteAllMsg');
+  late final _ClearConversationAndDeleteAllMsg =
+      _ClearConversationAndDeleteAllMsgPtr.asFunction<
           void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void ClearGroupHistoryMessage(
+  void DeleteConversationAndDeleteAllMsg(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> conversationID,
   ) {
-    return _ClearGroupHistoryMessage(
+    return _DeleteConversationAndDeleteAllMsg(
       operationID,
-      groupID,
+      conversationID,
     );
   }
 
-  late final _ClearGroupHistoryMessagePtr = _lookup<
+  late final _DeleteConversationAndDeleteAllMsgPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('ClearGroupHistoryMessage');
-  late final _ClearGroupHistoryMessage =
-      _ClearGroupHistoryMessagePtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void ClearGroupHistoryMessageFromLocalAndSvr(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
-  ) {
-    return _ClearGroupHistoryMessageFromLocalAndSvr(
-      operationID,
-      groupID,
-    );
-  }
-
-  late final _ClearGroupHistoryMessageFromLocalAndSvrPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>(
-      'ClearGroupHistoryMessageFromLocalAndSvr');
-  late final _ClearGroupHistoryMessageFromLocalAndSvr =
-      _ClearGroupHistoryMessageFromLocalAndSvrPtr.asFunction<
+              ffi.Pointer<ffi.Char>)>>('DeleteConversationAndDeleteAllMsg');
+  late final _DeleteConversationAndDeleteAllMsg =
+      _DeleteConversationAndDeleteAllMsgPtr.asFunction<
           void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   void InsertSingleMessageToLocalStorage(
@@ -2404,13 +1294,13 @@ class OpenimSdkFfiBindings {
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> message,
     ffi.Pointer<ffi.Char> groupID,
-    ffi.Pointer<ffi.Char> senderID,
+    ffi.Pointer<ffi.Char> sendID,
   ) {
     return _InsertGroupMessageToLocalStorage(
       operationID,
       message,
       groupID,
-      senderID,
+      sendID,
     );
   }
 
@@ -2443,525 +1333,1001 @@ class OpenimSdkFfiBindings {
   late final _SearchLocalMessages = _SearchLocalMessagesPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  ffi.Pointer<ffi.Char> GetConversationIDBySessionType(
-    ffi.Pointer<ffi.Char> sourceID,
-    int sessionType,
-  ) {
-    return _GetConversationIDBySessionType(
-      sourceID,
-      sessionType,
-    );
-  }
-
-  late final _GetConversationIDBySessionTypePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
-              ffi.Int)>>('GetConversationIDBySessionType');
-  late final _GetConversationIDBySessionType =
-      _GetConversationIDBySessionTypePtr.asFunction<
-          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>, int)>();
-
-  ffi.Pointer<ffi.Char> GetAtAllTag() {
-    return _GetAtAllTag();
-  }
-
-  late final _GetAtAllTagPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
-          'GetAtAllTag');
-  late final _GetAtAllTag =
-      _GetAtAllTagPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
-
-  void SetMessageReactionExtensions(
+  void SetMessageLocalEx(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> message,
-    ffi.Pointer<ffi.Char> reactionExtensionList,
+    ffi.Pointer<ffi.Char> conversationID,
+    ffi.Pointer<ffi.Char> clientMsgID,
+    ffi.Pointer<ffi.Char> localEx,
   ) {
-    return _SetMessageReactionExtensions(
+    return _SetMessageLocalEx(
       operationID,
-      message,
-      reactionExtensionList,
+      conversationID,
+      clientMsgID,
+      localEx,
     );
   }
 
-  late final _SetMessageReactionExtensionsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SetMessageReactionExtensions');
-  late final _SetMessageReactionExtensions =
-      _SetMessageReactionExtensionsPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>();
-
-  void AddMessageReactionExtensions(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> message,
-    ffi.Pointer<ffi.Char> reactionExtensionList,
-  ) {
-    return _AddMessageReactionExtensions(
-      operationID,
-      message,
-      reactionExtensionList,
-    );
-  }
-
-  late final _AddMessageReactionExtensionsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('AddMessageReactionExtensions');
-  late final _AddMessageReactionExtensions =
-      _AddMessageReactionExtensionsPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>();
-
-  void DeleteMessageReactionExtensions(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> message,
-    ffi.Pointer<ffi.Char> reactionExtensionList,
-  ) {
-    return _DeleteMessageReactionExtensions(
-      operationID,
-      message,
-      reactionExtensionList,
-    );
-  }
-
-  late final _DeleteMessageReactionExtensionsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('DeleteMessageReactionExtensions');
-  late final _DeleteMessageReactionExtensions =
-      _DeleteMessageReactionExtensionsPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>();
-
-  void GetMessageListReactionExtensions(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> messageList,
-  ) {
-    return _GetMessageListReactionExtensions(
-      operationID,
-      messageList,
-    );
-  }
-
-  late final _GetMessageListReactionExtensionsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetMessageListReactionExtensions');
-  late final _GetMessageListReactionExtensions =
-      _GetMessageListReactionExtensionsPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetMessageListSomeReactionExtensions(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> messageList,
-    ffi.Pointer<ffi.Char> reactionExtensionList,
-  ) {
-    return _GetMessageListSomeReactionExtensions(
-      operationID,
-      messageList,
-      reactionExtensionList,
-    );
-  }
-
-  late final _GetMessageListSomeReactionExtensionsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetMessageListSomeReactionExtensions');
-  late final _GetMessageListSomeReactionExtensions =
-      _GetMessageListSomeReactionExtensionsPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>();
-
-  void SetTypeKeyInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> message,
-    ffi.Pointer<ffi.Char> typeKey,
-    ffi.Pointer<ffi.Char> ex,
-    bool isCanRepeat,
-  ) {
-    return _SetTypeKeyInfo(
-      operationID,
-      message,
-      typeKey,
-      ex,
-      isCanRepeat,
-    );
-  }
-
-  late final _SetTypeKeyInfoPtr = _lookup<
+  late final _SetMessageLocalExPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>,
-              ffi.Bool)>>('SetTypeKeyInfo');
-  late final _SetTypeKeyInfo = _SetTypeKeyInfoPtr.asFunction<
+              ffi.Pointer<ffi.Char>)>>('SetMessageLocalEx');
+  late final _SetMessageLocalEx = _SetMessageLocalExPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, bool)>();
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void GetTypeKeyListInfo(
+  void GetSpecifiedFriendsInfo(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> messageList,
-    ffi.Pointer<ffi.Char> typeKeyList,
+    ffi.Pointer<ffi.Char> userIDList,
   ) {
-    return _GetTypeKeyListInfo(
+    return _GetSpecifiedFriendsInfo(
       operationID,
-      messageList,
-      typeKeyList,
+      userIDList,
     );
   }
 
-  late final _GetTypeKeyListInfoPtr = _lookup<
+  late final _GetSpecifiedFriendsInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('GetSpecifiedFriendsInfo');
+  late final _GetSpecifiedFriendsInfo = _GetSpecifiedFriendsInfoPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void GetFriendList(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _GetFriendList(
+      operationID,
+    );
+  }
+
+  late final _GetFriendListPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'GetFriendList');
+  late final _GetFriendList =
+      _GetFriendListPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  void GetFriendListPage(
+    ffi.Pointer<ffi.Char> operationID,
+    int offset,
+    int count,
+  ) {
+    return _GetFriendListPage(
+      operationID,
+      offset,
+      count,
+    );
+  }
+
+  late final _GetFriendListPagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32,
+              ffi.Int32)>>('GetFriendListPage');
+  late final _GetFriendListPage = _GetFriendListPagePtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, int, int)>();
+
+  void SearchFriends(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> searchParam,
+  ) {
+    return _SearchFriends(
+      operationID,
+      searchParam,
+    );
+  }
+
+  late final _SearchFriendsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('SearchFriends');
+  late final _SearchFriends = _SearchFriendsPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void CheckFriend(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> userIDList,
+  ) {
+    return _CheckFriend(
+      operationID,
+      userIDList,
+    );
+  }
+
+  late final _CheckFriendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('CheckFriend');
+  late final _CheckFriend = _CheckFriendPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void AddFriend(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> userIDReqMsg,
+  ) {
+    return _AddFriend(
+      operationID,
+      userIDReqMsg,
+    );
+  }
+
+  late final _AddFriendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('AddFriend');
+  late final _AddFriend = _AddFriendPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void SetFriendRemark(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> userIDRemark,
+  ) {
+    return _SetFriendRemark(
+      operationID,
+      userIDRemark,
+    );
+  }
+
+  late final _SetFriendRemarkPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('SetFriendRemark');
+  late final _SetFriendRemark = _SetFriendRemarkPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void DeleteFriend(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> friendUserID,
+  ) {
+    return _DeleteFriend(
+      operationID,
+      friendUserID,
+    );
+  }
+
+  late final _DeleteFriendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('DeleteFriend');
+  late final _DeleteFriend = _DeleteFriendPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void GetFriendApplicationListAsRecipient(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _GetFriendApplicationListAsRecipient(
+      operationID,
+    );
+  }
+
+  late final _GetFriendApplicationListAsRecipientPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'GetFriendApplicationListAsRecipient');
+  late final _GetFriendApplicationListAsRecipient =
+      _GetFriendApplicationListAsRecipientPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>)>();
+
+  void GetFriendApplicationListAsApplicant(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _GetFriendApplicationListAsApplicant(
+      operationID,
+    );
+  }
+
+  late final _GetFriendApplicationListAsApplicantPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'GetFriendApplicationListAsApplicant');
+  late final _GetFriendApplicationListAsApplicant =
+      _GetFriendApplicationListAsApplicantPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>)>();
+
+  void AcceptFriendApplication(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> userIDHandleMsg,
+  ) {
+    return _AcceptFriendApplication(
+      operationID,
+      userIDHandleMsg,
+    );
+  }
+
+  late final _AcceptFriendApplicationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('AcceptFriendApplication');
+  late final _AcceptFriendApplication = _AcceptFriendApplicationPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void RefuseFriendApplication(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> userIDHandleMsg,
+  ) {
+    return _RefuseFriendApplication(
+      operationID,
+      userIDHandleMsg,
+    );
+  }
+
+  late final _RefuseFriendApplicationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('RefuseFriendApplication');
+  late final _RefuseFriendApplication = _RefuseFriendApplicationPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void AddBlack(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> blackUserID,
+  ) {
+    return _AddBlack(
+      operationID,
+      blackUserID,
+    );
+  }
+
+  late final _AddBlackPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('AddBlack');
+  late final _AddBlack = _AddBlackPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void GetBlackList(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _GetBlackList(
+      operationID,
+    );
+  }
+
+  late final _GetBlackListPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'GetBlackList');
+  late final _GetBlackList =
+      _GetBlackListPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  void RemoveBlack(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> removeUserID,
+  ) {
+    return _RemoveBlack(
+      operationID,
+      removeUserID,
+    );
+  }
+
+  late final _RemoveBlackPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('RemoveBlack');
+  late final _RemoveBlack = _RemoveBlackPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void CreateGroup(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupReqInfo,
+  ) {
+    return _CreateGroup(
+      operationID,
+      groupReqInfo,
+    );
+  }
+
+  late final _CreateGroupPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('CreateGroup');
+  late final _CreateGroup = _CreateGroupPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void JoinGroup(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> reqMsg,
+    int joinSource,
+  ) {
+    return _JoinGroup(
+      operationID,
+      groupID,
+      reqMsg,
+      joinSource,
+    );
+  }
+
+  late final _JoinGroupPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetTypeKeyListInfo');
-  late final _GetTypeKeyListInfo = _GetTypeKeyListInfoPtr.asFunction<
+              ffi.Pointer<ffi.Char>, ffi.Int32)>>('JoinGroup');
+  late final _JoinGroup = _JoinGroupPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, int)>();
+
+  void QuitGroup(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+  ) {
+    return _QuitGroup(
+      operationID,
+      groupID,
+    );
+  }
+
+  late final _QuitGroupPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('QuitGroup');
+  late final _QuitGroup = _QuitGroupPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void DismissGroup(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+  ) {
+    return _DismissGroup(
+      operationID,
+      groupID,
+    );
+  }
+
+  late final _DismissGroupPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('DismissGroup');
+  late final _DismissGroup = _DismissGroupPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void ChangeGroupMute(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    bool isMute,
+  ) {
+    return _ChangeGroupMute(
+      operationID,
+      groupID,
+      isMute,
+    );
+  }
+
+  late final _ChangeGroupMutePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Bool)>>('ChangeGroupMute');
+  late final _ChangeGroupMute = _ChangeGroupMutePtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, bool)>();
+
+  void ChangeGroupMemberMute(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> userID,
+    int mutedSeconds,
+  ) {
+    return _ChangeGroupMemberMute(
+      operationID,
+      groupID,
+      userID,
+      mutedSeconds,
+    );
+  }
+
+  late final _ChangeGroupMemberMutePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>, ffi.Int)>>('ChangeGroupMemberMute');
+  late final _ChangeGroupMemberMute = _ChangeGroupMemberMutePtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, int)>();
+
+  void SetGroupMemberRoleLevel(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> userID,
+    int roleLevel,
+  ) {
+    return _SetGroupMemberRoleLevel(
+      operationID,
+      groupID,
+      userID,
+      roleLevel,
+    );
+  }
+
+  late final _SetGroupMemberRoleLevelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>, ffi.Int)>>('SetGroupMemberRoleLevel');
+  late final _SetGroupMemberRoleLevel = _SetGroupMemberRoleLevelPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, int)>();
+
+  void SetGroupMemberInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupMemberInfo,
+  ) {
+    return _SetGroupMemberInfo(
+      operationID,
+      groupMemberInfo,
+    );
+  }
+
+  late final _SetGroupMemberInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('SetGroupMemberInfo');
+  late final _SetGroupMemberInfo = _SetGroupMemberInfoPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void GetJoinedGroupList(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _GetJoinedGroupList(
+      operationID,
+    );
+  }
+
+  late final _GetJoinedGroupListPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'GetJoinedGroupList');
+  late final _GetJoinedGroupList =
+      _GetJoinedGroupListPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  void GetSpecifiedGroupsInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupIDList,
+  ) {
+    return _GetSpecifiedGroupsInfo(
+      operationID,
+      groupIDList,
+    );
+  }
+
+  late final _GetSpecifiedGroupsInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('GetSpecifiedGroupsInfo');
+  late final _GetSpecifiedGroupsInfo = _GetSpecifiedGroupsInfoPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void SearchGroups(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> searchParam,
+  ) {
+    return _SearchGroups(
+      operationID,
+      searchParam,
+    );
+  }
+
+  late final _SearchGroupsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('SearchGroups');
+  late final _SearchGroups = _SearchGroupsPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void SetGroupInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupInfo,
+  ) {
+    return _SetGroupInfo(
+      operationID,
+      groupInfo,
+    );
+  }
+
+  late final _SetGroupInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('SetGroupInfo');
+  late final _SetGroupInfo = _SetGroupInfoPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void SetGroupVerification(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    int verification,
+  ) {
+    return _SetGroupVerification(
+      operationID,
+      groupID,
+      verification,
+    );
+  }
+
+  late final _SetGroupVerificationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Int32)>>('SetGroupVerification');
+  late final _SetGroupVerification = _SetGroupVerificationPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
+
+  void SetGroupLookMemberInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    int rule,
+  ) {
+    return _SetGroupLookMemberInfo(
+      operationID,
+      groupID,
+      rule,
+    );
+  }
+
+  late final _SetGroupLookMemberInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Int32)>>('SetGroupLookMemberInfo');
+  late final _SetGroupLookMemberInfo = _SetGroupLookMemberInfoPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
+
+  void SetGroupApplyMemberFriend(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    int rule,
+  ) {
+    return _SetGroupApplyMemberFriend(
+      operationID,
+      groupID,
+      rule,
+    );
+  }
+
+  late final _SetGroupApplyMemberFriendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Int32)>>('SetGroupApplyMemberFriend');
+  late final _SetGroupApplyMemberFriend =
+      _SetGroupApplyMemberFriendPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int)>();
+
+  void GetGroupMemberList(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    int filter,
+    int offset,
+    int count,
+  ) {
+    return _GetGroupMemberList(
+      operationID,
+      groupID,
+      filter,
+      offset,
+      count,
+    );
+  }
+
+  late final _GetGroupMemberListPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Int32, ffi.Int32, ffi.Int32)>>('GetGroupMemberList');
+  late final _GetGroupMemberList = _GetGroupMemberListPtr.asFunction<
+      void Function(
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int, int)>();
+
+  void GetGroupMemberOwnerAndAdmin(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+  ) {
+    return _GetGroupMemberOwnerAndAdmin(
+      operationID,
+      groupID,
+    );
+  }
+
+  late final _GetGroupMemberOwnerAndAdminPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('GetGroupMemberOwnerAndAdmin');
+  late final _GetGroupMemberOwnerAndAdmin =
+      _GetGroupMemberOwnerAndAdminPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void GetGroupMemberListByJoinTimeFilter(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    int offset,
+    int count,
+    int joinTimeBegin,
+    int joinTimeEnd,
+    ffi.Pointer<ffi.Char> filterUserIDList,
+  ) {
+    return _GetGroupMemberListByJoinTimeFilter(
+      operationID,
+      groupID,
+      offset,
+      count,
+      joinTimeBegin,
+      joinTimeEnd,
+      filterUserIDList,
+    );
+  }
+
+  late final _GetGroupMemberListByJoinTimeFilterPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Int32,
+              ffi.Int32,
+              ffi.Int64,
+              ffi.Int64,
+              ffi.Pointer<ffi.Char>)>>('GetGroupMemberListByJoinTimeFilter');
+  late final _GetGroupMemberListByJoinTimeFilter =
+      _GetGroupMemberListByJoinTimeFilterPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int,
+              int, int, ffi.Pointer<ffi.Char>)>();
+
+  void GetSpecifiedGroupMembersInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> userIDList,
+  ) {
+    return _GetSpecifiedGroupMembersInfo(
+      operationID,
+      groupID,
+      userIDList,
+    );
+  }
+
+  late final _GetSpecifiedGroupMembersInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('GetSpecifiedGroupMembersInfo');
+  late final _GetSpecifiedGroupMembersInfo =
+      _GetSpecifiedGroupMembersInfoPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>();
+
+  void KickGroupMember(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> reason,
+    ffi.Pointer<ffi.Char> userIDList,
+  ) {
+    return _KickGroupMember(
+      operationID,
+      groupID,
+      reason,
+      userIDList,
+    );
+  }
+
+  late final _KickGroupMemberPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('KickGroupMember');
+  late final _KickGroupMember = _KickGroupMemberPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void TransferGroupOwner(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> newOwnerUserID,
+  ) {
+    return _TransferGroupOwner(
+      operationID,
+      groupID,
+      newOwnerUserID,
+    );
+  }
+
+  late final _TransferGroupOwnerPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('TransferGroupOwner');
+  late final _TransferGroupOwner = _TransferGroupOwnerPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>)>();
 
-  void GetAllTypeKeyInfo(
+  void InviteUserToGroup(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> message,
+    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> reason,
+    ffi.Pointer<ffi.Char> userIDList,
   ) {
-    return _GetAllTypeKeyInfo(
+    return _InviteUserToGroup(
       operationID,
-      message,
+      groupID,
+      reason,
+      userIDList,
     );
   }
 
-  late final _GetAllTypeKeyInfoPtr = _lookup<
+  late final _InviteUserToGroupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetAllTypeKeyInfo');
-  late final _GetAllTypeKeyInfo = _GetAllTypeKeyInfoPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('InviteUserToGroup');
+  late final _InviteUserToGroup = _InviteUserToGroupPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void SignalingInviteInGroup(
+  void GetGroupApplicationListAsRecipient(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> signalInviteInGroupReq,
   ) {
-    return _SignalingInviteInGroup(
+    return _GetGroupApplicationListAsRecipient(
       operationID,
-      signalInviteInGroupReq,
     );
   }
 
-  late final _SignalingInviteInGroupPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SignalingInviteInGroup');
-  late final _SignalingInviteInGroup = _SignalingInviteInGroupPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+  late final _GetGroupApplicationListAsRecipientPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'GetGroupApplicationListAsRecipient');
+  late final _GetGroupApplicationListAsRecipient =
+      _GetGroupApplicationListAsRecipientPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>)>();
 
-  void SignalingInvite(
+  void GetGroupApplicationListAsApplicant(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> signalInviteReq,
   ) {
-    return _SignalingInvite(
+    return _GetGroupApplicationListAsApplicant(
       operationID,
-      signalInviteReq,
     );
   }
 
-  late final _SignalingInvitePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SignalingInvite');
-  late final _SignalingInvite = _SignalingInvitePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+  late final _GetGroupApplicationListAsApplicantPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'GetGroupApplicationListAsApplicant');
+  late final _GetGroupApplicationListAsApplicant =
+      _GetGroupApplicationListAsApplicantPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>)>();
 
-  void SignalingAccept(
+  void AcceptGroupApplication(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> signalAcceptReq,
+    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> fromUserID,
+    ffi.Pointer<ffi.Char> handleMsg,
   ) {
-    return _SignalingAccept(
+    return _AcceptGroupApplication(
       operationID,
-      signalAcceptReq,
+      groupID,
+      fromUserID,
+      handleMsg,
     );
   }
 
-  late final _SignalingAcceptPtr = _lookup<
+  late final _AcceptGroupApplicationPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SignalingAccept');
-  late final _SignalingAccept = _SignalingAcceptPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('AcceptGroupApplication');
+  late final _AcceptGroupApplication = _AcceptGroupApplicationPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void SignalingReject(
+  void RefuseGroupApplication(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> signalRejectReq,
+    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> fromUserID,
+    ffi.Pointer<ffi.Char> handleMsg,
   ) {
-    return _SignalingReject(
+    return _RefuseGroupApplication(
       operationID,
-      signalRejectReq,
+      groupID,
+      fromUserID,
+      handleMsg,
     );
   }
 
-  late final _SignalingRejectPtr = _lookup<
+  late final _RefuseGroupApplicationPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SignalingReject');
-  late final _SignalingReject = _SignalingRejectPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('RefuseGroupApplication');
+  late final _RefuseGroupApplication = _RefuseGroupApplicationPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void SignalingCancel(
+  void SetGroupMemberNickname(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> signalCancelReq,
+    ffi.Pointer<ffi.Char> groupID,
+    ffi.Pointer<ffi.Char> userID,
+    ffi.Pointer<ffi.Char> groupMemberNickname,
   ) {
-    return _SignalingCancel(
+    return _SetGroupMemberNickname(
       operationID,
-      signalCancelReq,
+      groupID,
+      userID,
+      groupMemberNickname,
     );
   }
 
-  late final _SignalingCancelPtr = _lookup<
+  late final _SetGroupMemberNicknamePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SignalingCancel');
-  late final _SignalingCancel = _SignalingCancelPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('SetGroupMemberNickname');
+  late final _SetGroupMemberNickname = _SetGroupMemberNicknamePtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void SignalingHungUp(
+  void SearchGroupMembers(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> signalHungUpReq,
+    ffi.Pointer<ffi.Char> searchParam,
   ) {
-    return _SignalingHungUp(
+    return _SearchGroupMembers(
       operationID,
-      signalHungUpReq,
+      searchParam,
     );
   }
 
-  late final _SignalingHungUpPtr = _lookup<
+  late final _SearchGroupMembersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SignalingHungUp');
-  late final _SignalingHungUp = _SignalingHungUpPtr.asFunction<
+              ffi.Pointer<ffi.Char>)>>('SearchGroupMembers');
+  late final _SearchGroupMembers = _SearchGroupMembersPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void SignalingGetRoomByGroupID(
+  void IsJoinGroup(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> groupID,
   ) {
-    return _SignalingGetRoomByGroupID(
+    return _IsJoinGroup(
       operationID,
       groupID,
     );
   }
 
-  late final _SignalingGetRoomByGroupIDPtr = _lookup<
+  late final _IsJoinGroupPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SignalingGetRoomByGroupID');
-  late final _SignalingGetRoomByGroupID =
-      _SignalingGetRoomByGroupIDPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('IsJoinGroup');
+  late final _IsJoinGroup = _IsJoinGroupPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void SignalingGetTokenByRoomID(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> groupID,
+  void RegisterCallback(
+    ffi.Pointer<CGO_OpenIM_Listener> callback,
+    int port,
   ) {
-    return _SignalingGetTokenByRoomID(
-      operationID,
-      groupID,
+    return _RegisterCallback(
+      callback,
+      port,
     );
   }
 
-  late final _SignalingGetTokenByRoomIDPtr = _lookup<
+  late final _RegisterCallbackPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('SignalingGetTokenByRoomID');
-  late final _SignalingGetTokenByRoomID =
-      _SignalingGetTokenByRoomIDPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+          ffi.Void Function(ffi.Pointer<CGO_OpenIM_Listener>,
+              Dart_Port_DL)>>('RegisterCallback');
+  late final _RegisterCallback = _RegisterCallbackPtr.asFunction<
+      void Function(ffi.Pointer<CGO_OpenIM_Listener>, int)>();
 
-  void GetSubDepartment(
+  ffi.Pointer<ffi.Char> GetSdkVersion() {
+    return _GetSdkVersion();
+  }
+
+  late final _GetSdkVersionPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+          'GetSdkVersion');
+  late final _GetSdkVersion =
+      _GetSdkVersionPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
+
+  bool InitSDK(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> departmentID,
-    int offset,
-    int size,
+    ffi.Pointer<ffi.Char> config,
   ) {
-    return _GetSubDepartment(
+    return _InitSDK(
       operationID,
-      departmentID,
-      offset,
-      size,
+      config,
     );
   }
 
-  late final _GetSubDepartmentPtr = _lookup<
+  late final _InitSDKPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Int, ffi.Int)>>('GetSubDepartment');
-  late final _GetSubDepartment = _GetSubDepartmentPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int)>();
+          ffi.Bool Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('InitSDK');
+  late final _InitSDK = _InitSDKPtr.asFunction<
+      bool Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void GetDepartmentMember(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> departmentID,
-    int offset,
-    int size,
-  ) {
-    return _GetDepartmentMember(
-      operationID,
-      departmentID,
-      offset,
-      size,
-    );
-  }
-
-  late final _GetDepartmentMemberPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Int, ffi.Int)>>('GetDepartmentMember');
-  late final _GetDepartmentMember = _GetDepartmentMemberPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int)>();
-
-  void GetUserInDepartment(
+  void Login(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> userID,
+    ffi.Pointer<ffi.Char> token,
   ) {
-    return _GetUserInDepartment(
+    return _Login(
       operationID,
       userID,
+      token,
     );
   }
 
-  late final _GetUserInDepartmentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetUserInDepartment');
-  late final _GetUserInDepartment = _GetUserInDepartmentPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetDepartmentMemberAndSubDepartment(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> departmentID,
-  ) {
-    return _GetDepartmentMemberAndSubDepartment(
-      operationID,
-      departmentID,
-    );
-  }
-
-  late final _GetDepartmentMemberAndSubDepartmentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetDepartmentMemberAndSubDepartment');
-  late final _GetDepartmentMemberAndSubDepartment =
-      _GetDepartmentMemberAndSubDepartmentPtr.asFunction<
-          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetParentDepartmentList(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> departmentID,
-  ) {
-    return _GetParentDepartmentList(
-      operationID,
-      departmentID,
-    );
-  }
-
-  late final _GetParentDepartmentListPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetParentDepartmentList');
-  late final _GetParentDepartmentList = _GetParentDepartmentListPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void GetDepartmentInfo(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> departmentID,
-  ) {
-    return _GetDepartmentInfo(
-      operationID,
-      departmentID,
-    );
-  }
-
-  late final _GetDepartmentInfoPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('GetDepartmentInfo');
-  late final _GetDepartmentInfo = _GetDepartmentInfoPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
-  void SearchOrganization(
-    ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> input,
-    int offset,
-    int count,
-  ) {
-    return _SearchOrganization(
-      operationID,
-      input,
-      offset,
-      count,
-    );
-  }
-
-  late final _SearchOrganizationPtr = _lookup<
+  late final _LoginPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Int, ffi.Int)>>('SearchOrganization');
-  late final _SearchOrganization = _SearchOrganizationPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int)>();
+              ffi.Pointer<ffi.Char>)>>('Login');
+  late final _Login = _LoginPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
-  void GetWorkMomentsUnReadCount(
+  void Logout(
     ffi.Pointer<ffi.Char> operationID,
   ) {
-    return _GetWorkMomentsUnReadCount(
+    return _Logout(
       operationID,
     );
   }
 
-  late final _GetWorkMomentsUnReadCountPtr =
+  late final _LogoutPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'GetWorkMomentsUnReadCount');
-  late final _GetWorkMomentsUnReadCount = _GetWorkMomentsUnReadCountPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+          'Logout');
+  late final _Logout =
+      _LogoutPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
 
-  void GetWorkMomentsNotification(
+  void SetAppBackgroundStatus(
     ffi.Pointer<ffi.Char> operationID,
-    int offset,
-    int count,
+    bool isBackground,
   ) {
-    return _GetWorkMomentsNotification(
+    return _SetAppBackgroundStatus(
       operationID,
-      offset,
-      count,
+      isBackground,
     );
   }
 
-  late final _GetWorkMomentsNotificationPtr = _lookup<
+  late final _SetAppBackgroundStatusPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int,
-              ffi.Int)>>('GetWorkMomentsNotification');
-  late final _GetWorkMomentsNotification = _GetWorkMomentsNotificationPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Char>, int, int)>();
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Bool)>>('SetAppBackgroundStatus');
+  late final _SetAppBackgroundStatus = _SetAppBackgroundStatusPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, bool)>();
 
-  void ClearWorkMomentsNotification(
+  void NetworkStatusChanged(
     ffi.Pointer<ffi.Char> operationID,
   ) {
-    return _ClearWorkMomentsNotification(
+    return _NetworkStatusChanged(
       operationID,
     );
   }
 
-  late final _ClearWorkMomentsNotificationPtr =
+  late final _NetworkStatusChangedPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'ClearWorkMomentsNotification');
-  late final _ClearWorkMomentsNotification = _ClearWorkMomentsNotificationPtr
-      .asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+          'NetworkStatusChanged');
+  late final _NetworkStatusChanged = _NetworkStatusChangedPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>)>();
+
+  int GetLoginStatus(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _GetLoginStatus(
+      operationID,
+    );
+  }
+
+  late final _GetLoginStatusPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
+          'GetLoginStatus');
+  late final _GetLoginStatus =
+      _GetLoginStatusPtr.asFunction<int Function(ffi.Pointer<ffi.Char>)>();
+
+  ffi.Pointer<ffi.Char> GetLoginUserID() {
+    return _GetLoginUserID();
+  }
+
+  late final _GetLoginUserIDPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+          'GetLoginUserID');
+  late final _GetLoginUserID =
+      _GetLoginUserIDPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
 
   void UpdateFcmToken(
     ffi.Pointer<ffi.Char> operationID,
-    ffi.Pointer<ffi.Char> fmcToken,
+    ffi.Pointer<ffi.Char> userIDList,
   ) {
     return _UpdateFcmToken(
       operationID,
-      fmcToken,
+      userIDList,
     );
   }
 
@@ -2987,6 +2353,91 @@ class OpenimSdkFfiBindings {
           ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32)>>('SetAppBadge');
   late final _SetAppBadge =
       _SetAppBadgePtr.asFunction<void Function(ffi.Pointer<ffi.Char>, int)>();
+
+  void GetUsersInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> userIDList,
+  ) {
+    return _GetUsersInfo(
+      operationID,
+      userIDList,
+    );
+  }
+
+  late final _GetUsersInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('GetUsersInfo');
+  late final _GetUsersInfo = _GetUsersInfoPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void GetUsersInfoFromSrv(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> userIDList,
+  ) {
+    return _GetUsersInfoFromSrv(
+      operationID,
+      userIDList,
+    );
+  }
+
+  late final _GetUsersInfoFromSrvPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('GetUsersInfoFromSrv');
+  late final _GetUsersInfoFromSrv = _GetUsersInfoFromSrvPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void SetSelfInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> userInfo,
+  ) {
+    return _SetSelfInfo(
+      operationID,
+      userInfo,
+    );
+  }
+
+  late final _SetSelfInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('SetSelfInfo');
+  late final _SetSelfInfo = _SetSelfInfoPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void GetSelfUserInfo(
+    ffi.Pointer<ffi.Char> operationID,
+  ) {
+    return _GetSelfUserInfo(
+      operationID,
+    );
+  }
+
+  late final _GetSelfUserInfoPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'GetSelfUserInfo');
+  late final _GetSelfUserInfo =
+      _GetSelfUserInfoPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  void UpdateMsgSenderInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> nickname,
+    ffi.Pointer<ffi.Char> faceURL,
+  ) {
+    return _UpdateMsgSenderInfo(
+      operationID,
+      nickname,
+      faceURL,
+    );
+  }
+
+  late final _UpdateMsgSenderInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('UpdateMsgSenderInfo');
+  late final _UpdateMsgSenderInfo = _UpdateMsgSenderInfoPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 }
 
 final class _GoString_ extends ffi.Struct {
@@ -2996,8 +2447,7 @@ final class _GoString_ extends ffi.Struct {
   external int n;
 }
 
-typedef ptrdiff_t = __darwin_ptrdiff_t;
-typedef __darwin_ptrdiff_t = ffi.Long;
+typedef ptrdiff_t = ffi.LongLong;
 
 final class CGO_OpenIM_Listener extends ffi.Struct {
   external ffi.Pointer<
@@ -3007,8 +2457,17 @@ final class CGO_OpenIM_Listener extends ffi.Struct {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Int32,
+              ffi.Pointer<ffi.Double>,
               ffi.Pointer<ffi.Char>)>> onMethodChannel;
+
+  external ffi.Pointer<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Char>)>> onNativeMethodChannel;
 }
 
 /// ============================================================================
@@ -3042,3 +2501,4 @@ final class GoSlice extends ffi.Struct {
 
 typedef GoInt = GoInt64;
 typedef GoInt64 = ffi.LongLong;
+typedef GoString = _GoString_;
