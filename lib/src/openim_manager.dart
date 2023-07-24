@@ -78,14 +78,12 @@ class InitSdkParams {
   final String wsAddr;
   final String? dataDir;
 
-  final String objectStorage;
   final int logLevel;
 
   final String? operationID;
 
-  final String? encryptionKey;
-  final bool enabledEncryption;
-  final bool enabledCompression;
+  final bool isLogStandardOutput;
+  final String logFilePath;
   final bool isExternalExtensions;
 
   InitSdkParams({
@@ -94,11 +92,9 @@ class InitSdkParams {
     required this.logLevel,
     this.dataDir,
     this.operationID,
-    this.encryptionKey,
-    this.enabledEncryption = false,
-    this.enabledCompression = false,
+    this.isLogStandardOutput = false,
+    this.logFilePath = '',
     this.isExternalExtensions = false,
-    this.objectStorage = 'oss',
   });
 }
 
@@ -136,95 +132,6 @@ class OpenIMManager {
     return IMPlatform.ipad;
   }
 
-  /// 请求成功  返回数据
-  static _onSuccess(_PortModel msg) {
-    switch (msg.callMethodName) {
-      case _PortMethod.getAllConversationList:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => ConversationInfo.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-      case _PortMethod.getOneConversation:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => ConversationInfo.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-      case _PortMethod.getHistoryMessageList:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => Message.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-        break;
-      case _PortMethod.getUsersInfo:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => UserInfo.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-        break;
-      case _PortMethod.getSelfUserInfo:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => UserInfo.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-        break;
-      case _PortMethod.sendMessage:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => Message.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-        break;
-      case _PortMethod.inviteUserToGroup:
-      case _PortMethod.kickGroupMember:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => GroupInviteResult.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-        break;
-      case _PortMethod.getGroupMembersInfo:
-      case _PortMethod.getGroupMemberList:
-      case _PortMethod.getGroupMemberListByJoinTimeFilter:
-      case _PortMethod.getGroupMemberOwnerAndAdmin:
-      case _PortMethod.searchGroupMembers:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => GroupMembersInfo.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-        break;
-      case _PortMethod.getJoinedGroupList:
-      case _PortMethod.getGroupsInfo:
-      case _PortMethod.searchGroups:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => GroupInfo.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-        break;
-      case _PortMethod.createGroup:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => GroupInfo.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-        break;
-      case _PortMethod.getRecvGroupApplicationList:
-      case _PortMethod.getSendGroupApplicationList:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => GroupApplicationInfo.fromJson(v))));
-          _sendPortMap.remove(msg.operationID!);
-        }
-        break;
-      case _PortMethod.getTotalUnreadMsgCount:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: int.parse(msg.data)));
-          _sendPortMap.remove(msg.operationID!);
-        }
-        break;
-      default:
-        if (msg.operationID != null) {
-          _sendPortMap[msg.operationID!]?.send(_PortResult(data: msg.data));
-          _sendPortMap.remove(msg.operationID!);
-        }
-    }
-  }
-
   static Future<void> _isolateEntry(_IsolateTaskData<InitSdkParams> task) async {
     if (task.rootIsolateToken != null) {
       BackgroundIsolateBinaryMessenger.ensureInitialized(task.rootIsolateToken!);
@@ -243,16 +150,13 @@ class OpenIMManager {
       }
 
       String config = jsonEncode({
-        'platform': getIMPlatform(),
-        'api_addr': data.apiAddr,
-        'ws_addr': data.wsAddr,
-        'data_dir': dataDir,
-        'log_level': data.logLevel,
-        'object_storage': data.objectStorage,
-        'encryption_key': data.encryptionKey,
-        'is_need_encryption': data.enabledEncryption,
-        'is_compression': data.enabledCompression,
-        'is_external_extensions': data.isExternalExtensions,
+        'platformID': getIMPlatform(),
+        'apiAddr': data.apiAddr,
+        'wsAddr': data.wsAddr,
+        'dataDir': dataDir,
+        'logLevel': data.logLevel,
+        'LogFilePath': data.logFilePath,
+        'isExternalExtensions': data.isExternalExtensions,
       });
 
       bool status = _imBindings.InitSDK(
@@ -272,16 +176,10 @@ class OpenIMManager {
 
           switch (data.method) {
             case 'OnError':
-              if (data.operationID != null) {
-                _sendPortMap[data.operationID!]?.send(_PortResult(
-                    error: data.data,
-                    errCode: data.errCode is int ? (data.errCode as int).toDouble() : data.errCode,
-                    callMethodName: data.callMethodName));
-                _sendPortMap.remove(data.operationID!);
-              }
+              NativeCall.onError(data);
               break;
             case 'OnSuccess':
-              _onSuccess(data);
+              NativeCall.onSuccess(data);
               break;
             case ListenerType.onConversationChanged:
             case ListenerType.onNewConversation:
@@ -1184,11 +1082,9 @@ class OpenIMManager {
     required String wsAddr,
     String? dataDir,
     int logLevel = 6,
-    String objectStorage = 'oss',
     String? operationID,
-    String? encryptionKey,
-    bool enabledEncryption = false,
-    bool enabledCompression = false,
+    bool isLogStandardOutput = false,
+    String logFilePath = '',
     bool isExternalExtensions = false,
   }) async {
     if (_isInit) return false;
@@ -1202,12 +1098,10 @@ class OpenIMManager {
             apiAddr: apiAddr,
             wsAddr: wsAddr,
             dataDir: dataDir,
-            objectStorage: objectStorage,
-            operationID: operationID,
             logLevel: logLevel,
-            encryptionKey: encryptionKey,
-            enabledEncryption: enabledEncryption,
-            enabledCompression: enabledCompression,
+            isLogStandardOutput: isLogStandardOutput,
+            logFilePath: logFilePath,
+            isExternalExtensions: isExternalExtensions,
           ),
           rootIsolateToken,
         ));

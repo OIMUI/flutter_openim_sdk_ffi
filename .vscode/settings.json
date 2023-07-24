@@ -18,6 +18,7 @@
         "nullptr",
         "ptrdiff",
         "Struct",
+        "tizen",
         "Unmute"
     ]
 }

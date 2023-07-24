@@ -2447,7 +2447,8 @@ final class _GoString_ extends ffi.Struct {
   external int n;
 }
 
-typedef ptrdiff_t = ffi.LongLong;
+typedef ptrdiff_t = __darwin_ptrdiff_t;
+typedef __darwin_ptrdiff_t = ffi.Long;
 
 final class CGO_OpenIM_Listener extends ffi.Struct {
   external ffi.Pointer<

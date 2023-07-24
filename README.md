@@ -55,11 +55,5 @@ to [OpenIMDoc](https://doc.rentsoft.cn/sdks/introduction)
 
 flutter pub run ffigen --config ffigen.yaml
 
-nm -D openim_sdk_ffi.so
 
-nm -gU flutter_openim_sdk_ffi
-
-dumpbin /exports openim_sdk_ffi.dll
-
-lipo -info macos/libopenim_sdk_ffi.dylib
 
