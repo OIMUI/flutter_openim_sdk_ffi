@@ -35,8 +35,8 @@ class FriendshipManager {
       method: _PortMethod.addFriend,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
-        'uid': uid,
-        'reason': reason,
+        'toUserID': uid,
+        'reqMsg': reason ?? '',
       },
       sendPort: receivePort.sendPort,
     ));
@@ -44,7 +44,7 @@ class FriendshipManager {
 
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 

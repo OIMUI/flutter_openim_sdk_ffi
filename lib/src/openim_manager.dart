@@ -83,7 +83,7 @@ class InitSdkParams {
   final String? operationID;
 
   final bool isLogStandardOutput;
-  final String logFilePath;
+  final String? logFilePath;
   final bool isExternalExtensions;
 
   InitSdkParams({
@@ -92,8 +92,8 @@ class InitSdkParams {
     required this.logLevel,
     this.dataDir,
     this.operationID,
-    this.isLogStandardOutput = false,
-    this.logFilePath = '',
+    this.isLogStandardOutput = true,
+    this.logFilePath,
     this.isExternalExtensions = false,
   });
 }
@@ -156,6 +156,7 @@ class OpenIMManager {
         'dataDir': dataDir,
         'logLevel': data.logLevel,
         'LogFilePath': data.logFilePath,
+        'isLogStandardOutput': data.isLogStandardOutput,
         'isExternalExtensions': data.isExternalExtensions,
       });
 
@@ -1084,7 +1085,7 @@ class OpenIMManager {
     int logLevel = 6,
     String? operationID,
     bool isLogStandardOutput = false,
-    String logFilePath = '',
+    String? logFilePath,
     bool isExternalExtensions = false,
   }) async {
     if (_isInit) return false;
