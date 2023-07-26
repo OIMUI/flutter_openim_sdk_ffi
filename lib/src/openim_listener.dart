@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-01 23:37:30
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-23 19:55:14
+ * Last Modified: 2023-07-26 11:40:00
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -167,4 +167,28 @@ mixin OpenIMListener {
   void onRecvCustomBusinessMessage(String s) {}
 
   void onMessageKvInfoChanged(List<MessageKv> list) {}
+
+  /// 文件打开的大小
+  void onUploadFileOpen(String id, int size) {}
+
+  /// 分片大小,数量
+  void onUploadFilePartSize(String id, int partSize, int num) {}
+
+  /// 每块分片的hash值
+  void onUploadFileHashPartProgress(String id, int index, int size, String partHash) {}
+
+  /// 分块完成，服务端标记hash和文件最终hash
+  void onUploadFileHashPartComplete(String id, String partHash, String fileHash) {}
+
+  /// 上传ID
+  void onUploadFileUploadID(String id, String uploadID) {}
+
+  /// 上传分片进度
+  void onUploadFileUploadPartComplete(String id, int index, int partSize, String partHash) {}
+
+  /// 整体进度
+  void onUploadFileUploadProgress(String id, int fileSize, int streamSize, int storageSize) {}
+
+  /// 上传完成
+  void onUploadFileUploadComplete(String id, int size, String url, int type) {}
 }

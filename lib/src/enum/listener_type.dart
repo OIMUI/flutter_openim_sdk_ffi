@@ -86,4 +86,14 @@ class ListenerType {
   static const String onHangUp = 'OnHangUp';
   static const String onRoomParticipantConnected = 'OnRoomParticipantConnected';
   static const String onRoomParticipantDisconnected = 'OnRoomParticipantDisconnected';
+
+  /// UploadFileListener
+  static const String open = 'Open';
+  static const String partSize = 'PartSize';
+  static const String hashPartProgress = 'HashPartProgress';
+  static const String hashPartComplete = 'HashPartComplete';
+  static const String uploadID = 'UploadID';
+  static const String uploadPartComplete = 'UploadPartComplete';
+  static const String uploadComplete = 'UploadComplete';
+  static const String complete = 'Complete';
 }

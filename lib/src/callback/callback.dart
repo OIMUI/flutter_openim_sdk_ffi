@@ -7,7 +7,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-24 14:47:49
+ * Last Modified: 2023-07-26 11:06:37
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -63,7 +63,7 @@ class _PortMethod {
   /// 消息
   static const String sendMessage = 'SendMessage';
   static const String getHistoryMessageList = 'GetHistoryMessageList';
-  static const String revokeMessage = 'RevokeMessage';
+  // static const String revokeMessage = 'RevokeMessage';
   static const String deleteMessageFromLocalStorage = 'DeleteMessageFromLocalStorage';
   static const String insertSingleMessageToLocalStorage = 'InsertSingleMessageToLocalStorage';
   static const String insertGroupMessageToLocalStorage = 'InsertGroupMessageToLocalStorage';
@@ -187,7 +187,7 @@ class _PortMethod {
   static const String networkStatusChanged = 'NetworkStatusChanged';
   static const String setAppBackgroundStatus = 'SetAppBackgroundStatus';
   static const String updateFcmToken = 'UpdateFcmToken';
-  static const String uploadImage = 'UploadImage';
+  static const String uploadFile = 'UploadFile';
   static const String wakeUp = 'WakeUp';
   static const String getLoginStatus = 'GetLoginStatus';
   static const String logout = 'Logout';
@@ -290,6 +290,13 @@ class NativeCall {
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
         break;
+      case _PortMethod.uploadFile:
+        if (msg.operationID != null) {
+          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: int.parse(msg.data)));
+          OpenIMManager._sendPortMap.remove(msg.operationID!);
+        }
+        break;
+
       default:
         if (msg.operationID != null) {
           OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: msg.data));

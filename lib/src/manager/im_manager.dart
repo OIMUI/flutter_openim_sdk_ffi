@@ -17,7 +17,6 @@ class IMManager {
 
   bool isLogined = false;
   String? token;
-  String? _objectStorage;
 
   IMManager() {
     conversationManager = ConversationManager();
@@ -203,6 +202,38 @@ class IMManager {
       case ListenerType.onMessageKvInfoChanged:
         OpenIMManager._onEvent((listener) => listener.onMessageKvInfoChanged(channel.data));
         break;
+
+      /// UploadFileListener
+      case ListenerType.open:
+        OpenIMManager._onEvent((listener) => listener.onUploadFileOpen(channel.operationID!, channel.data['size']));
+        break;
+      case ListenerType.partSize:
+        OpenIMManager._onEvent(
+            (listener) => listener.onUploadFilePartSize(channel.operationID!, channel.data['partSize'], channel.data['num']));
+        break;
+      case ListenerType.hashPartProgress:
+        OpenIMManager._onEvent((listener) => listener.onUploadFileHashPartProgress(
+            channel.operationID!, channel.data['index'], channel.data['size'], channel.data['partHash']));
+        break;
+      case ListenerType.hashPartComplete:
+        OpenIMManager._onEvent(
+            (listener) => listener.onUploadFileHashPartComplete(channel.operationID!, channel.data['partHash'], channel.data['fileHash']));
+        break;
+      case ListenerType.uploadID:
+        OpenIMManager._onEvent((listener) => listener.onUploadFileUploadID(channel.operationID!, channel.data));
+        break;
+      case ListenerType.uploadPartComplete:
+        OpenIMManager._onEvent((listener) => listener.onUploadFileUploadPartComplete(
+            channel.operationID!, channel.data['index'], channel.data['partSize'], channel.data['partHash']));
+        break;
+      case ListenerType.uploadComplete:
+        OpenIMManager._onEvent((listener) => listener.onUploadFileUploadProgress(
+            channel.operationID!, channel.data['fileSize'], channel.data['streamSize'], channel.data['storageSize']));
+        break;
+      case ListenerType.complete:
+        OpenIMManager._onEvent((listener) =>
+            listener.onUploadFileUploadComplete(channel.operationID!, channel.data['size'], channel.data['url'], channel.data['type']));
+        break;
     }
   }
 
@@ -307,23 +338,24 @@ class IMManager {
     }
   }
 
-  /// 上传图片到服务器
-  /// [path] 图片路径
-  /// [token] im token
-  /// [objectStorage] 存储对象 cos/minio
-  Future<void> uploadImage({
-    required String path,
-    String? token,
-    String? objectStorage,
-    String? operationID,
+  /// 上传文件到服务器
+  ///
+  ///[id] 区分是哪个文件的回调
+  Future<void> uploadFile({
+    required String operationID,
+    required String filePath,
+    required String fileName,
+    String? contentType,
+    String? cause,
   }) async {
     ReceivePort receivePort = ReceivePort();
     OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.uploadImage,
+      method: _PortMethod.uploadFile,
       data: {
-        'path': path,
-        'token': token ?? this.token,
-        'obj': objectStorage ?? _objectStorage,
+        'filePath': filePath,
+        'name': fileName,
+        'contentType': contentType,
+        'cause': cause,
         'operationID': IMUtils.checkOperationID(operationID),
       },
       sendPort: receivePort.sendPort,

@@ -283,6 +283,15 @@ class OpenIMManager {
               data.data = IMUtils.toList(data.data, (map) => MessageKv.fromJson(map));
               task.sendPort.send(data);
               break;
+            case ListenerType.open:
+            case ListenerType.partSize:
+            case ListenerType.hashPartProgress:
+            case ListenerType.hashPartComplete:
+            case ListenerType.uploadPartComplete:
+            case ListenerType.uploadComplete:
+              jsonDecode(data.data);
+              task.sendPort.send(data);
+              break;
             default:
               task.sendPort.send(data);
           }
@@ -1013,6 +1022,7 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(gid);
             break;
+
           case _PortMethod.getGroupMemberOwnerAndAdmin:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
@@ -1064,6 +1074,14 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             calloc.free(operationID);
             break;
+          case _PortMethod.uploadFile:
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final req = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
+            _imBindings.UploadFile(operationID, req);
+            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
+            calloc.free(operationID);
+            break;
+
           //  case _PortMethod.unInitSDK:
           // final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
           // _imBindings.(operationID);

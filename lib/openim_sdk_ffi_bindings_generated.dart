@@ -1358,6 +1358,23 @@ class OpenimSdkFfiBindings {
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
+  void UploadFile(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> req,
+  ) {
+    return _UploadFile(
+      operationID,
+      req,
+    );
+  }
+
+  late final _UploadFilePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('UploadFile');
+  late final _UploadFile = _UploadFilePtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
   void GetSpecifiedFriendsInfo(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> userIDList,

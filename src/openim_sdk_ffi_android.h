@@ -27,6 +27,7 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 #line 1 "cgo-generated-wrapper"
 
+
 #line 3 "friend.go"
 
 #include <stdio.h>
@@ -114,6 +115,7 @@ typedef double _Complex GoComplex128;
   static assertion to make sure the file is being used on architecture
   at least with matching size of GoInt.
 */
+typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
 
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
@@ -194,6 +196,7 @@ extern void InsertSingleMessageToLocalStorage(char* operationID, char* message, 
 extern void InsertGroupMessageToLocalStorage(char* operationID, char* message, char* groupID, char* sendID);
 extern void SearchLocalMessages(char* operationID, char* searchParam);
 extern void SetMessageLocalEx(char* operationID, char* conversationID, char* clientMsgID, char* localEx);
+extern void UploadFile(char* operationID, char* req);
 extern void GetSpecifiedFriendsInfo(char* operationID, char* userIDList);
 extern void GetFriendList(char* operationID);
 extern void GetFriendListPage(char* operationID, int32_t offset, int32_t count);
