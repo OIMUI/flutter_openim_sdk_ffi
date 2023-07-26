@@ -239,7 +239,13 @@ class OpenIMManager {
       String? dataDir = data.dataDir;
       if (dataDir == null) {
         Directory document = await getApplicationDocumentsDirectory();
-        dataDir = document.path;
+        dataDir = join(document.path, 'moyo_im');
+        print('document.path');
+        print(document.path);
+      }
+
+      if (!Directory(dataDir).existsSync()) {
+        Directory(dataDir).createSync(recursive: true);
       }
 
       String config = jsonEncode({

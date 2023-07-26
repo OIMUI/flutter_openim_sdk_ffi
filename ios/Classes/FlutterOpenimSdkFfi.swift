@@ -46,7 +46,6 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         if message != nil {
             messageString = String(cString: message!)
         }
-        print(methodNameString)
         switch methodNameString {
         case "OnSuccess":
             switch callMethodNameString {
@@ -69,10 +68,33 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
             let customException = CustomException(errCode: Int(bitPattern: errCode) , message: messageString)
             deferredInfoMap[operationIDString]??.complete(with: customException)
             deferredInfoMap.removeValue(forKey: operationIDString)
+        case "OnConnectFailed":
+            for listener in FlutterOpenimSdkFfi.listeners {
+                if let onConnListener = listener as? OnConnListener {
+                    onConnListener.onConnectFailed(code:Int64(Int(bitPattern: errCode)),error:messageString)
+                }
+            }
         case "OnKickedOffline":
             for listener in FlutterOpenimSdkFfi.listeners {
                 if let onConnListener = listener as? OnConnListener {
                     onConnListener.onKickedOffline()
+                }
+            }
+        case "OnConnectSuccess":
+            for listener in FlutterOpenimSdkFfi.listeners {
+                if let onConnListener = listener as? OnConnListener {
+                    onConnListener.onConnectSuccess()
+                }
+            }
+        case "OnConnecting":
+            for listener in FlutterOpenimSdkFfi.listeners {
+                if let onConnListener = listener as? OnConnListener {
+                    onConnListener.onConnecting()
+                }
+            }case "OnUserTokenExpired":
+            for listener in FlutterOpenimSdkFfi.listeners {
+                if let onConnListener = listener as? OnConnListener {
+                    onConnListener.onUserTokenExpired()
                 }
             }
         case "OnInitSDK":
@@ -99,12 +121,12 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
     @objc public func login(userID: String, token: String) throws -> UserInfo {
         let operationID = getCurrentTimeMillisString()
         let deferred = Deferred<Any?>()
-        let operationIDString = operationID.cString(using: .utf8)!
-        let userIDCString = userID.cString(using: .utf8)!
-        let tokenCString = token.cString(using: .utf8)!
+        let operationIDString = convertToCCharArray(operationID)!
+        let userIDCString = convertToCCharArray(userID)!
+        let tokenCString = convertToCCharArray(token)!
         deferredInfoMap[operationID] = deferred
         
-        typealias FunctionType = @convention(c) (UnsafePointer<CChar>, UnsafePointer<CChar>, UnsafePointer<CChar>) -> Void
+        typealias FunctionType = @convention(c) (UnsafeMutablePointer<UInt8>, UnsafeMutablePointer<UInt8>, UnsafeMutablePointer<UInt8>) -> Void
         let functionPointer = dlsym(handle, "login")
         let loginCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
         loginCallback(operationIDString, userIDCString, tokenCString)
@@ -116,6 +138,22 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
             print("Error: \(error)")
             throw error
         }
+    }
+    
+    func convertToCCharArray(_ inputString: String) -> UnsafeMutablePointer<UInt8>? {
+        // 将字符串转换为UTF-8编码的数据
+        guard let data = inputString.data(using: .utf8) else {
+            return nil
+        }
+        
+        // 分配内存来容纳字符数组
+        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: data.count + 1)
+        
+        // 将数据复制到字符数组中（包括结尾的null字符）
+        data.copyBytes(to: buffer, count: data.count)
+        buffer[data.count] = 0 // 添加结尾的null字符
+        
+        return buffer
     }
     
     // 获取用户信息
