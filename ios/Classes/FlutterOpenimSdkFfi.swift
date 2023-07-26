@@ -5,7 +5,7 @@ import Foundation
 // 定义一个Swift函数类型，与C函数指针匹配
 typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePointer<Int8>, UnsafePointer<Int8>, UnsafePointer<Double>, UnsafePointer<Int8>) -> Void
 
-public class FlutterOpenimSdkFfi: NSObject {
+@objc public class FlutterOpenimSdkFfi: NSObject {
     let handle: UnsafeMutableRawPointer
     
     private var deferredInfoMap: [String: Deferred<Any?>?] = [:]
@@ -14,11 +14,11 @@ public class FlutterOpenimSdkFfi: NSObject {
     
     private static var sharedCallbackInstance: FlutterOpenimSdkFfi?
     
-    public static func addListener(_ listener: Any) {
+    @objc public static func addListener(_ listener: Any) {
         listeners.append(listener)
     }
     
-    public static func removeListener(_ listener: Any) {
+    @objc public static func removeListener(_ listener: Any) {
         if let index = listeners.firstIndex(where: { ($0 as AnyObject) === listener as AnyObject }) {
             listeners.remove(at: index)
         }
@@ -86,7 +86,7 @@ public class FlutterOpenimSdkFfi: NSObject {
         }
     }
     
-    public func registerCallback() {
+    @objc public func registerCallback() {
         let functionPointer = dlsym(handle, "nativeRegisterCallback")
         typealias FunctionType = @convention(c) (_ callback: NativeMethodCallback?) -> Void
         let nativeRegisterCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
@@ -96,7 +96,7 @@ public class FlutterOpenimSdkFfi: NSObject {
     }
     
     // 登陆
-    public func login(userID: String, token: String) throws -> UserInfo {
+    @objc public func login(userID: String, token: String) throws -> UserInfo {
         let operationID = getCurrentTimeMillisString()
         let deferred = Deferred<Any?>()
         let operationIDString = operationID.cString(using: .utf8)!
@@ -119,7 +119,7 @@ public class FlutterOpenimSdkFfi: NSObject {
     }
     
     // 获取用户信息
-    public func getSelfUserInfo() throws -> UserInfo {
+    @objc public func getSelfUserInfo() throws -> UserInfo {
         let operationID = getCurrentTimeMillisString()
         let operationIDString = operationID.cString(using: .utf8)!
         let deferred = Deferred<Any?>()

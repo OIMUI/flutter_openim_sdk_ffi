@@ -220,19 +220,19 @@ class IMManager {
             (listener) => listener.onUploadFileHashPartComplete(channel.operationID!, channel.data['partHash'], channel.data['fileHash']));
         break;
       case ListenerType.uploadID:
-        OpenIMManager._onEvent((listener) => listener.onUploadFileUploadID(channel.operationID!, channel.data));
+        OpenIMManager._onEvent((listener) => listener.onUploadFileID(channel.operationID!, channel.data));
         break;
       case ListenerType.uploadPartComplete:
-        OpenIMManager._onEvent((listener) => listener.onUploadFileUploadPartComplete(
+        OpenIMManager._onEvent((listener) => listener.onUploadFilePartComplete(
             channel.operationID!, channel.data['index'], channel.data['partSize'], channel.data['partHash']));
         break;
       case ListenerType.uploadComplete:
-        OpenIMManager._onEvent((listener) => listener.onUploadFileUploadProgress(
+        OpenIMManager._onEvent((listener) => listener.onUploadFileProgress(
             channel.operationID!, channel.data['fileSize'], channel.data['streamSize'], channel.data['storageSize']));
         break;
       case ListenerType.complete:
         OpenIMManager._onEvent((listener) =>
-            listener.onUploadFileUploadComplete(channel.operationID!, channel.data['size'], channel.data['url'], channel.data['type']));
+            listener.onUploadFileComplete(channel.operationID!, channel.data['size'], channel.data['url'], channel.data['type']));
         break;
     }
   }

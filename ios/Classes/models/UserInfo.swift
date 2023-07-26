@@ -1,5 +1,5 @@
 
-public class UserInfo: Decodable {
+@objc public class UserInfo: NSObject, Decodable {
     private var userID: String? = nil
 
     var nickname: String? {
@@ -156,9 +156,5 @@ public class UserInfo: Decodable {
 
     static func ==(lhs: UserInfo, rhs: UserInfo) -> Bool {
         return lhs.userID == rhs.userID
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(userID)
     }
 }

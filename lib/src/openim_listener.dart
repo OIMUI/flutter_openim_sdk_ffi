@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-01 23:37:30
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-26 11:40:00
+ * Last Modified: 2023-07-26 14:59:23
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -181,14 +181,14 @@ mixin OpenIMListener {
   void onUploadFileHashPartComplete(String id, String partHash, String fileHash) {}
 
   /// 上传ID
-  void onUploadFileUploadID(String id, String uploadID) {}
+  void onUploadFileID(String id, String uploadID) {}
 
   /// 上传分片进度
-  void onUploadFileUploadPartComplete(String id, int index, int partSize, String partHash) {}
+  void onUploadFilePartComplete(String id, int index, int partSize, String partHash) {}
 
   /// 整体进度
-  void onUploadFileUploadProgress(String id, int fileSize, int streamSize, int storageSize) {}
+  void onUploadFileProgress(String id, int fileSize, int streamSize, int storageSize) {}
 
   /// 上传完成
-  void onUploadFileUploadComplete(String id, int size, String url, int type) {}
+  void onUploadFileComplete(String id, int size, String url, int type) {}
 }
