@@ -149,6 +149,10 @@ class OpenIMManager {
         dataDir = document.path;
       }
 
+      if (!Directory(dataDir).existsSync()) {
+        Directory(dataDir).createSync(recursive: true);
+      }
+
       String config = jsonEncode({
         'platformID': getIMPlatform(),
         'apiAddr': data.apiAddr,
