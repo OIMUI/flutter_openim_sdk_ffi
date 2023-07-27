@@ -241,11 +241,6 @@ class OpenIMManager {
         Directory document = await getApplicationDocumentsDirectory();
         dataDir = document.path;
       }
-
-      if (!Directory(dataDir).existsSync()) {
-        Directory(dataDir).createSync(recursive: true);
-      }
-
       String config = jsonEncode({
         'platform': getIMPlatform(),
         'api_addr': data.apiAddr,
