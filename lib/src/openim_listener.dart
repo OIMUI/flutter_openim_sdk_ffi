@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-01 23:37:30
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-26 14:59:23
+ * Last Modified: 2023-07-29 14:29:46
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -39,6 +39,18 @@ mixin OpenIMListener {
 
   ///  群消息已读回执
   void onRecvGroupMessageReadReceipt(List<ReadReceiptInfo> list) {}
+
+  /// 收到了一条新消息
+  void _onRecvNewMessage(Message msg) {
+    if (msg.contentType == MessageType.typing) {
+      onTypingStatusChanged(msg);
+    } else {
+      onRecvNewMessage(msg);
+    }
+  }
+
+  /// 对方正在输入
+  void onTypingStatusChanged(Message msg) {}
 
   /// 收到了一条新消息
   void onRecvNewMessage(Message msg) {}

@@ -27,6 +27,7 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 #line 1 "cgo-generated-wrapper"
 
+
 #line 3 "friend.go"
 
 #include <stdio.h>
@@ -51,7 +52,6 @@ typedef struct {
     void (*onMethodChannel)(Dart_Port_DL port, char*, char*, char*, double*, char*);
 	void (*onNativeMethodChannel)(char*, char*, char*, double*, char*);
 } CGO_OpenIM_Listener;
-
 
 static void callOnMethodChannel(CGO_OpenIM_Listener *listener, Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
 	if (listener->onMethodChannel != NULL) {
@@ -178,11 +178,10 @@ extern GoString GetConversationIDBySessionType(char* operationID, char* sourceID
 extern void SendMessage(char* operationID, char* message, char* recvID, char* groupID, char* offlinePushInfo);
 extern void SendMessageNotOss(char* operationID, char* message, char* recvID, char* groupID, char* offlinePushInfo);
 extern void FindMessageList(char* operationID, char* findMessageOptions);
+extern void GetAdvancedHistoryMessageList(char* operationID, char* getMessageOptions);
+extern void GetAdvancedHistoryMessageListReverse(char* operationID, char* getMessageOptions);
 extern void RevokeMessage(char* operationID, char* conversationID, char* clientMsgID);
 extern void TypingStatusUpdate(char* operationID, char* recvID, char* msgTip);
-
-// mark as read
-//
 extern void MarkConversationMessageAsRead(char* operationID, char* conversationID);
 extern void MarkMessagesAsReadByMsgID(char* operationID, char* conversationID, char* clientMsgIDs);
 extern void DeleteMessageFromLocalStorage(char* operationID, char* conversationID, char* clientMsgID);
@@ -196,6 +195,7 @@ extern void InsertSingleMessageToLocalStorage(char* operationID, char* message, 
 extern void InsertGroupMessageToLocalStorage(char* operationID, char* message, char* groupID, char* sendID);
 extern void SearchLocalMessages(char* operationID, char* searchParam);
 extern void SetMessageLocalEx(char* operationID, char* conversationID, char* clientMsgID, char* localEx);
+extern void UploadFile(char* operationID, char* req);
 extern void GetSpecifiedFriendsInfo(char* operationID, char* userIDList);
 extern void GetFriendList(char* operationID);
 extern void GetFriendListPage(char* operationID, int32_t offset, int32_t count);

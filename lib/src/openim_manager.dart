@@ -378,7 +378,6 @@ class OpenIMManager {
             calloc.free(offlinePushInfo);
             calloc.free(clientMsgID);
             break;
-
           case _PortMethod.insertSingleMessageToLocalStorage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
@@ -402,6 +401,16 @@ class OpenIMManager {
             calloc.free(message);
             calloc.free(groupID);
             calloc.free(senderID);
+            break;
+          case _PortMethod.markMessageAsReadByMsgID:
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final conversationID = (msg.data['conversationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final messageIDList = jsonEncode(msg.data['messageIDList']).toNativeUtf8().cast<ffi.Char>();
+            _imBindings.MarkMessagesAsReadByMsgID(operationID, conversationID, messageIDList);
+            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
+            calloc.free(operationID);
+            calloc.free(conversationID);
+            calloc.free(messageIDList);
             break;
 
           case _PortMethod.typingStatusUpdate:
@@ -579,7 +588,6 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(data);
             break;
-
           case _PortMethod.searchLocalMessages:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final searchParam = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
@@ -588,7 +596,6 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(searchParam);
             break;
-
           case _PortMethod.deleteAllMsgFromLocal:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             _imBindings.DeleteAllMsgFromLocal(operationID);
@@ -601,7 +608,6 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             calloc.free(operationID);
             break;
-
           case _PortMethod.findMessageList:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final searchParams = jsonEncode(msg.data['searchParams']).toNativeUtf8().cast<ffi.Char>();
@@ -668,7 +674,22 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(fileElem);
             break;
-
+          case _PortMethod.getAdvancedHistoryMessageList:
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final getMessageOptions = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
+            _imBindings.GetAdvancedHistoryMessageList(operationID, getMessageOptions);
+            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
+            calloc.free(operationID);
+            calloc.free(getMessageOptions);
+            break;
+          case _PortMethod.getAdvancedHistoryMessageListReverse:
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final getMessageOptions = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
+            _imBindings.GetAdvancedHistoryMessageListReverse(operationID, getMessageOptions);
+            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
+            calloc.free(operationID);
+            calloc.free(getMessageOptions);
+            break;
           case _PortMethod.setConversationDraft:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final conversationID = (msg.data['conversationID'] as String).toNativeUtf8().cast<ffi.Char>();

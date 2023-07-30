@@ -67,7 +67,7 @@ class IMManager {
       case ListenerType.onProgress:
         OpenIMManager._onEvent((listener) => listener.onProgress(channel.data ?? '', channel.errCode ?? 0));
       case ListenerType.onRecvNewMessage:
-        OpenIMManager._onEvent((listener) => listener.onRecvNewMessage(channel.data));
+        OpenIMManager._onEvent((listener) => listener._onRecvNewMessage(channel.data));
         break;
       case ListenerType.onSelfInfoUpdated:
         OpenIMManager._onEvent((listener) => listener.onSelfInfoUpdated(channel.data));

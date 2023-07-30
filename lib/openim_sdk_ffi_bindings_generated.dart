@@ -1061,6 +1061,42 @@ class OpenimSdkFfiBindings {
   late final _FindMessageList = _FindMessageListPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
+  void GetAdvancedHistoryMessageList(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> getMessageOptions,
+  ) {
+    return _GetAdvancedHistoryMessageList(
+      operationID,
+      getMessageOptions,
+    );
+  }
+
+  late final _GetAdvancedHistoryMessageListPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('GetAdvancedHistoryMessageList');
+  late final _GetAdvancedHistoryMessageList =
+      _GetAdvancedHistoryMessageListPtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void GetAdvancedHistoryMessageListReverse(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> getMessageOptions,
+  ) {
+    return _GetAdvancedHistoryMessageListReverse(
+      operationID,
+      getMessageOptions,
+    );
+  }
+
+  late final _GetAdvancedHistoryMessageListReversePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('GetAdvancedHistoryMessageListReverse');
+  late final _GetAdvancedHistoryMessageListReverse =
+      _GetAdvancedHistoryMessageListReversePtr.asFunction<
+          void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
   void RevokeMessage(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> conversationID,

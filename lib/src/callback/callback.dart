@@ -7,7 +7,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-26 11:06:37
+ * Last Modified: 2023-07-29 16:38:33
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -62,13 +62,12 @@ class _PortMethod {
 
   /// 消息
   static const String sendMessage = 'SendMessage';
-  static const String getHistoryMessageList = 'GetHistoryMessageList';
+  static const String getAdvancedHistoryMessageList = 'GetAdvancedHistoryMessageList';
+  static const String getAdvancedHistoryMessageListReverse = 'GetAdvancedHistoryMessageListReverse';
   // static const String revokeMessage = 'RevokeMessage';
   static const String deleteMessageFromLocalStorage = 'DeleteMessageFromLocalStorage';
   static const String insertSingleMessageToLocalStorage = 'InsertSingleMessageToLocalStorage';
   static const String insertGroupMessageToLocalStorage = 'InsertGroupMessageToLocalStorage';
-  static const String markC2CMessageAsRead = 'MarkC2CMessageAsRead';
-  static const String markGroupMessageAsRead = 'MarkGroupMessageAsRead';
   static const String typingStatusUpdate = 'TypingStatusUpdate';
   static const String createTextMessage = 'CreateTextMessage';
   static const String createTextAtMessage = 'CreateTextAtMessage';
@@ -93,12 +92,10 @@ class _PortMethod {
   static const String deleteMessageFromLocalAndSvr = 'DeleteMessageFromLocalAndSvr';
   static const String deleteAllMsgFromLocal = 'DeleteAllMsgFromLocal';
   static const String deleteAllMsgFromLocalAndSvr = 'DeleteAllMsgFromLocalAndSvr';
-  static const String markMessageAsReadByConID = 'MarkMessageAsReadByConID';
+  static const String markMessageAsReadByMsgID = 'markMessageAsReadByMsgID';
   static const String clearC2CHistoryMessageFromLocalAndSvr = 'ClearC2CHistoryMessageFromLocalAndSvr';
   static const String clearGroupHistoryMessageFromLocalAndSvr = 'ClearGroupHistoryMessageFromLocalAndSvr';
-  static const String getHistoryMessageListReverse = 'GetHistoryMessageListReverse';
   static const String revokeMessageV2 = 'RevokeMessageV2';
-  static const String getAdvancedHistoryMessageList = 'GetAdvancedHistoryMessageList';
   static const String findMessageList = 'FindMessageList';
   static const String createAdvancedTextMessage = 'CreateAdvancedTextMessage';
   static const String createAdvancedQuoteMessage = 'CreateAdvancedQuoteMessage';
@@ -219,9 +216,11 @@ class NativeCall {
               ?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => ConversationInfo.fromJson(v))));
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
-      case _PortMethod.getHistoryMessageList:
+      case _PortMethod.getAdvancedHistoryMessageList:
+      case _PortMethod.getAdvancedHistoryMessageListReverse:
         if (msg.operationID != null) {
-          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => Message.fromJson(v))));
+          OpenIMManager._sendPortMap[msg.operationID!]
+              ?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => AdvancedMessage.fromJson(v))));
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
         break;
@@ -306,6 +305,7 @@ class NativeCall {
   }
 
   static onError(_PortModel msg) {
+    print(msg.toJson());
     if (msg.operationID != null) {
       OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(
           error: msg.data,

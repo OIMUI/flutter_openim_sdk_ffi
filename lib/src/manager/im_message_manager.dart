@@ -35,35 +35,65 @@ class MessageManager {
   }
 
   /// 获取聊天记录(以startMsg为节点，以前的聊天记录)
-  /// [userID] 接收消息的用户id
+  ///
   /// [conversationID] 会话id，查询通知时可用
-  /// [groupID] 接收消息的组id
+  ///
   /// [startMsg] 从这条消息开始查询[count]条，获取的列表index==length-1为最新消息，所以获取下一页历史记录startMsg=list.first
+  ///
   /// [count] 一次拉取的总数
-  Future<List<Message>> getHistoryMessageList({
-    String? userID,
-    String? groupID,
+  ///
+  /// [lastMinSeq] 第一页消息不用传，获取第二页开始必传 跟[startMsg]一样
+  Future<AdvancedMessage> getAdvancedHistoryMessageList({
     String? conversationID,
     Message? startMsg,
+    int? lastMinSeq,
     int? count,
     String? operationID,
   }) async {
     ReceivePort receivePort = ReceivePort();
 
     OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.getHistoryMessageList,
+      method: _PortMethod.getAdvancedHistoryMessageList,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
-        'userID': userID ?? '',
-        'groupID': groupID ?? '',
         'conversationID': conversationID ?? '',
         'startClientMsgID': startMsg?.clientMsgID ?? '',
-        'count': count ?? 10,
+        'count': count ?? 40,
+        'lastMinSeq': lastMinSeq ?? 0,
       },
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
+    return result.value;
+  }
+
+  /// 获取聊天记录(以startMsg为节点，新收到的聊天记录)，用在全局搜索定位某一条消息，然后此条消息后新增的消息
+  /// [conversationID] 会话id，查询通知时可用
+  /// [startMsg] 从这条消息开始查询[count]条，获取的列表index==length-1为最新消息，所以获取下一页历史记录startMsg=list.last
+  /// [count] 一次拉取的总数
+  Future<AdvancedMessage> getAdvancedHistoryMessageListReverse({
+    String? conversationID,
+    Message? startMsg,
+    int? lastMinSeq,
+    int? count,
+    String? operationID,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getAdvancedHistoryMessageListReverse,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'conversationID': conversationID ?? '',
+        'startClientMsgID': startMsg?.clientMsgID ?? '',
+        'count': count ?? 40,
+        'lastMinSeq': lastMinSeq ?? 0,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
     return result.value;
   }
 
@@ -143,58 +173,6 @@ class MessageManager {
     receivePort.close();
 
     return result.value;
-  }
-
-  /// 标记c2c单条消息已读
-  /// [userID] 消息来源的userID
-  /// [messageIDList] 消息clientMsgID集合
-  Future<void> markC2CMessageAsRead({
-    required String userID,
-    required List<String> messageIDList,
-    String? operationID,
-  }) async {
-    ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.markC2CMessageAsRead,
-      data: {
-        'operationID': IMUtils.checkOperationID(operationID),
-        'messageIDList': messageIDList,
-        'userID': userID,
-      },
-      sendPort: receivePort.sendPort,
-    ));
-    _PortResult result = await receivePort.first;
-
-    receivePort.close();
-    if (result.error != null) {
-      throw OpenIMError(result.errCode ?? 0, result.data ?? '', methodName: result.callMethodName);
-    }
-  }
-
-  /// 标记群聊消息已读
-  /// [groupID] 群id
-  /// [messageIDList] 消息clientMsgID集合
-  Future<void> markGroupMessageAsRead({
-    required String groupID,
-    required List<String> messageIDList,
-    String? operationID,
-  }) async {
-    ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.markGroupMessageAsRead,
-      data: {
-        'operationID': IMUtils.checkOperationID(operationID),
-        'messageIDList': messageIDList,
-        'groupID': groupID,
-      },
-      sendPort: receivePort.sendPort,
-    ));
-    _PortResult result = await receivePort.first;
-
-    receivePort.close();
-    if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
-    }
   }
 
   /// 正在输入提示
@@ -796,14 +774,14 @@ class MessageManager {
   /// 标记消息已读
   /// [conversationID] 会话ID
   /// [messageIDList] 被标记的消息clientMsgID
-  Future<void> markMessageAsReadByConID({
+  Future<void> markMessageAsReadByMsgID({
     required String conversationID,
     required List<String> messageIDList,
     String? operationID,
   }) async {
     ReceivePort receivePort = ReceivePort();
     OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.markMessageAsReadByConID,
+      method: _PortMethod.markMessageAsReadByMsgID,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
         'conversationID': conversationID,
@@ -865,39 +843,6 @@ class MessageManager {
     }
   }
 
-  /// 获取聊天记录(以startMsg为节点，新收到的聊天记录)，用在全局搜索定位某一条消息，然后此条消息后新增的消息
-  /// [userID] 接收消息的用户id
-  /// [conversationID] 会话id，查询通知时可用
-  /// [groupID] 接收消息的组id
-  /// [startMsg] 从这条消息开始查询[count]条，获取的列表index==length-1为最新消息，所以获取下一页历史记录startMsg=list.last
-  /// [count] 一次拉取的总数
-  Future<List<Message>> getHistoryMessageListReverse({
-    String? userID,
-    String? groupID,
-    String? conversationID,
-    Message? startMsg,
-    int? count,
-    String? operationID,
-  }) async {
-    ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.getHistoryMessageListReverse,
-      data: {
-        'operationID': IMUtils.checkOperationID(operationID),
-        'userID': userID,
-        'groupID': groupID,
-        'conversationID': conversationID,
-        'startMsg': startMsg?.toJson(),
-        'count': count,
-      },
-      sendPort: receivePort.sendPort,
-    ));
-    _PortResult result = await receivePort.first;
-    receivePort.close();
-
-    return result.value;
-  }
-
   /// 撤回消息
   /// [message] 被撤回的消息体
   Future<void> revokeMessageV2({
@@ -919,41 +864,6 @@ class MessageManager {
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
-  }
-
-  /// 获取聊天记录(以startMsg为节点，以前的聊天记录)
-  /// [userID] 接收消息的用户id
-  /// [conversationID] 会话id，查询通知时可用
-  /// [groupID] 接收消息的组id
-  /// [startMsg] 从这条消息开始查询[count]条，获取的列表index==length-1为最新消息，所以获取下一页历史记录startMsg=list.first
-  /// [count] 一次拉取的总数
-  /// [lastMinSeq] 第一页消息不用传，获取第二页开始必传 跟[startMsg]一样
-  Future<AdvancedMessage> getAdvancedHistoryMessageList({
-    String? userID,
-    String? groupID,
-    String? conversationID,
-    int? lastMinSeq,
-    Message? startMsg,
-    int? count,
-    String? operationID,
-  }) async {
-    ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
-      method: _PortMethod.getAdvancedHistoryMessageList,
-      data: {
-        'operationID': IMUtils.checkOperationID(operationID),
-        'userID': userID,
-        'groupID': groupID,
-        'conversationID': conversationID,
-        'lastMinSeq': lastMinSeq,
-        'startMsg': startMsg?.toJson(),
-        'count': count,
-      },
-      sendPort: receivePort.sendPort,
-    ));
-    _PortResult result = await receivePort.first;
-    receivePort.close();
-    return result.value;
   }
 
   /// 查找消息详细
