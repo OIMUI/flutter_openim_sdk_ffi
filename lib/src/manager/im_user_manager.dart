@@ -79,7 +79,6 @@ class UserManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
-    return result.value!;
+    return result.value;
   }
 }

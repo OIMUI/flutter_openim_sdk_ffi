@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-01 23:37:30
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-29 14:29:46
+ * Last Modified: 2023-08-03 16:24:39
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -17,7 +17,7 @@ part of flutter_openim_sdk_ffi;
  */
 mixin OpenIMListener {
   /// SDK连接服务器失败
-  void onConnectFailed(int? code, String? errorMsg) {}
+  void onConnectFailed(int code, String errorMsg) {}
 
   /// SDK连接服务器成功
   void onConnectSuccess() {}

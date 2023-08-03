@@ -32,7 +32,7 @@ class IMManager {
   void _nativeCallback(_PortModel channel) {
     switch (channel.method) {
       case ListenerType.onConnectFailed:
-        OpenIMManager._onEvent((listener) => listener.onConnectFailed(1, ''));
+        OpenIMManager._onEvent((listener) => listener.onConnectFailed(channel.errCode, ''));
         break;
       case ListenerType.onConnecting:
         OpenIMManager._onEvent((listener) => listener.onConnecting());
@@ -217,7 +217,7 @@ class IMManager {
         break;
       case ListenerType.hashPartComplete:
         OpenIMManager._onEvent(
-            (listener) => listener.onUploadFileHashPartComplete(channel.operationID!, channel.data['partHash'], channel.data['fileHash']));
+            (listener) => listener.onUploadFileHashPartComplete(channel.operationID!, channel.data['partsHash'], channel.data['fileHash']));
         break;
       case ListenerType.uploadID:
         OpenIMManager._onEvent((listener) => listener.onUploadFileID(channel.operationID!, channel.data));
@@ -232,7 +232,7 @@ class IMManager {
         break;
       case ListenerType.complete:
         OpenIMManager._onEvent((listener) =>
-            listener.onUploadFileComplete(channel.operationID!, channel.data['size'], channel.data['url'], channel.data['type']));
+            listener.onUploadFileComplete(channel.operationID!, channel.data['size'], channel.data['url'], channel.data['typ']));
         break;
     }
   }
@@ -354,17 +354,16 @@ class IMManager {
       data: {
         'filePath': filePath,
         'name': fileName,
-        'contentType': contentType,
+        'contentType': contentType ?? '',
         'cause': cause,
         'operationID': IMUtils.checkOperationID(operationID),
       },
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
-
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 

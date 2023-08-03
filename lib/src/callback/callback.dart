@@ -7,7 +7,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-29 16:38:33
+ * Last Modified: 2023-08-03 17:40:23
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -291,7 +291,7 @@ class NativeCall {
         break;
       case _PortMethod.uploadFile:
         if (msg.operationID != null) {
-          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: int.parse(msg.data)));
+          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: msg.data));
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
         break;
@@ -308,9 +308,10 @@ class NativeCall {
     print(msg.toJson());
     if (msg.operationID != null) {
       OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(
-          error: msg.data,
-          errCode: msg.errCode is int ? (msg.errCode as int).toDouble() : msg.errCode,
-          callMethodName: msg.callMethodName));
+        error: msg.data,
+        errCode: msg.errCode,
+        callMethodName: msg.callMethodName,
+      ));
       OpenIMManager._sendPortMap.remove(msg.operationID!);
     }
   }

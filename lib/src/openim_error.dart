@@ -4,7 +4,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-07-02 20:49:10
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-03 17:05:31
+ * Last Modified: 2023-08-03 14:47:25
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -16,7 +16,7 @@ part of flutter_openim_sdk_ffi;
  */
 
 class OpenIMError extends Error {
-  final double code;
+  final int code;
 
   final String message;
 
@@ -25,5 +25,5 @@ class OpenIMError extends Error {
   OpenIMError(this.code, this.message, {this.methodName});
 
   @override
-  String toString() => 'error: ${code.toInt()}, message: $message, method: $methodName';
+  String toString() => 'error: $code, message: $message, method: $methodName';
 }
