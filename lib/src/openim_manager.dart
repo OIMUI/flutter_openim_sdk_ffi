@@ -917,12 +917,10 @@ class OpenIMManager {
           case _PortMethod.createGroup:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final gInfo = jsonEncode(msg.data['gInfo']).toNativeUtf8().cast<ffi.Char>();
-            final memberList = jsonEncode(msg.data['memberList']).toNativeUtf8().cast<ffi.Char>();
+            final gInfo = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
             _imBindings.CreateGroup(operationID, gInfo);
             calloc.free(operationID);
             calloc.free(gInfo);
-            calloc.free(memberList);
             break;
 
           case _PortMethod.joinGroup:

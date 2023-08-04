@@ -177,20 +177,23 @@ class GroupManager {
 
   /// 创建一个组
   /// [groupName] 群名
+  ///
   /// [notification] 公告
+  ///
   /// [introduction] 群介绍
+  ///
   /// [faceUrl] 群头像
+  ///
   /// [groupType] 组类型 [GroupType]
+  ///
   /// [ex] 额外信息
+  ///
   /// [list] 初创群成员以及其角色列表[GroupMemberRole]
   Future<GroupInfo> createGroup({
-    String? groupName,
-    String? notification,
-    String? introduction,
-    String? faceUrl,
-    int? groupType,
-    String? ex,
-    required List<GroupMemberRole> list,
+    required GroupInfo groupInfo,
+    List<String> memberUserIDs = const [],
+    List<String> adminUserIDs = const [],
+    String? ownerUserID,
     String? operationID,
   }) async {
     ReceivePort receivePort = ReceivePort();
@@ -198,15 +201,10 @@ class GroupManager {
       method: _PortMethod.createGroup,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
-        'gInfo': {
-          "groupName": groupName,
-          "notification": notification,
-          "introduction": introduction,
-          "faceURL": faceUrl,
-          "groupType": groupType,
-          "ex": ex,
-        },
-        'memberList': list.map((e) => e.toJson()).toList(),
+        'groupInfo': groupInfo.toJson(),
+        'memberUserIDs': memberUserIDs,
+        'adminUserIDs': adminUserIDs,
+        'ownerUserID': ownerUserID,
       },
       sendPort: receivePort.sendPort,
     ));
