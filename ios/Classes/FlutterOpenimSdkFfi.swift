@@ -8,7 +8,7 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
 @objc public class FlutterOpenimSdkFfi: NSObject {
     let handle: UnsafeMutableRawPointer
     
-    private var deferredInfoMap: [String: Deferred<Any?>?] = [:]
+    private var deferredInfoMap: [String: (Any?, Error?) -> Void] = [:]
     
     private static var listeners: [Any] = []
     
@@ -51,23 +51,29 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
             switch callMethodNameString {
             case "GetSelfUserInfo":
                 let userInfo = JsonUtil.toObj(messageString, to: UserInfo.self)
-                deferredInfoMap[operationIDString]??.complete(result: userInfo)
-                deferredInfoMap.removeValue(forKey: operationIDString)
-            case "GetTotalUnreadMsgCount":
-                if let unreadCount = Int(messageString) {
-                    deferredInfoMap[operationIDString]??.complete(result: unreadCount)
+                if let callback = deferredInfoMap[operationIDString] {
+                    callback(userInfo, nil)
                     deferredInfoMap.removeValue(forKey: operationIDString)
                 }
+//            case "GetTotalUnreadMsgCount":
+//                if let unreadCount = Int(messageString) {
+//                    deferredInfoMap[operationIDString]??.complete(result: unreadCount)
+//                    deferredInfoMap.removeValue(forKey: operationIDString)
+//                }
             case "Login":
-                deferredInfoMap[operationIDString]??.complete(result: nil)
-                deferredInfoMap.removeValue(forKey: operationIDString)
+                if let callback = deferredInfoMap[operationIDString] {
+                    callback(nil, nil)
+                    deferredInfoMap.removeValue(forKey: operationIDString)
+                }
             default:
                 break
             }
         case "OnError":
             let customException = CustomException(errCode: Int(bitPattern: errCode) , message: messageString)
-            deferredInfoMap[operationIDString]??.complete(with: customException)
-            deferredInfoMap.removeValue(forKey: operationIDString)
+            if let callback = deferredInfoMap[operationIDString] {
+                callback(nil, customException)
+                deferredInfoMap.removeValue(forKey: operationIDString)
+            }
         case "OnConnectFailed":
             for listener in FlutterOpenimSdkFfi.listeners {
                 if let onConnListener = listener as? OnConnListener {
@@ -118,27 +124,20 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
     }
     
     // 登陆
-    @objc public func login(userID: String, token: String) throws -> UserInfo {
+    @objc public func login(userID: String, token: String, completion: @escaping (Any?, Error?) -> Void) {
         let operationID = getCurrentTimeMillisString()
-        let deferred = Deferred<Any?>()
         let operationIDString = convertToCCharArray(operationID)!
         let userIDCString = convertToCCharArray(userID)!
         let tokenCString = convertToCCharArray(token)!
-        deferredInfoMap[operationID] = deferred
+        deferredInfoMap[operationID] = completion
         
         typealias FunctionType = @convention(c) (UnsafeMutablePointer<UInt8>, UnsafeMutablePointer<UInt8>, UnsafeMutablePointer<UInt8>) -> Void
         let functionPointer = dlsym(handle, "login")
         let loginCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
         loginCallback(operationIDString, userIDCString, tokenCString)
-        do {
-            let _ = try deferred.await()
-            return try getSelfUserInfo()
-        } catch {
-            // Handle the error appropriately.
-            print("Error: \(error)")
-            throw error
-        }
     }
+    
+   
     
     func convertToCCharArray(_ inputString: String) -> UnsafeMutablePointer<UInt8>? {
         // 将字符串转换为UTF-8编码的数据
@@ -157,18 +156,15 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
     }
     
     // 获取用户信息
-    @objc public func getSelfUserInfo() throws -> UserInfo {
+    @objc public func getSelfUserInfo(completion: @escaping (Any?, Error?) -> Void) {
         let operationID = getCurrentTimeMillisString()
         let operationIDString = operationID.cString(using: .utf8)!
-        let deferred = Deferred<Any?>()
-        deferredInfoMap[operationID] = deferred
+        deferredInfoMap[operationID] = completion
         
         typealias FunctionType = @convention(c) (UnsafePointer<CChar>) -> Void
         let functionPointer = dlsym(handle, "getSelfUserInfo")
         let getSelfUserInfoCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
         getSelfUserInfoCallback(operationIDString)
-        
-        return try deferred.await() as! UserInfo
     }
     
     private func getCurrentTimeMillisString() -> String {
@@ -196,28 +192,5 @@ class CustomException: Error {
     init(errCode: Int, message: String) {
         self.errorCode = errCode
         self.message = message
-    }
-}
-class Deferred<T> {
-    private let semaphore = DispatchSemaphore(value: 0)
-    private var result: T?
-    private var error: Error?
-    
-    func complete(result: T) {
-        self.result = result
-        semaphore.signal()
-    }
-    
-    func complete(with error: Error) {
-        self.error = error
-        semaphore.signal()
-    }
-    
-    func await() throws -> T {
-        semaphore.wait()
-        if let error = error {
-            throw error
-        }
-        return result!
     }
 }
