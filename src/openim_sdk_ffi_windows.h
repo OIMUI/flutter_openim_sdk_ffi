@@ -178,11 +178,10 @@ extern __declspec(dllexport) GoString GetConversationIDBySessionType(char* opera
 extern __declspec(dllexport) void SendMessage(char* operationID, char* message, char* recvID, char* groupID, char* offlinePushInfo);
 extern __declspec(dllexport) void SendMessageNotOss(char* operationID, char* message, char* recvID, char* groupID, char* offlinePushInfo);
 extern __declspec(dllexport) void FindMessageList(char* operationID, char* findMessageOptions);
+extern __declspec(dllexport) void GetAdvancedHistoryMessageList(char* operationID, char* getMessageOptions);
+extern __declspec(dllexport) void GetAdvancedHistoryMessageListReverse(char* operationID, char* getMessageOptions);
 extern __declspec(dllexport) void RevokeMessage(char* operationID, char* conversationID, char* clientMsgID);
 extern __declspec(dllexport) void TypingStatusUpdate(char* operationID, char* recvID, char* msgTip);
-
-// mark as read
-//
 extern __declspec(dllexport) void MarkConversationMessageAsRead(char* operationID, char* conversationID);
 extern __declspec(dllexport) void MarkMessagesAsReadByMsgID(char* operationID, char* conversationID, char* clientMsgIDs);
 extern __declspec(dllexport) void DeleteMessageFromLocalStorage(char* operationID, char* conversationID, char* clientMsgID);
