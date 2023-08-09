@@ -434,4 +434,23 @@ class IMManager {
       throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
     }
   }
+
+  /// 设置角标
+  Future<void> setAppBadge(int unreadCount, {String? operationID}) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.setAppBadge,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'unreadCount': unreadCount,
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+
+    receivePort.close();
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+    }
+  }
 }
