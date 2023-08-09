@@ -248,7 +248,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -294,7 +294,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -315,7 +315,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -340,7 +340,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -398,7 +398,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -427,7 +427,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -449,7 +449,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -474,7 +474,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -502,7 +502,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -530,7 +530,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -584,7 +584,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -644,7 +644,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -669,7 +669,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -694,7 +694,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -814,7 +814,7 @@ class GroupManager {
     _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 }

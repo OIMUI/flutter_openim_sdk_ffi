@@ -247,7 +247,7 @@ class IMManager {
   //   ));
   //   _PortResult result = await receivePort.first;
   //   if (result.error != null) {
-  //     throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+  //     throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
   //   }
   //   receivePort.close();
   // }
@@ -334,7 +334,7 @@ class IMManager {
 
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -387,7 +387,7 @@ class IMManager {
 
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -410,7 +410,7 @@ class IMManager {
 
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -431,7 +431,7 @@ class IMManager {
 
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 
@@ -450,7 +450,7 @@ class IMManager {
 
     receivePort.close();
     if (result.error != null) {
-      throw OpenIMError(result.errCode!, result.data!, methodName: result.callMethodName);
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
     }
   }
 }
