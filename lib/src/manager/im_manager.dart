@@ -340,13 +340,14 @@ class IMManager {
 
   /// 上传文件到服务器
   ///
-  ///[id] 区分是哪个文件的回调
+  ///[putID] 区分是哪个文件的回调
   Future<void> uploadFile({
-    required String operationID,
+    required String putID,
     required String filePath,
     required String fileName,
     String? contentType,
     String? cause,
+    String? operationID,
   }) async {
     ReceivePort receivePort = ReceivePort();
     OpenIMManager._openIMSendPort.send(_PortModel(
@@ -357,6 +358,7 @@ class IMManager {
         'contentType': contentType ?? '',
         'cause': cause,
         'operationID': IMUtils.checkOperationID(operationID),
+        'uuid': putID,
       },
       sendPort: receivePort.sendPort,
     ));

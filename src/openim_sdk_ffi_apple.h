@@ -195,7 +195,7 @@ extern void InsertSingleMessageToLocalStorage(char* operationID, char* message, 
 extern void InsertGroupMessageToLocalStorage(char* operationID, char* message, char* groupID, char* sendID);
 extern void SearchLocalMessages(char* operationID, char* searchParam);
 extern void SetMessageLocalEx(char* operationID, char* conversationID, char* clientMsgID, char* localEx);
-extern void UploadFile(char* operationID, char* req);
+extern void UploadFile(char* operationID, char* req, char* uuid);
 extern void GetSpecifiedFriendsInfo(char* operationID, char* userIDList);
 extern void GetFriendList(char* operationID);
 extern void GetFriendListPage(char* operationID, int32_t offset, int32_t count);

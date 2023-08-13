@@ -1122,10 +1122,12 @@ class OpenIMManager {
           case _PortMethod.uploadFile:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final uuid = (msg.data['uuid'] as String).toNativeUtf8().cast<ffi.Char>();
             final req = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.UploadFile(operationID, req);
+            _imBindings.UploadFile(operationID, req, uuid);
             calloc.free(operationID);
             calloc.free(req);
+            calloc.free(uuid);
             break;
           case _PortMethod.setSelfInfo:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;

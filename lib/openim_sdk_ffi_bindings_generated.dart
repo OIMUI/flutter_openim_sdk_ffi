@@ -1137,7 +1137,6 @@ class OpenimSdkFfiBindings {
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>)>();
 
-  /// mark as read
   void MarkConversationMessageAsRead(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> conversationID,
@@ -1397,19 +1396,22 @@ class OpenimSdkFfiBindings {
   void UploadFile(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> req,
+    ffi.Pointer<ffi.Char> uuid,
   ) {
     return _UploadFile(
       operationID,
       req,
+      uuid,
     );
   }
 
   late final _UploadFilePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('UploadFile');
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('UploadFile');
   late final _UploadFile = _UploadFilePtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>)>();
 
   void GetSpecifiedFriendsInfo(
     ffi.Pointer<ffi.Char> operationID,
