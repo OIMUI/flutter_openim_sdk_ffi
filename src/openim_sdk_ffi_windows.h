@@ -195,7 +195,7 @@ extern __declspec(dllexport) void InsertSingleMessageToLocalStorage(char* operat
 extern __declspec(dllexport) void InsertGroupMessageToLocalStorage(char* operationID, char* message, char* groupID, char* sendID);
 extern __declspec(dllexport) void SearchLocalMessages(char* operationID, char* searchParam);
 extern __declspec(dllexport) void SetMessageLocalEx(char* operationID, char* conversationID, char* clientMsgID, char* localEx);
-extern __declspec(dllexport) void UploadFile(char* operationID, char* req);
+extern __declspec(dllexport) void UploadFile(char* operationID, char* req, char* uuid);
 extern __declspec(dllexport) void GetSpecifiedFriendsInfo(char* operationID, char* userIDList);
 extern __declspec(dllexport) void GetFriendList(char* operationID);
 extern __declspec(dllexport) void GetFriendListPage(char* operationID, int32_t offset, int32_t count);

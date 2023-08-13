@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-01 23:37:30
  * Author: Spicely
  * -----
- * Last Modified: 2023-08-03 16:24:39
+ * Last Modified: 2023-08-13 17:19:20
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -83,7 +83,7 @@ mixin OpenIMListener {
   /// 好友申请已被接受
   void onFriendApplicationAccepted(FriendApplicationInfo u) {}
 
-  /// 已添加新的好友申请
+  /// 好友申请新增通知
   void onFriendApplicationAdded(FriendApplicationInfo u) {}
 
   /// 好友申请已被删除
