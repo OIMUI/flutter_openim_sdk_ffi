@@ -1,8 +1,11 @@
 package io.openim.flutter_openim_sdk_ffi
 
-import android.content.Context
+
 import android.util.Log
-import androidx.collection.ArrayMap
+import androidx.annotation.NonNull
+import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
 import io.openim.flutter_openim_sdk_ffi.listener.OnAdvanceMsgListener
 import io.openim.flutter_openim_sdk_ffi.listener.OnConnListener
 import io.openim.flutter_openim_sdk_ffi.listener.OnConversationListener
@@ -13,61 +16,35 @@ import io.openim.flutter_openim_sdk_ffi.models.ReadReceiptInfo
 import io.openim.flutter_openim_sdk_ffi.models.RevokedInfo
 import io.openim.flutter_openim_sdk_ffi.models.UserInfo
 import kotlinx.coroutines.CompletableDeferred
-import java.io.File
+
+
 
 class OpenIMSDKFFi {
-
     private val deferredInfoMap: MutableMap<String, CompletableDeferred<Any>?> = mutableMapOf()
+    private val listeners: MutableList<Any> = mutableListOf()
 
     companion object {
-        // 加载共享库
         init {
             System.loadLibrary("flutter_openim_sdk_ffi")
         }
-
-        private val listeners: MutableList<Any> = mutableListOf()
-
-        fun addListener(listener: Any) {
-            listeners.add(listener)
-        }
-
-        fun removeListener(listener: Any) {
-            listeners.remove(listener)
-        }
-    }
-    external fun registerCallback()
-
-    private external fun Login(operationID: String, userID: String, token: String)
-
-    private external fun GetSelfUserInfo(operationID: String)
-
-    private external fun GetTotalUnreadMsgCount(operationID: String)
-
-
-    suspend fun login(operationID: String, uid: String, token: String): UserInfo {
-        val deferred = CompletableDeferred<Any>()
-        deferredInfoMap[operationID] = deferred
-        Login(operationID, uid, token)
-        deferred.await()
-        return getSelfUserInfo(System.currentTimeMillis().toString())
     }
 
-    suspend fun getTotalUnreadMsgCount(operationID: String): Int {
-        val deferred = CompletableDeferred<Any>()
-        deferredInfoMap[operationID] = deferred
-        GetTotalUnreadMsgCount(operationID)
-        return deferred.await() as Int
+    fun addListener(listener: Any) {
+        listeners.add(listener)
     }
 
-    suspend fun getSelfUserInfo(operationID: String): UserInfo {
-        val deferred = CompletableDeferred<Any>()
-        deferredInfoMap[operationID] = deferred
-        GetSelfUserInfo(operationID)
-        return deferred.await() as UserInfo
+    fun removeListener(listener: Any) {
+        listeners.remove(listener)
     }
+
+    fun register() {
+        registerCallback()
+    }
+
+    private external fun registerCallback()
 
     // Go回调函数
-    fun onMethodChannel(
+    private fun onMethodChannel(
         methodName: String,
         operationID: String?,
         callMethodName: String?,
@@ -217,7 +194,34 @@ class OpenIMSDKFFi {
             }
 
         }
+    }
 
+    private external fun Login(operationID: String, userID: String, token: String)
+
+    private external fun GetSelfUserInfo(operationID: String)
+
+    private external fun GetTotalUnreadMsgCount(operationID: String)
+
+
+    suspend fun login(operationID: String, uid: String, token: String): UserInfo {
+        val deferred = CompletableDeferred<Any>()
+        deferredInfoMap[operationID] = deferred
+        Login(operationID, uid, token)
+        deferred.await()
+        return getSelfUserInfo(System.currentTimeMillis().toString())
+    }
+
+    suspend fun getTotalUnreadMsgCount(operationID: String): Int {
+        val deferred = CompletableDeferred<Any>()
+        deferredInfoMap[operationID] = deferred
+        GetTotalUnreadMsgCount(operationID)
+        return deferred.await() as Int
+    }
+
+    suspend fun getSelfUserInfo(operationID: String): UserInfo {
+        val deferred = CompletableDeferred<Any>()
+        deferredInfoMap[operationID] = deferred
+        GetSelfUserInfo(operationID)
+        return deferred.await() as UserInfo
     }
 }
-
