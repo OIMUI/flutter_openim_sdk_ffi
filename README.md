@@ -1,5 +1,9 @@
 # flutter_openim_sdk_ffi
- 支持windows、ios、android、macos、linux
+ 支持windows、ios、android、macos、linux 对应openim v3.1
+
+ 
+## 警告！！
+当前为测试版本可能面对不兼容修改
 # init 
 ```dart
   await OpenIMManager.init(
@@ -51,9 +55,11 @@
 
 to [OpenIMDoc](https://doc.rentsoft.cn/sdks/introduction)
 
-## Project structure
+## 已知问题
 
-flutter pub run ffigen --config ffigen.yaml
+windows平台发送消息会闪退
+
+
 
 
 
