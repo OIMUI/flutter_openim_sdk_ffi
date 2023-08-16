@@ -176,19 +176,16 @@ class GroupManager {
       ).then((list) => list.where((e) => e.groupID == gid).isNotEmpty);
 
   /// 创建一个组
-  /// [groupName] 群名
   ///
-  /// [notification] 公告
+  /// [groupInfo] 群信息
   ///
-  /// [introduction] 群介绍
+  /// [memberUserIDs] 群成员ID列表
   ///
-  /// [faceUrl] 群头像
+  /// [adminUserIDs] 群管理员ID列表
   ///
-  /// [groupType] 组类型 [GroupType]
+  /// [ownerUserID] 群主ID
   ///
-  /// [ex] 额外信息
-  ///
-  /// [list] 初创群成员以及其角色列表[GroupMemberRole]
+  /// [operationID] 操作ID
   Future<GroupInfo> createGroup({
     required GroupInfo groupInfo,
     List<String> memberUserIDs = const [],
