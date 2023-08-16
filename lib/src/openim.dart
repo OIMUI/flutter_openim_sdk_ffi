@@ -38,8 +38,6 @@ final ffi.DynamicLibrary _imDylib = () {
 
 final FlutterOpenimSdkFfiBindings _bindings = FlutterOpenimSdkFfiBindings(_dylib);
 
-final OpenimSdkFfiBindings _imBindings = OpenimSdkFfiBindings(_imDylib);
-
 class OpenIM {
   static Future<String> get version async {
     ReceivePort receivePort = ReceivePort();

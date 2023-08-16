@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-01 23:37:30
  * Author: Spicely
  * -----
- * Last Modified: 2023-08-11 11:12:33
+ * Last Modified: 2023-08-16 15:55:33
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -42,6 +42,18 @@ mixin OpenIMListener {
 
   /// 消息被撤回
   void onRecvMessageRevoked(String msgId) {}
+
+  /// 收到了一条新消息
+  void _onRecvNewMessage(Message msg) {
+    if (msg.contentType == MessageType.typing) {
+      onTypingStatusChanged(msg);
+    } else {
+      onRecvNewMessage(msg);
+    }
+  }
+
+  /// 对方正在输入
+  void onTypingStatusChanged(Message msg) {}
 
   /// 收到了一条新消息
   void onRecvNewMessage(Message msg) {}
@@ -170,7 +182,4 @@ mixin OpenIMListener {
   void onRecvCustomBusinessMessage(String s) {}
 
   void onMessageKvInfoChanged(List<MessageKv> list) {}
-
-  /// 监听native
-  void onNativeLogin(String uid, String token) {}
 }

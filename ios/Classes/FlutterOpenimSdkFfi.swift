@@ -7,17 +7,24 @@ import Flutter
 typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePointer<Int8>, UnsafePointer<Int8>, UnsafePointer<Double>, UnsafePointer<Int8>) -> Void
 
 @objc public class FlutterOpenimSdkFfi: NSObject {
-    private static var channel: FlutterMethodChannel?
+    private var handle: UnsafeMutableRawPointer?
     
-    private var deferredInfoMap: [String: (Any?, Error?) -> Void] = [:]
+    private var channel: FlutterMethodChannel?
     
-    private static var listeners: [Any] = []
+    private static var sharedCallbackInstance: FlutterOpenimSdkFfi?
     
-    @objc public static func addListener(_ listener: Any) {
+    private var deferredInfoMap: [String: Deferred<Any?>?] = [:]
+    
+    private var listeners: [Any] = []
+    
+    // 创建一个并发队列
+    private let concurrentQueue = DispatchQueue(label: "com.muka.concurrentQueue", attributes: .concurrent)
+    
+    @objc public func addListener(_ listener: Any) {
         listeners.append(listener)
     }
     
-    @objc public static func removeListener(_ listener: Any) {
+    @objc public func removeListener(_ listener: Any) {
         if let index = listeners.firstIndex(where: { ($0 as AnyObject) === listener as AnyObject }) {
             listeners.remove(at: index)
         }
@@ -25,6 +32,10 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
     
     public override init() {
         super.init()
+        concurrentQueue.async {
+            self.handle = dlopen("flutter_openim_sdk_ffi.framework/flutter_openim_sdk_ffi", RTLD_NOW)
+        }
+        FlutterOpenimSdkFfi.sharedCallbackInstance = self
     }
     
     // 这个方法将被C函数调用，用于通知Swift
@@ -48,56 +59,57 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
             switch callMethodNameString {
             case "GetSelfUserInfo":
                 let userInfo = JsonUtil.toObj(messageString, to: UserInfo.self)
-                if let callback = deferredInfoMap[operationIDString] {
-                    callback(userInfo, nil)
+                deferredInfoMap[operationIDString]??.complete(result: userInfo)
+                deferredInfoMap.removeValue(forKey: operationIDString)
+            case "GetTotalUnreadMsgCount":
+                if let unreadCount = Int(messageString) {
+                    deferredInfoMap[operationIDString]??.complete(result: unreadCount)
                     deferredInfoMap.removeValue(forKey: operationIDString)
                 }
-                //            case "GetTotalUnreadMsgCount":
-                //                if let unreadCount = Int(messageString) {
-                //                    deferredInfoMap[operationIDString]??.complete(result: unreadCount)
-                //                    deferredInfoMap.removeValue(forKey: operationIDString)
-                //                }
             case "Login":
-                if let callback = deferredInfoMap[operationIDString] {
-                    callback(nil, nil)
-                    deferredInfoMap.removeValue(forKey: operationIDString)
-                }
+                deferredInfoMap[operationIDString]??.complete(result: nil)
+                deferredInfoMap.removeValue(forKey: operationIDString)
             default:
                 break
             }
         case "OnError":
             let customException = CustomException(errCode: Int(bitPattern: errCode) , message: messageString)
-            if let callback = deferredInfoMap[operationIDString] {
-                callback(nil, customException)
-                deferredInfoMap.removeValue(forKey: operationIDString)
-            }
+            deferredInfoMap[operationIDString]??.complete(with: customException)
+            deferredInfoMap.removeValue(forKey: operationIDString)
         case "OnConnectFailed":
-            for listener in FlutterOpenimSdkFfi.listeners {
+            for listener in listeners {
                 if let onConnListener = listener as? OnConnListener {
                     onConnListener.onConnectFailed(code:Int64(Int(bitPattern: errCode)),error:messageString)
                 }
             }
         case "OnKickedOffline":
-            for listener in FlutterOpenimSdkFfi.listeners {
+            for listener in listeners {
                 if let onConnListener = listener as? OnConnListener {
                     onConnListener.onKickedOffline()
                 }
             }
         case "OnConnectSuccess":
-            for listener in FlutterOpenimSdkFfi.listeners {
+            for listener in listeners {
                 if let onConnListener = listener as? OnConnListener {
                     onConnListener.onConnectSuccess()
                 }
             }
         case "OnConnecting":
-            for listener in FlutterOpenimSdkFfi.listeners {
+            for listener in listeners {
                 if let onConnListener = listener as? OnConnListener {
                     onConnListener.onConnecting()
                 }
-            }case "OnUserTokenExpired":
-            for listener in FlutterOpenimSdkFfi.listeners {
+            }
+        case "OnUserTokenExpired":
+            for listener in listeners {
                 if let onConnListener = listener as? OnConnListener {
                     onConnListener.onUserTokenExpired()
+                }
+            }
+        case "OnInitSDK":
+            for listener in listeners {
+                if let onConnListener = listener as? OnConnListener {
+                    onConnListener.onInitSDK()
                 }
             }
         default:
@@ -105,29 +117,36 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         }
     }
     
-    @objc public static func register(binaryMessenger: FlutterBinaryMessenger) {
-        FlutterOpenimSdkFfi.channel = FlutterMethodChannel(name: "plugins.muka.site/flutter_openim_sdk_ffi", binaryMessenger: binaryMessenger)
-        FlutterOpenimSdkFfi.channel?.setMethodCallHandler(onMethodCall)
+    @objc public func register(binaryMessenger: FlutterBinaryMessenger) {
+        channel = FlutterMethodChannel(name: "plugins.muka.site/flutter_openim_sdk_ffi", binaryMessenger: binaryMessenger)
+        channel?.setMethodCallHandler(onMethodCall)
+        let functionPointer = dlsym(handle, "nativeRegisterCallback")
+        typealias FunctionType = @convention(c) (_ callback: NativeMethodCallback?) -> Void
+        let nativeRegisterCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
+        
+        // Pass the bridge function as a C function pointer
+        nativeRegisterCallback(FlutterOpenimSdkFfi.handleNativeMethodBridge)
     }
     
-    // 登陆
-    @objc public func login(userID: String, token: String) {
-        let arg: [String: Any] = ["userID": userID, "token": token]
-        FlutterOpenimSdkFfi.channel?.invokeMethod("Login", arguments: arg)
+    
+    
+    // Bridge function to avoid capturing 'self' within the closure
+    private static let handleNativeMethodBridge: NativeMethodCallback = { (methodName, operationID, callMethodName, errCode, message) in
+        sharedCallbackInstance?.handleNativeMethodCallback(
+            methodName: methodName,
+            operationID: operationID,
+            callMethodName: callMethodName,
+            errCode: errCode,
+            message: message
+        )
     }
     
-    static func onMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        switch call.method {
-        case "OnInitSDK":
-            for listener in FlutterOpenimSdkFfi.listeners {
-                if let onConnListener = listener as? OnConnListener {
-                    onConnListener.onInitSDK()
-                }
-            }
-            result(true)
-        default: break
-            
-        }
+    func onMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        //        switch call.method {
+        //
+        //        default: break
+        //
+        //        }
     }
     
     
@@ -147,16 +166,37 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         return buffer
     }
     
+    // 登陆
+    @objc public func login(userID: String, token: String) {
+        concurrentQueue.async {
+            let operationID = self.getCurrentTimeMillisString()
+            let deferred = Deferred<Any?>()
+            let operationIDString = self.convertToCCharArray(operationID)!
+            let userIDCString = self.convertToCCharArray(userID)!
+            let tokenCString = self.convertToCCharArray(token)!
+            self.deferredInfoMap[operationID] = deferred
+            
+            typealias FunctionType = @convention(c) (UnsafeMutablePointer<UInt8>, UnsafeMutablePointer<UInt8>, UnsafeMutablePointer<UInt8>) -> Void
+            let functionPointer = dlsym(self.handle, "login")
+            let loginCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
+            loginCallback(operationIDString, userIDCString, tokenCString)
+        }
+    }
+    
     // 获取用户信息
-    @objc public func getSelfUserInfo(completion: @escaping (Any?, Error?) -> Void) {
-//        let operationID = getCurrentTimeMillisString()
-//        let operationIDString = operationID.cString(using: .utf8)!
-//        deferredInfoMap[operationID] = completion
-//
-//        typealias FunctionType = @convention(c) (UnsafePointer<CChar>) -> Void
-//        let functionPointer = dlsym(handle, "getSelfUserInfo")
-//        let getSelfUserInfoCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
-//        getSelfUserInfoCallback(operationIDString)
+    // 获取用户信息
+    @objc public func getSelfUserInfo() throws -> UserInfo {
+        let operationID = getCurrentTimeMillisString()
+        let operationIDString = operationID.cString(using: .utf8)!
+        let deferred = Deferred<Any?>()
+        deferredInfoMap[operationID] = deferred
+        
+        typealias FunctionType = @convention(c) (UnsafePointer<CChar>) -> Void
+        let functionPointer = dlsym(handle, "getSelfUserInfo")
+        let getSelfUserInfoCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
+        getSelfUserInfoCallback(operationIDString)
+        
+        return try deferred.await() as! UserInfo
     }
     
     private func getCurrentTimeMillisString() -> String {
@@ -172,5 +212,28 @@ class CustomException: Error {
     init(errCode: Int, message: String) {
         self.errorCode = errCode
         self.message = message
+    }
+}
+class Deferred<T> {
+    private let semaphore = DispatchSemaphore(value: 0)
+    private var result: T?
+    private var error: Error?
+    
+    func complete(result: T) {
+        self.result = result
+        semaphore.signal()
+    }
+    
+    func complete(with error: Error) {
+        self.error = error
+        semaphore.signal()
+    }
+    
+    func await() throws -> T {
+        semaphore.wait()
+        if let error = error {
+            throw error
+        }
+        return result!
     }
 }
