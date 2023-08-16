@@ -11,9 +11,9 @@ class IMManager {
   late SignalingManager signalingManager;
   late OrganizationManager organizationManager;
 
-  late String uid;
+  String? uid;
 
-  late UserInfo uInfo;
+  UserInfo? uInfo;
 
   bool isLogined = false;
   String? token;
@@ -304,22 +304,38 @@ class IMManager {
   /// 获取登录状态
   Future<int?> getLoginStatus() async {
     ReceivePort receivePort = ReceivePort();
-
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.getLoginStatus,
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
     return result.value;
   }
 
   /// 获取当前登录用户id
-  Future<String> getLoginUserID() async => uid;
+  Future<String> getLoginUserID() async {
+    if (uid == null) {
+      UserInfo info = await OpenIM.iMManager.userManager.getSelfUserInfo();
+      uInfo = info;
+      uid = info.userID;
+      return uid!;
+    } else {
+      return uid!;
+    }
+  }
 
   /// 获取当前登录用户信息
-  Future<UserInfo> getLoginUserInfo() async => uInfo;
+  Future<UserInfo> getLoginUserInfo() async {
+    if (uInfo == null) {
+      UserInfo info = await OpenIM.iMManager.userManager.getSelfUserInfo();
+      uInfo = info;
+      uid = info.userID;
+      return info;
+    } else {
+      return uInfo!;
+    }
+  }
 
   /// 从后台回到前台立刻唤醒
   Future wakeUp({String? operationID}) async {

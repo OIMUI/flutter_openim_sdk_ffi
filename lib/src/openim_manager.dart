@@ -103,6 +103,8 @@ class InitSdkParams {
 class OpenIMManager {
   static bool _isInit = false;
 
+  static late final OpenimSdkFfiBindings _imBindings;
+
   /// 主进程通信端口
   static final ReceivePort _receivePort = ReceivePort();
 
@@ -161,7 +163,7 @@ class OpenIMManager {
         'isLogStandardOutput': data.isLogStandardOutput,
         'isExternalExtensions': data.isExternalExtensions,
       });
-
+      _imBindings = OpenimSdkFfiBindings(_imDylib);
       bool status = _imBindings.InitSDK(
         IMUtils.checkOperationID(data.operationID).toNativeUtf8().cast<ffi.Char>(),
         config.toNativeUtf8().cast<ffi.Char>(),
@@ -1161,7 +1163,7 @@ class OpenIMManager {
 
   /// 通知原生初始化完成
   static Future<void> notifyNativeInit() async {
-    _channel.invokeMethod('OnInitSDK');
+    // _channel.invokeMethod('OnInitSDK');
   }
 
   /// 初始化
@@ -1181,9 +1183,6 @@ class OpenIMManager {
     _channel.setMethodCallHandler((call) {
       try {
         switch (call.method) {
-          case _PortMethod.login:
-            OpenIMManager._onEvent((listener) => listener.onNativeLogin(call.arguments['userID'], call.arguments['token']));
-            break;
           default:
         }
       } catch (e) {

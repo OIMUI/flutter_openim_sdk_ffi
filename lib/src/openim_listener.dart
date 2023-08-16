@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-01 23:37:30
  * Author: Spicely
  * -----
- * Last Modified: 2023-08-16 11:27:15
+ * Last Modified: 2023-08-16 16:43:20
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -203,7 +203,4 @@ mixin OpenIMListener {
 
   /// 上传完成
   void onUploadFileComplete(String id, int size, String url, int type) {}
-
-  /// 监听native
-  void onNativeLogin(String uid, String token) {}
 }
