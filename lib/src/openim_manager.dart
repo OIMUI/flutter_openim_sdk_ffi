@@ -1152,8 +1152,16 @@ class OpenIMManager {
         }
       });
     } catch (e) {
-      Logger.print(e.toString());
+      print(e);
     }
+  }
+
+  /// 原生通信
+  static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
+
+  /// 通知原生初始化完成
+  static Future<void> notifyNativeInit() async {
+    _channel.invokeMethod('OnInitSDK');
   }
 
   /// 初始化
@@ -1170,6 +1178,19 @@ class OpenIMManager {
   }) async {
     if (_isInit) return false;
     _isInit = true;
+    _channel.setMethodCallHandler((call) {
+      try {
+        switch (call.method) {
+          case _PortMethod.login:
+            OpenIMManager._onEvent((listener) => listener.onNativeLogin(call.arguments['userID'], call.arguments['token']));
+            break;
+          default:
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+      return Future.value(null);
+    });
     RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
     await Isolate.spawn(
         _isolateEntry,
