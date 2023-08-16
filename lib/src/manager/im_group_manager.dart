@@ -76,9 +76,13 @@ class GroupManager {
   }
 
   /// 分页获取组成员列表
+  ///
   /// [groupId] 群ID
+  ///
   /// [filter] 过滤成员 0所有，1普通成员, 2群主，3管理员，4管理员+普通成员
+  ///
   /// [offset] 开始下标
+  ///
   /// [count] 总数
   Future<List<GroupMembersInfo>> getGroupMemberList({
     required String groupId,
