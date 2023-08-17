@@ -134,3 +134,15 @@ Java_io_openim_flutter_1openim_1sdk_1ffi_OpenIMSDKFFi_GetTotalUnreadMsgCount(JNI
     GetTotalUnreadMsgCount(native_operation_id);
     (*env)->ReleaseStringUTFChars(env, operation_id, native_operation_id);
 }
+
+JNIEXPORT void JNICALL
+Java_io_openim_flutter_1openim_1sdk_1ffi_OpenIMSDKFFi_InitSDK(JNIEnv *env, jobject thiz,
+                                                              jstring operation_id,
+                                                              jstring params) {
+    const char *native_operation_id = (*env)->GetStringUTFChars(env, operation_id, 0);
+    const char *native_params = (*env)->GetStringUTFChars(env, params, 0);
+    bool (*InitSDK)(const char*, const char*) = dlsym(dlfHandle, "InitSDK");
+    InitSDK(native_operation_id, native_params);
+    (*env)->ReleaseStringUTFChars(env, operation_id, native_operation_id);
+    (*env)->ReleaseStringUTFChars(env, params, native_params);
+}
