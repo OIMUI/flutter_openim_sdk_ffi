@@ -43,16 +43,8 @@ class OpenIMSDKFFi {
         errCode: Double?,
         message: String?
     ) {
-        Log.d("onMethodChannel",methodName)
-        if (callMethodName != null) {
-            Log.d("onMethodChannel",callMethodName)
-        }
-        if (message != null) {
-            Log.d("onMethodChannel",message)
-        }
         when (methodName) {
             "OnSuccess" -> {
-                Log.d("OnSuccess",message.toString())
                 when (callMethodName) {
                     "GetSelfUserInfo" -> {
                         deferredInfoMap[operationID]?.complete(JsonUtil.toObj(message!!, UserInfo::class.java))
@@ -72,7 +64,6 @@ class OpenIMSDKFFi {
             }
 
             "OnError" -> {
-                Log.d("OnError",message.toString())
                 deferredInfoMap[operationID]?.completeExceptionally(CustomException(errCode!!.toInt(), message!!))
                 deferredInfoMap.remove(operationID)
             }
