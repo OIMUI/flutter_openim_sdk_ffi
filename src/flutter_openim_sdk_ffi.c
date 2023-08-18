@@ -78,7 +78,7 @@ void printMessage(const char *message)
     }
     if (errCode != NULL) {
         cJSON_AddNumberToObject(json, "errCode", *errCode);
-    } 
+    }
     if (message != NULL) {
         cJSON_AddStringToObject(json, "data", message);
     }
@@ -144,10 +144,10 @@ void *entry_point(void* arg)
     }
     if (callMethodName != NULL) {
         cJSON_AddStringToObject(json, "callMethodName", callMethodName);
-    } 
+    }
     if (errCode != NULL) {
         cJSON_AddNumberToObject(json, "errCode", *errCode);
-    } 
+    }
     if (message != NULL) {
         cJSON_AddStringToObject(json, "data", message);
     }
@@ -168,7 +168,7 @@ void *entry_point(void* arg)
 }
 
 void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message)
-{   
+{
     // 创建参数结构体并分配内存
     ThreadArgs* args = (ThreadArgs*)malloc(sizeof(ThreadArgs));
 

@@ -87,6 +87,9 @@ class InitSdkParams {
   final String? logFilePath;
   final bool isExternalExtensions;
 
+  final String? appID;
+  final String? secret;
+
   InitSdkParams({
     required this.apiAddr,
     required this.wsAddr,
@@ -97,6 +100,8 @@ class InitSdkParams {
     this.isLogStandardOutput = true,
     this.logFilePath,
     this.isExternalExtensions = false,
+    this.appID,
+    this.secret,
   });
 }
 
@@ -136,7 +141,7 @@ class OpenIMManager {
     return IMPlatform.ipad;
   }
 
-  static Future<void> _isolateEntry(_IsolateTaskData<InitSdkParams> task) async {
+  static Future<void> _isolateEntry(_IsolateTaskData<InitSdkParams?> task) async {
     if (task.rootIsolateToken != null) {
       BackgroundIsolateBinaryMessenger.ensureInitialized(task.rootIsolateToken!);
     }
@@ -146,33 +151,35 @@ class OpenIMManager {
 
       _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
 
-      InitSdkParams data = task.data;
-      String? dataDir = data.dataDir;
-      if (dataDir == null) {
-        Directory document = await getApplicationDocumentsDirectory();
-        dataDir = document.path;
-      }
-      String config = jsonEncode({
-        'platformID': getIMPlatform(),
-        'apiAddr': data.apiAddr,
-        'wsAddr': data.wsAddr,
-        'dataDir': dataDir,
-        'logLevel': data.logLevel,
-        "objectStorage": data.objectStorage,
-        'LogFilePath': data.logFilePath,
-        'isLogStandardOutput': data.isLogStandardOutput,
-        'isExternalExtensions': data.isExternalExtensions,
-      });
       _imBindings = OpenimSdkFfiBindings(_imDylib);
-      bool status = _imBindings.InitSDK(
-        IMUtils.checkOperationID(data.operationID).toNativeUtf8().cast<ffi.Char>(),
-        config.toNativeUtf8().cast<ffi.Char>(),
-      );
-
-      _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
-      if (status) {
-        _bindings.ffi_Dart_InitSDK();
+      bool status = true;
+      if (task.data != null) {
+        InitSdkParams data = task.data!;
+        String? dataDir = data.dataDir;
+        if (dataDir == null) {
+          Directory document = await getApplicationDocumentsDirectory();
+          dataDir = document.path;
+        }
+        String config = jsonEncode({
+          'platformID': getIMPlatform(),
+          'apiAddr': data.apiAddr,
+          'wsAddr': data.wsAddr,
+          'dataDir': dataDir,
+          'logLevel': data.logLevel,
+          "objectStorage": data.objectStorage,
+          'LogFilePath': data.logFilePath,
+          'isLogStandardOutput': data.isLogStandardOutput,
+          'isExternalExtensions': data.isExternalExtensions,
+          'app_id': data.appID,
+          'secret': data.secret,
+        });
+        status = _imBindings.InitSDK(
+          IMUtils.checkOperationID(data.operationID).toNativeUtf8().cast<ffi.Char>(),
+          config.toNativeUtf8().cast<ffi.Char>(),
+        );
       }
+      _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
+      _bindings.ffi_Dart_InitSDK();
       task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
       receivePort.listen((msg) {
@@ -1159,7 +1166,7 @@ class OpenIMManager {
   }
 
   /// 原生通信
-  static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
+  // static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
 
   /// 通知原生初始化完成
   static Future<void> notifyNativeInit() async {
@@ -1167,46 +1174,23 @@ class OpenIMManager {
   }
 
   /// 初始化
-  static Future<bool> init({
-    required String apiAddr,
-    required String wsAddr,
-    String? dataDir,
-    int logLevel = 6,
-    String objectStorage = 'cos',
-    String? operationID,
-    bool isLogStandardOutput = false,
-    String? logFilePath,
-    bool isExternalExtensions = false,
-  }) async {
+  ///
+  /// [params] 在flutter中使用必传 如果混合开发则不需要传
+  static Future<bool> init({InitSdkParams? params}) async {
     if (_isInit) return false;
     _isInit = true;
-    _channel.setMethodCallHandler((call) {
-      try {
-        switch (call.method) {
-          default:
-        }
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-      return Future.value(null);
-    });
+    // _channel.setMethodCallHandler((call) {
+    //   try {
+    //     switch (call.method) {
+    //       default:
+    //     }
+    //   } catch (e) {
+    //     debugPrint(e.toString());
+    //   }
+    //   return Future.value(null);
+    // });
     RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
-    await Isolate.spawn(
-        _isolateEntry,
-        _IsolateTaskData<InitSdkParams>(
-          _receivePort.sendPort,
-          InitSdkParams(
-            apiAddr: apiAddr,
-            wsAddr: wsAddr,
-            dataDir: dataDir,
-            logLevel: logLevel,
-            objectStorage: objectStorage,
-            isLogStandardOutput: isLogStandardOutput,
-            logFilePath: logFilePath,
-            isExternalExtensions: isExternalExtensions,
-          ),
-          rootIsolateToken,
-        ));
+    await Isolate.spawn(_isolateEntry, _IsolateTaskData<InitSdkParams?>(_receivePort.sendPort, params, rootIsolateToken));
 
     _bindings.ffi_Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
 

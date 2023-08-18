@@ -1,11 +1,8 @@
 package io.openim.flutter_openim_sdk_ffi
 
 
+import android.content.Context
 import android.util.Log
-import androidx.annotation.NonNull
-import io.flutter.plugin.common.BinaryMessenger
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
 import io.openim.flutter_openim_sdk_ffi.listener.OnAdvanceMsgListener
 import io.openim.flutter_openim_sdk_ffi.listener.OnConnListener
 import io.openim.flutter_openim_sdk_ffi.listener.OnConversationListener
@@ -16,7 +13,7 @@ import io.openim.flutter_openim_sdk_ffi.models.ReadReceiptInfo
 import io.openim.flutter_openim_sdk_ffi.models.RevokedInfo
 import io.openim.flutter_openim_sdk_ffi.models.UserInfo
 import kotlinx.coroutines.CompletableDeferred
-
+import kotlinx.coroutines.*
 
 
 class OpenIMSDKFFi {
@@ -37,11 +34,6 @@ class OpenIMSDKFFi {
         listeners.remove(listener)
     }
 
-    fun register() {
-        registerCallback()
-    }
-
-    private external fun registerCallback()
 
     // Go回调函数
     private fun onMethodChannel(
@@ -51,8 +43,16 @@ class OpenIMSDKFFi {
         errCode: Double?,
         message: String?
     ) {
+        Log.d("onMethodChannel",methodName)
+        if (callMethodName != null) {
+            Log.d("onMethodChannel",callMethodName)
+        }
+        if (message != null) {
+            Log.d("onMethodChannel",message)
+        }
         when (methodName) {
             "OnSuccess" -> {
+                Log.d("OnSuccess",message.toString())
                 when (callMethodName) {
                     "GetSelfUserInfo" -> {
                         deferredInfoMap[operationID]?.complete(JsonUtil.toObj(message!!, UserInfo::class.java))
@@ -72,6 +72,7 @@ class OpenIMSDKFFi {
             }
 
             "OnError" -> {
+                Log.d("OnError",message.toString())
                 deferredInfoMap[operationID]?.completeExceptionally(CustomException(errCode!!.toInt(), message!!))
                 deferredInfoMap.remove(operationID)
             }
@@ -200,13 +201,40 @@ class OpenIMSDKFFi {
 
     private external fun GetSelfUserInfo(operationID: String)
 
+
+    external fun registerCallback()
+
     private external fun GetTotalUnreadMsgCount(operationID: String)
 
+    private external fun InitSDK(operationID: String, params: String)
 
-    suspend fun login(operationID: String, uid: String, token: String): UserInfo {
+    fun initSDK(context: Context,appID: String, secret: String) {
+        val operationID = System.currentTimeMillis().toString()
+        val dataDir = context.filesDir.absolutePath
+        val hashMap = hashMapOf<String,Any>()
+        hashMap["platform"] = 2
+        hashMap["api_addr"] = "http://121.40.210.13:10002"
+        hashMap["ws_addr"] = "ws://121.40.210.13:10001"
+        hashMap["data_dir"] = dataDir
+        hashMap["log_level"] = 6
+        hashMap["object_storage"] = "oss"
+        hashMap["encryption_key"] = ""
+        hashMap["is_need_encryption"] = false
+        hashMap["is_compression"] = false
+        hashMap["is_external_extensions"] = false
+        hashMap["app_id"] = appID
+        hashMap["secret"] = secret
+        // hashMap转字符串
+        val params = JsonUtil.toString(hashMap)
+        InitSDK(operationID, params)
+    }
+
+    suspend fun login(userID: String, token: String): UserInfo {
+        val operationID = System.currentTimeMillis().toString()
         val deferred = CompletableDeferred<Any>()
         deferredInfoMap[operationID] = deferred
-        Login(operationID, uid, token)
+        delay(1000)
+        Login(operationID, userID, token)
         deferred.await()
         return getSelfUserInfo(System.currentTimeMillis().toString())
     }

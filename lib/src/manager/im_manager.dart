@@ -272,8 +272,11 @@ class IMManager {
       data: {'operationID': IMUtils.checkOperationID(operationID), 'uid': uid, 'token': token},
       sendPort: receivePort.sendPort,
     ));
-    await receivePort.first;
+    _PortResult result = await receivePort.first;
     receivePort.close();
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
+    }
 
     try {
       return uInfo = await userManager.getSelfUserInfo();
