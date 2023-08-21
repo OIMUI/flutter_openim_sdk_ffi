@@ -97,7 +97,7 @@ class InitSdkParams {
     this.objectStorage = 'cos',
     this.dataDir,
     this.operationID,
-    this.isLogStandardOutput = true,
+    this.isLogStandardOutput = false,
     this.logFilePath,
     this.isExternalExtensions = false,
     this.appID,
