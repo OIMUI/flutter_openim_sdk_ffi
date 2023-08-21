@@ -9,6 +9,8 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
 @objc public class FlutterOpenimSdkFfi: NSObject {
     private var handle: UnsafeMutableRawPointer?
     
+    private var dylibHandle: UnsafeMutableRawPointer?
+    
     private var channel: FlutterMethodChannel?
     
     private static var sharedCallbackInstance: FlutterOpenimSdkFfi?
@@ -18,7 +20,7 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
     private var listeners: [Any] = []
     
     // 创建一个并发队列
-    private let concurrentQueue = DispatchQueue(label: "com.muka.concurrentQueue", attributes: .concurrent)
+    private let backgroundQueue = DispatchQueue(label: "com.muka.backgroundQueue", qos: .background)
     
     @objc public func addListener(_ listener: Any) {
         listeners.append(listener)
@@ -32,8 +34,9 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
     
     public override init() {
         super.init()
-        concurrentQueue.async {
+        backgroundQueue.async {
             self.handle = dlopen("flutter_openim_sdk_ffi.framework/flutter_openim_sdk_ffi", RTLD_NOW)
+            self.dylibHandle = dlopen("libopenim_sdk_ffi.dylib", RTLD_NOW)
         }
         FlutterOpenimSdkFfi.sharedCallbackInstance = self
     }
@@ -117,9 +120,9 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         }
     }
     
-    @objc public func register(binaryMessenger: FlutterBinaryMessenger) {
-        channel = FlutterMethodChannel(name: "plugins.muka.site/flutter_openim_sdk_ffi", binaryMessenger: binaryMessenger)
-        channel?.setMethodCallHandler(onMethodCall)
+    @objc public func register() {
+        //        channel = FlutterMethodChannel(name: "plugins.muka.site/flutter_openim_sdk_ffi", binaryMessenger: binaryMessenger)
+        //        channel?.setMethodCallHandler(onMethodCall)
         let functionPointer = dlsym(handle, "nativeRegisterCallback")
         typealias FunctionType = @convention(c) (_ callback: NativeMethodCallback?) -> Void
         let nativeRegisterCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
@@ -127,8 +130,6 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         // Pass the bridge function as a C function pointer
         nativeRegisterCallback(FlutterOpenimSdkFfi.handleNativeMethodBridge)
     }
-    
-    
     
     // Bridge function to avoid capturing 'self' within the closure
     private static let handleNativeMethodBridge: NativeMethodCallback = { (methodName, operationID, callMethodName, errCode, message) in
@@ -166,24 +167,51 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         return buffer
     }
     
+    @objc public func initSDK(appID: String, secret: String) {
+        backgroundQueue.async {
+            let operationID = self.getCurrentTimeMillisString()
+            let operationIDString = self.convertToCCharArray(operationID)!
+            let dataDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
+            
+            var dictionary = [String: Any]()
+            dictionary["platform"] = 2
+            dictionary["api_addr"] = "http://121.40.210.13:10002"
+            dictionary["ws_addr"] = "ws://121.40.210.13:10001"
+            dictionary["data_dir"] = dataDir
+            dictionary["log_level"] = 6
+            dictionary["object_storage"] = "oss"
+            dictionary["encryption_key"] = ""
+            dictionary["is_need_encryption"] = false
+            dictionary["is_compression"] = false
+            dictionary["is_external_extensions"] = false
+            dictionary["app_id"] = appID
+            dictionary["secret"] = secret
+            
+            if let jsonData = try? JSONSerialization.data(withJSONObject: dictionary),
+               let params = String(data: jsonData, encoding: .utf8) {
+                let paramsCString = self.convertToCCharArray(params)!
+                typealias FunctionType = @convention(c) (UnsafeMutablePointer<UInt8>, UnsafeMutablePointer<UInt8>) -> Void
+                let functionPointer = dlsym(self.dylibHandle, "InitSDK")
+                let initSDKCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
+                initSDKCallback(operationIDString, paramsCString)
+            }
+        }
+    }
     // 登陆
     @objc public func login(userID: String, token: String) {
-        concurrentQueue.async {
+        backgroundQueue.async {
             let operationID = self.getCurrentTimeMillisString()
-            let deferred = Deferred<Any?>()
             let operationIDString = self.convertToCCharArray(operationID)!
             let userIDCString = self.convertToCCharArray(userID)!
             let tokenCString = self.convertToCCharArray(token)!
-            self.deferredInfoMap[operationID] = deferred
             
             typealias FunctionType = @convention(c) (UnsafeMutablePointer<UInt8>, UnsafeMutablePointer<UInt8>, UnsafeMutablePointer<UInt8>) -> Void
-            let functionPointer = dlsym(self.handle, "login")
+            let functionPointer = dlsym(self.dylibHandle, "Login")
             let loginCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
             loginCallback(operationIDString, userIDCString, tokenCString)
         }
     }
     
-    // 获取用户信息
     // 获取用户信息
     @objc public func getSelfUserInfo() throws -> UserInfo {
         let operationID = getCurrentTimeMillisString()
@@ -192,7 +220,7 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         deferredInfoMap[operationID] = deferred
         
         typealias FunctionType = @convention(c) (UnsafePointer<CChar>) -> Void
-        let functionPointer = dlsym(handle, "getSelfUserInfo")
+        let functionPointer = dlsym(dylibHandle, "getSelfUserInfo")
         let getSelfUserInfoCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
         getSelfUserInfoCallback(operationIDString)
         
@@ -205,6 +233,7 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         return String(Int64(timeInterval * 1000))
     }
 }
+
 class CustomException: Error {
     var errorCode: Int
     var message: String
