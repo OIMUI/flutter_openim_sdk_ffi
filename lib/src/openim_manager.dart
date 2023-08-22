@@ -1152,6 +1152,14 @@ class OpenIMManager {
             _imBindings.SetAppBadge(operationID, msg.data['unreadCount']);
             calloc.free(operationID);
             break;
+          case _PortMethod.getFriendsInfo:
+            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final userIDList = jsonEncode(msg.data['uidList']).toNativeUtf8().cast<ffi.Char>();
+            _imBindings.GetSpecifiedFriendsInfo(operationID, userIDList);
+            calloc.free(operationID);
+            calloc.free(userIDList);
+            break;
           //  case _PortMethod.unInitSDK:
           // final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
           // _imBindings.(operationID);

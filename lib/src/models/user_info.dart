@@ -2,8 +2,10 @@ part of flutter_openim_sdk_ffi;
 
 /// Is a friend not in the blacklist
 /// 是好友不在黑名单
+///
 /// Not a friend on the blacklist
 /// 不是好友在黑名单
+///
 /// Not a friend is not on the blacklist
 /// 不是好友不在黑名单
 class UserInfo {

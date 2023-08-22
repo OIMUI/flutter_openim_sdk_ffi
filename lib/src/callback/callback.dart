@@ -7,7 +7,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-08-09 17:49:45
+ * Last Modified: 2023-08-22 17:02:29
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -125,6 +125,7 @@ class _PortMethod {
   static const String acceptFriendApplication = 'AcceptFriendApplication';
   static const String refuseFriendApplication = 'RefuseFriendApplication';
   static const String searchFriends = 'SearchFriends';
+  static const String getSpecifiedFriendsInfo = 'GetSpecifiedFriendsInfo';
 
   /// OrganizationManager
   static const String getSubDepartment = 'GetSubDepartment';
@@ -293,6 +294,12 @@ class NativeCall {
       case _PortMethod.uploadFile:
         if (msg.operationID != null) {
           OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: msg.data));
+          OpenIMManager._sendPortMap.remove(msg.operationID!);
+        }
+        break;
+      case _PortMethod.getSpecifiedFriendsInfo:
+        if (msg.operationID != null) {
+          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => UserInfo.fromJson(v))));
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
         break;

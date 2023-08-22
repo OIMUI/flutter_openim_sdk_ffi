@@ -2,6 +2,7 @@ part of flutter_openim_sdk_ffi;
 
 class FriendshipManager {
   /// 查询好友信息
+  ///
   /// [uidList] userID集合
   Future<List<UserInfo>> getFriendsInfo({
     required List<String> uidList,
@@ -18,8 +19,7 @@ class FriendshipManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
-    return IMUtils.toList(result.value, (map) => UserInfo.fromJson(map));
+    return result.value;
   }
 
   /// 发送一个好友请求，需要对方调用同意申请才能成为好友。
