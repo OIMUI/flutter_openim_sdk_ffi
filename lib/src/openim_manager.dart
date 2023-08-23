@@ -93,7 +93,7 @@ class InitSdkParams {
   InitSdkParams({
     required this.apiAddr,
     required this.wsAddr,
-    required this.logLevel,
+    this.logLevel = 6,
     this.objectStorage = 'cos',
     this.dataDir,
     this.operationID,
