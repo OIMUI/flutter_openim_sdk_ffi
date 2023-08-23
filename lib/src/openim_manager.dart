@@ -1591,11 +1591,11 @@ class OpenIMManager {
   }
 
   /// 原生通信
-  // static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
+  static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
 
   /// 通知原生初始化完成
   static Future<void> notifyNativeInit() async {
-    // _channel.invokeMethod('OnInitSDK');
+    _channel.invokeMethod('OnInitSDK');
   }
 
   /// 初始化
@@ -1604,19 +1604,21 @@ class OpenIMManager {
   static Future<bool> init({InitSdkParams? params}) async {
     if (_isInit) return false;
     _isInit = true;
-    // _channel.setMethodCallHandler((call) {
-    //   try {
-    //     switch (call.method) {
-    //       default:
-    //     }
-    //   } catch (e) {
-    //     debugPrint(e.toString());
-    //   }
-    //   return Future.value(null);
-    // });
+    _channel.setMethodCallHandler((call) {
+      try {
+        switch (call.method) {
+          case _PortMethod.login:
+            OpenIMManager._onEvent((listener) => listener.onNativeLogin(call.arguments['userID'], call.arguments['token']));
+            break;
+          default:
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+      return Future.value(null);
+    });
     RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
     await Isolate.spawn(_isolateEntry, _IsolateTaskData<InitSdkParams?>(_receivePort.sendPort, params, rootIsolateToken));
-
     _bindings.ffi_Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
 
     final completer = Completer();
@@ -1636,6 +1638,7 @@ class OpenIMManager {
   static void _methodChannel(_PortModel port, Completer completer) {
     switch (port.method) {
       case _PortMethod.initSDK:
+        notifyNativeInit();
         completer.complete(port.data);
         break;
       default:

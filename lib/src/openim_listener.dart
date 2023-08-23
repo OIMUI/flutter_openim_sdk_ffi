@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-01 23:37:30
  * Author: Spicely
  * -----
- * Last Modified: 2023-08-16 15:55:33
+ * Last Modified: 2023-08-23 15:26:42
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -182,4 +182,7 @@ mixin OpenIMListener {
   void onRecvCustomBusinessMessage(String s) {}
 
   void onMessageKvInfoChanged(List<MessageKv> list) {}
+
+  /// 监听native
+  void onNativeLogin(String uid, String token) {}
 }
