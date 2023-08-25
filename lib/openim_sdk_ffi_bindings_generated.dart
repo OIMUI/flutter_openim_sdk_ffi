@@ -33,7 +33,7 @@ class OpenimSdkFfiBindings {
     ffi.Pointer<ffi.Char> methodName,
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> callMethodName,
-    int errCode,
+    ffi.Pointer<ffi.Double> errCode,
     ffi.Pointer<ffi.Char> message,
   ) {
     return _callOnMethodChannel(
@@ -55,7 +55,7 @@ class OpenimSdkFfiBindings {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Int32,
+              ffi.Pointer<ffi.Double>,
               ffi.Pointer<ffi.Char>)>>('callOnMethodChannel');
   late final _callOnMethodChannel = _callOnMethodChannelPtr.asFunction<
       void Function(
@@ -64,8 +64,45 @@ class OpenimSdkFfiBindings {
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>,
-          int,
+          ffi.Pointer<ffi.Double>,
           ffi.Pointer<ffi.Char>)>();
+
+  void callOnNativeMethodChannel(
+    ffi.Pointer<CGO_OpenIM_Listener> listener,
+    ffi.Pointer<ffi.Char> methodName,
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> callMethodName,
+    ffi.Pointer<ffi.Double> errCode,
+    ffi.Pointer<ffi.Char> message,
+  ) {
+    return _callOnNativeMethodChannel(
+      listener,
+      methodName,
+      operationID,
+      callMethodName,
+      errCode,
+      message,
+    );
+  }
+
+  late final _callOnNativeMethodChannelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<CGO_OpenIM_Listener>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Char>)>>('callOnNativeMethodChannel');
+  late final _callOnNativeMethodChannel =
+      _callOnNativeMethodChannelPtr.asFunction<
+          void Function(
+              ffi.Pointer<CGO_OpenIM_Listener>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Char>)>();
 
   void RegisterCallback(
     ffi.Pointer<CGO_OpenIM_Listener> callback,
@@ -114,22 +151,19 @@ class OpenimSdkFfiBindings {
   void Login(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> userID,
-    ffi.Pointer<ffi.Char> token,
   ) {
     return _Login(
       operationID,
       userID,
-      token,
     );
   }
 
   late final _LoginPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Char>)>>('Login');
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('Login');
   late final _Login = _LoginPtr.asFunction<
-      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<ffi.Char>)>();
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
   void WakeUp(
     ffi.Pointer<ffi.Char> operationID,
@@ -223,9 +257,9 @@ class OpenimSdkFfiBindings {
   }
 
   late final _SetAppBackgroundStatusPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Bool)>>('SetAppBackgroundStatus');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Bool)>>(
+      'SetAppBackgroundStatus');
   late final _SetAppBackgroundStatus = _SetAppBackgroundStatusPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, bool)>();
 
@@ -1252,9 +1286,9 @@ class OpenimSdkFfiBindings {
   }
 
   late final _SetGlobalRecvMessageOptPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Int)>>('SetGlobalRecvMessageOpt');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int)>>(
+      'SetGlobalRecvMessageOpt');
   late final _SetGlobalRecvMessageOpt = _SetGlobalRecvMessageOptPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, int)>();
 
@@ -2983,8 +3017,9 @@ class OpenimSdkFfiBindings {
   }
 
   late final _SetAppBadgePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32)>>('SetAppBadge');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32)>>(
+      'SetAppBadge');
   late final _SetAppBadge =
       _SetAppBadgePtr.asFunction<void Function(ffi.Pointer<ffi.Char>, int)>();
 }
@@ -3007,8 +3042,17 @@ final class CGO_OpenIM_Listener extends ffi.Struct {
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>,
-              ffi.Int32,
+              ffi.Pointer<ffi.Double>,
               ffi.Pointer<ffi.Char>)>> onMethodChannel;
+
+  external ffi.Pointer<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Char>)>> onNativeMethodChannel;
 }
 
 /// ============================================================================

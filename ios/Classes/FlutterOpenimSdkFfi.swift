@@ -7,15 +7,13 @@ import Flutter
 typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePointer<Int8>, UnsafePointer<Int8>, UnsafePointer<Double>, UnsafePointer<Int8>) -> Void
 
 @objc public class FlutterOpenimSdkFfi: NSObject {
-//    private var handle: UnsafeMutableRawPointer?
-//
-//    private var dylibHandle: UnsafeMutableRawPointer?
+    private var handle: UnsafeMutableRawPointer?
     
     private var channel: FlutterMethodChannel?
     
-    private static var sharedCallbackInstance: FlutterOpenimSdkFfi?
-    
     private var deferredInfoMap: [String: Deferred<Any?>?] = [:]
+    
+    private let backgroundQueue = DispatchQueue(label: "com.muka.backgroundQueue", qos: .background)
     
     private var listeners: [Any] = []
     
@@ -29,19 +27,23 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         }
     }
     
-    public override init() {
-        super.init()
-//        DispatchQueue.global().async {
-//            self.handle = dlopen("flutter_openim_sdk_ffi.framework/flutter_openim_sdk_ffi", RTLD_NOW)
-//            self.dylibHandle = dlopen("libopenim_sdk_ffi.dylib", RTLD_NOW)
-//        }
-        FlutterOpenimSdkFfi.sharedCallbackInstance = self
+    @objc public func register(binaryMessenger: FlutterBinaryMessenger) {
+        channel = FlutterMethodChannel(name: "plugins.muka.site/flutter_openim_sdk_ffi", binaryMessenger: binaryMessenger)
+        channel?.setMethodCallHandler(onMethodCall)
+    }
+    
+    func onMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        switch call.method {
+            
+        default: break
+            
+        }
     }
     
     // 这个方法将被C函数调用，用于通知Swift
     private func handleNativeMethodCallback(methodName: UnsafePointer<Int8>, operationID: UnsafePointer<Int8>?, callMethodName:
                                             UnsafePointer<Int8>?, errCode: UnsafePointer<Double>?, message: UnsafePointer<Int8>?) {
-        DispatchQueue.global().async {
+        backgroundQueue.async {
             let methodNameString = String(cString: methodName)
             var operationIDString = ""
             var callMethodNameString = ""
@@ -114,42 +116,6 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         }
     }
     
-    @objc public func register(binaryMessenger: FlutterBinaryMessenger) {
-        channel = FlutterMethodChannel(name: "plugins.muka.site/flutter_openim_sdk_ffi", binaryMessenger: binaryMessenger)
-        channel?.setMethodCallHandler(onMethodCall)
-//        let functionPointer = dlsym(handle, "nativeRegisterCallback")
-//        typealias FunctionType = @convention(c) (_ callback: NativeMethodCallback?) -> Void
-//        let nativeRegisterCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
-//        DispatchQueue.global().async {
-//            // Pass the bridge function as a C function pointer
-//            nativeRegisterCallback(FlutterOpenimSdkFfi.handleNativeMethodBridge)
-//        }
-    }
-    
-    // Bridge function to avoid capturing 'self' within the closure
-    private static let handleNativeMethodBridge: NativeMethodCallback = { (methodName, operationID, callMethodName, errCode, message) in
-        sharedCallbackInstance?.handleNativeMethodCallback(
-            methodName: methodName,
-            operationID: operationID,
-            callMethodName: callMethodName,
-            errCode: errCode,
-            message: message
-        )
-    }
-    
-    func onMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        switch call.method {
-        case "OnInitSDK":
-            for listener in listeners {
-                if let onConnListener = listener as? OnConnListener {
-                    onConnListener.onInitSDK()
-                }
-            }
-        default: break
-            
-        }
-    }
-    
     
     func convertToCCharArray(_ inputString: String) -> UnsafeMutablePointer<UInt8>? {
         // 将字符串转换为UTF-8编码的数据
@@ -168,55 +134,34 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
     }
     
     @objc public func initSDK(appID: String, secret: String) {
-//        let operationID = self.getCurrentTimeMillisString()
-//        let operationIDString = self.convertToCCharArray(operationID)!
-//        let dataDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
-//
-//        var dictionary = [String: Any]()
-//        dictionary["platform"] = 1
-//        dictionary["api_addr"] = "http://121.40.210.13:10002"
-//        dictionary["ws_addr"] = "ws://121.40.210.13:10001"
-//        dictionary["data_dir"] = dataDir
-//        dictionary["log_level"] = 6
-//        dictionary["object_storage"] = "oss"
-//        dictionary["encryption_key"] = ""
-//        dictionary["is_need_encryption"] = false
-//        dictionary["is_compression"] = false
-//        dictionary["is_external_extensions"] = false
-//        dictionary["app_id"] = appID
-//        dictionary["secret"] = secret
-//
-//        if let jsonData = try? JSONSerialization.data(withJSONObject: dictionary),
-//           let params = String(data: jsonData, encoding: .utf8) {
-//            let paramsCString = self.convertToCCharArray(params)!
-//            typealias FunctionType = @convention(c) (UnsafeMutablePointer<UInt8>, UnsafeMutablePointer<UInt8>) -> Void
-//            let functionPointer = dlsym(self.dylibHandle, "InitSDK")
-//            let initSDKCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
-//            initSDKCallback(operationIDString, paramsCString)
-//        }
+        var dictionary = [String: Any]()
+        dictionary["appID"] = appID
+        dictionary["secret"] = secret
+        channel?.invokeMethod("initSDK", arguments: dictionary)
     }
     // 登陆
-    @objc public func login(userID: String, token: String) {
-        DispatchQueue.global().async {
-            let arg: [String: Any] = ["userID": userID, "token": token]
-            self.channel?.invokeMethod("Login", arguments: arg)
-        }
+    @objc public func login(userID: String, nickname: String?, faceURL:String?, phoneNumber: String?) {
+        var dictionary = [String: Any]()
+        dictionary["userID"] = userID
+        dictionary["nickname"] = nickname
+        dictionary["faceURL"] = faceURL
+        dictionary["phoneNumber"] = phoneNumber
+        channel?.invokeMethod("Login", arguments: dictionary)
     }
-    
-//    // 获取用户信息
-//    @objc public func getSelfUserInfo() throws -> UserInfo {
-////        let operationID = getCurrentTimeMillisString()
-////        let operationIDString = operationID.cString(using: .utf8)!
-////        let deferred = Deferred<Any?>()
-////        deferredInfoMap[operationID] = deferred
-////
-////        typealias FunctionType = @convention(c) (UnsafePointer<CChar>) -> Void
-////        let functionPointer = dlsym(dylibHandle, "getSelfUserInfo")
-////        let getSelfUserInfoCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
-////        getSelfUserInfoCallback(operationIDString)
-////
-////        return try deferred.await() as! UserInfo
-//    }
+    //    // 获取用户信息
+    //    @objc public func getSelfUserInfo() throws -> UserInfo {
+    ////        let operationID = getCurrentTimeMillisString()
+    ////        let operationIDString = operationID.cString(using: .utf8)!
+    ////        let deferred = Deferred<Any?>()
+    ////        deferredInfoMap[operationID] = deferred
+    ////
+    ////        typealias FunctionType = @convention(c) (UnsafePointer<CChar>) -> Void
+    ////        let functionPointer = dlsym(dylibHandle, "getSelfUserInfo")
+    ////        let getSelfUserInfoCallback = unsafeBitCast(functionPointer, to: FunctionType.self)
+    ////        getSelfUserInfoCallback(operationIDString)
+    ////
+    ////        return try deferred.await() as! UserInfo
+    //    }
     
     private func getCurrentTimeMillisString() -> String {
         let currentTime = Date()

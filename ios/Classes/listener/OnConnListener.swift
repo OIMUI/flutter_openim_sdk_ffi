@@ -30,8 +30,4 @@
      */
     @objc func onUserTokenExpired()
     
-    /**
-     * 应用已经初始化
-     */
-    @objc func onInitSDK()
 }

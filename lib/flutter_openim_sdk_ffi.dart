@@ -59,3 +59,4 @@ part './src/openim_error.dart';
 
 part './src/struct/struct.dart';
 part 'src/callback/callback.dart';
+part 'src/callback/native_call.dart';

@@ -14,13 +14,18 @@ import 'dart:ffi' as ffi;
 ///
 class FlutterOpenimSdkFfiBindings {
   /// Holds the symbol lookup function.
-  final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) _lookup;
+  final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
+      _lookup;
 
   /// The symbols are looked up in [dynamicLibrary].
-  FlutterOpenimSdkFfiBindings(ffi.DynamicLibrary dynamicLibrary) : _lookup = dynamicLibrary.lookup;
+  FlutterOpenimSdkFfiBindings(ffi.DynamicLibrary dynamicLibrary)
+      : _lookup = dynamicLibrary.lookup;
 
   /// The symbols are looked up with [lookup].
-  FlutterOpenimSdkFfiBindings.fromLookup(ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup) : _lookup = lookup;
+  FlutterOpenimSdkFfiBindings.fromLookup(
+      ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
+          lookup)
+      : _lookup = lookup;
 
   void setPrintCallback(
     PrintCallback callback,
@@ -30,8 +35,11 @@ class FlutterOpenimSdkFfiBindings {
     );
   }
 
-  late final _setPrintCallbackPtr = _lookup<ffi.NativeFunction<ffi.Void Function(PrintCallback)>>('setPrintCallback');
-  late final _setPrintCallback = _setPrintCallbackPtr.asFunction<void Function(PrintCallback)>();
+  late final _setPrintCallbackPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(PrintCallback)>>(
+          'setPrintCallback');
+  late final _setPrintCallback =
+      _setPrintCallbackPtr.asFunction<void Function(PrintCallback)>();
 
   void ffi_Dart_RegisterCallback(
     ffi.Pointer<ffi.Void> handle,
@@ -43,9 +51,12 @@ class FlutterOpenimSdkFfiBindings {
     );
   }
 
-  late final _ffi_Dart_RegisterCallbackPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>, Dart_Port_DL)>>('ffi_Dart_RegisterCallback');
-  late final _ffi_Dart_RegisterCallback = _ffi_Dart_RegisterCallbackPtr.asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
+  late final _ffi_Dart_RegisterCallbackPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Void>,
+              Dart_Port_DL)>>('ffi_Dart_RegisterCallback');
+  late final _ffi_Dart_RegisterCallback = _ffi_Dart_RegisterCallbackPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
 
   int ffi_Dart_InitializeApiDL(
     ffi.Pointer<ffi.Void> data,
@@ -56,18 +67,23 @@ class FlutterOpenimSdkFfiBindings {
   }
 
   late final _ffi_Dart_InitializeApiDLPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.Pointer<ffi.Void>)>>('ffi_Dart_InitializeApiDL');
-  late final _ffi_Dart_InitializeApiDL = _ffi_Dart_InitializeApiDLPtr.asFunction<int Function(ffi.Pointer<ffi.Void>)>();
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.Pointer<ffi.Void>)>>(
+          'ffi_Dart_InitializeApiDL');
+  late final _ffi_Dart_InitializeApiDL = _ffi_Dart_InitializeApiDLPtr
+      .asFunction<int Function(ffi.Pointer<ffi.Void>)>();
 
   void ffi_Dart_InitSDK() {
     return _ffi_Dart_InitSDK();
   }
 
-  late final _ffi_Dart_InitSDKPtr = _lookup<ffi.NativeFunction<ffi.Void Function()>>('ffi_Dart_InitSDK');
-  late final _ffi_Dart_InitSDK = _ffi_Dart_InitSDKPtr.asFunction<void Function()>();
+  late final _ffi_Dart_InitSDKPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>('ffi_Dart_InitSDK');
+  late final _ffi_Dart_InitSDK =
+      _ffi_Dart_InitSDKPtr.asFunction<void Function()>();
 }
 
-typedef PrintCallback = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>;
+typedef PrintCallback
+    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>;
 
 /// ============================================================================
 /// IMPORTANT! Never update these signatures without properly updating

@@ -121,6 +121,15 @@ class OpenIMManager {
   /// 通信存储
   static final Map<String, SendPort> _sendPortMap = {};
 
+  /// 原生通信
+  static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
+
+  /// 监听ios事件
+  static void nativeListen() {
+    if (!Platform.isIOS) return;
+    _channel.setMethodCallHandler(_nativeCall);
+  }
+
   static int getIMPlatform() {
     if (kIsWeb) {
       return IMPlatform.web;
@@ -244,10 +253,10 @@ class OpenIMManager {
     try {
       final receivePort = ReceivePort();
       task.sendPort.send(receivePort.sendPort);
-
+      _imBindings = OpenimSdkFfiBindings(_imDylib);
+      _bindings.ffi_Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
       _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
 
-      _imBindings = OpenimSdkFfiBindings(_imDylib);
       bool status = true;
       if (task.data != null) {
         InitSdkParams data = task.data!;
@@ -411,12 +420,10 @@ class OpenIMManager {
           case _PortMethod.login:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
-            final token = (msg.data['token'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.Login(operationID, uid, token);
+            final userID = jsonEncode(msg.data['userID']).toNativeUtf8().cast<ffi.Char>();
+            _imBindings.Login(operationID, userID);
             calloc.free(operationID);
-            calloc.free(uid);
-            calloc.free(token);
+            calloc.free(userID);
             break;
           case _PortMethod.version:
             String version = _imBindings.GetSdkVersion().cast<Utf8>().toDartString();
@@ -1590,36 +1597,14 @@ class OpenIMManager {
     }
   }
 
-  /// 原生通信
-  static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
-
-  /// 通知原生初始化完成
-  static Future<void> notifyNativeInit() async {
-    _channel.invokeMethod('OnInitSDK');
-  }
-
   /// 初始化
   ///
   /// [params] 在flutter中使用必传 如果混合开发则不需要传
   static Future<bool> init({InitSdkParams? params}) async {
     if (_isInit) return false;
     _isInit = true;
-    _channel.setMethodCallHandler((call) {
-      try {
-        switch (call.method) {
-          case _PortMethod.login:
-            OpenIMManager._onEvent((listener) => listener.onNativeLogin(call.arguments['userID'], call.arguments['token']));
-            break;
-          default:
-        }
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-      return Future.value(null);
-    });
     RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
     await Isolate.spawn(_isolateEntry, _IsolateTaskData<InitSdkParams?>(_receivePort.sendPort, params, rootIsolateToken));
-    _bindings.ffi_Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
 
     final completer = Completer();
     _receivePort.listen((msg) {
@@ -1638,7 +1623,6 @@ class OpenIMManager {
   static void _methodChannel(_PortModel port, Completer completer) {
     switch (port.method) {
       case _PortMethod.initSDK:
-        notifyNativeInit();
         completer.complete(port.data);
         break;
       default:

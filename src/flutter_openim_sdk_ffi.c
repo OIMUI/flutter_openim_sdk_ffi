@@ -22,9 +22,6 @@ bool registerNativeCallback = false;
 #ifdef __ANDROID__
 #include "flutter_openim_sdk_ffi_android.c"
 #endif
-#ifdef __APPLE__
-#include "flutter_openim_sdk_ffi_ios.c"
-#endif
 
 // 定义参数结构体
 typedef struct {
@@ -194,6 +191,7 @@ FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
 
 // 在Dart中注册回调函数
 FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isolate_send_port) {
+    printf("go回调注册\n");
     dlfHandle = handle;
     g_listener.onMethodChannel = onMethodChannelFunc;
     #if defined(__ANDROID__)

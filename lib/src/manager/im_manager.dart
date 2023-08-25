@@ -228,19 +228,15 @@ class IMManager {
   /// [token] 登录token，从业务服务器上获取
   /// [defaultValue] 获取失败后使用的默认值
   Future<UserInfo> login({
-    required String uid,
-    required String token,
+    required String userID,
     String? operationID,
     Future<UserInfo> Function()? defaultValue,
   }) async {
     this.isLogined = true;
-    this.uid = uid;
-    this.token = token;
     ReceivePort receivePort = ReceivePort();
-
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.login,
-      data: {'operationID': IMUtils.checkOperationID(operationID), 'uid': uid, 'token': token},
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'userID': userID},
       sendPort: receivePort.sendPort,
     ));
     _PortResult result = await receivePort.first;
@@ -250,7 +246,9 @@ class IMManager {
     }
 
     try {
-      return uInfo = await userManager.getSelfUserInfo();
+      uInfo = await userManager.getSelfUserInfo();
+      this.uid = uInfo!.userID;
+      return uInfo!;
     } catch (error, stackTrace) {
       log('login e: $error  s: $stackTrace');
       if (null != defaultValue) {
