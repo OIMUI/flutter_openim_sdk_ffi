@@ -4,7 +4,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-08-25 17:25:25
  * Author: Spicely
  * -----
- * Last Modified: 2023-08-25 17:34:36
+ * Last Modified: 2023-08-28 15:39:49
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -37,7 +37,13 @@ Future<dynamic> _nativeCall(call) async {
       case _PortMethod.login:
         try {
           Map<String, dynamic> params = Map<String, dynamic>.from(call.arguments);
+          print(params);
           UserInfo userInfo = await OpenIM.iMManager.login(userID: params['userID']);
+          OpenIM.iMManager.userManager.setSelfInfo(
+            nickname: params['nickname'],
+            faceURL: params['faceURL'],
+            phoneNumber: params['phoneNumber'],
+          );
           return userInfo.toJson();
         } catch (e) {
           debugPrint(e.toString());

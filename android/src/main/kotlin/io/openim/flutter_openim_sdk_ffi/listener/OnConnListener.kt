@@ -30,10 +30,4 @@ interface OnConnListener {
      * 请使用新签发的 UserSig 进行登录。
      */
     fun onUserTokenExpired()
-    
-    /**
-     * 应用已经初始化
-     */
-
-     fun onInitSDK()
 }

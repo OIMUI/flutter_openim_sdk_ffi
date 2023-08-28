@@ -126,7 +126,6 @@ class OpenIMManager {
 
   /// 监听ios事件
   static void nativeListen() {
-    if (!Platform.isIOS) return;
     _channel.setMethodCallHandler(_nativeCall);
   }
 
@@ -285,7 +284,6 @@ class OpenIMManager {
         );
       }
       _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
-      _bindings.ffi_Dart_InitSDK();
       task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
       receivePort.listen((msg) {
@@ -442,6 +440,14 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             _imBindings.GetSelfUserInfo(operationID);
             calloc.free(operationID);
+            break;
+          case _PortMethod.setSelfInfo:
+            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final userInfo = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
+            _imBindings.SetSelfInfo(operationID, userInfo);
+            calloc.free(operationID);
+            calloc.free(userInfo);
             break;
           case _PortMethod.getAllConversationList:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
