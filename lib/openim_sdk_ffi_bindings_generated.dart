@@ -10,7 +10,7 @@ import 'dart:ffi' as ffi;
 
 /// Bindings for `src/flutter_openim_sdk_ffi.h`.
 ///
-/// Regenerate bindings with `flutter pub run ffigen --config ffigen.yaml`.
+/// Regenerate bindings with `flutter pub run ffigen --config open_im.yaml`.
 ///
 class OpenimSdkFfiBindings {
   /// Holds the symbol lookup function.
@@ -3022,6 +3022,23 @@ class OpenimSdkFfiBindings {
       'SetAppBadge');
   late final _SetAppBadge =
       _SetAppBadgePtr.asFunction<void Function(ffi.Pointer<ffi.Char>, int)>();
+
+  void GetAppUserId(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> thirdPartyUserId,
+  ) {
+    return _GetAppUserId(
+      operationID,
+      thirdPartyUserId,
+    );
+  }
+
+  late final _GetAppUserIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('GetAppUserId');
+  late final _GetAppUserId = _GetAppUserIdPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 }
 
 final class _GoString_ extends ffi.Struct {

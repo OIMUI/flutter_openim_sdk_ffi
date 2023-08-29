@@ -6,7 +6,7 @@ interface OnConnListener {
      * 连接服务器失败
      * 可以提示用户当前网络连接不可用
      */
-    fun onConnectFailed(code: Long, error: String)
+    fun onConnectFailed(code: Int, error: String)
 
     /**
      * 已经成功连接到服务器

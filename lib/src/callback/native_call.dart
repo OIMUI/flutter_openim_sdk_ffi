@@ -4,7 +4,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-08-25 17:25:25
  * Author: Spicely
  * -----
- * Last Modified: 2023-08-28 15:39:49
+ * Last Modified: 2023-08-29 16:25:37
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -15,7 +15,7 @@ part of flutter_openim_sdk_ffi;
  * Date      	By	Comments
  */
 
-Future<dynamic> _nativeCall(call) async {
+Future<dynamic> _nativeCall(MethodCall call) async {
   try {
     switch (call.method) {
       case 'initSDK':
@@ -23,7 +23,7 @@ Future<dynamic> _nativeCall(call) async {
         InitSdkParams data = InitSdkParams(
           apiAddr: 'http://121.40.210.13:10002',
           wsAddr: 'ws://121.40.210.13:10001',
-          logLevel: 1,
+          logLevel: 6,
           appID: params['appID'],
           secret: params['secret'],
         );
@@ -37,7 +37,6 @@ Future<dynamic> _nativeCall(call) async {
       case _PortMethod.login:
         try {
           Map<String, dynamic> params = Map<String, dynamic>.from(call.arguments);
-          print(params);
           UserInfo userInfo = await OpenIM.iMManager.login(userID: params['userID']);
           OpenIM.iMManager.userManager.setSelfInfo(
             nickname: params['nickname'],
@@ -47,6 +46,14 @@ Future<dynamic> _nativeCall(call) async {
           return userInfo.toJson();
         } catch (e) {
           debugPrint(e.toString());
+        }
+      case _PortMethod.getAppUserId:
+        try {
+          Map<String, dynamic> params = Map<String, dynamic>.from(call.arguments);
+          String id = await OpenIM.iMManager.userManager.getAppUserId(userID: params['userID']);
+          return id;
+        } catch (e) {
+          return e;
         }
       default:
     }

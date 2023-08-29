@@ -40,6 +40,24 @@ class UserManager {
     return result.value;
   }
 
+  /// 获取当前登录用户的信息
+  Future<String> getAppUserId({
+    String? operationID,
+    required String userID,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getAppUserId,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'userID': userID},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return result.value;
+  }
+
   /// 修改当前登录用户资料
   /// [nickname] 昵称
   /// [faceURL] 头像

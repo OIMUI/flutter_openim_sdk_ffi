@@ -124,8 +124,11 @@ class OpenIMManager {
   /// 原生通信
   static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
 
+  static bool _nativeStatus = false;
+
   /// 监听ios事件
   static void nativeListen() {
+    _nativeStatus = true;
     _channel.setMethodCallHandler(_nativeCall);
   }
 
@@ -288,8 +291,9 @@ class OpenIMManager {
 
       receivePort.listen((msg) {
         if (msg is String) {
-          _PortModel data = _PortModel.fromJson(jsonDecode(msg));
-
+          Map<String, dynamic> map = jsonDecode(msg);
+          _PortModel data = _PortModel.fromJson(map);
+          task.sendPort.send(map);
           switch (data.method) {
             case 'OnError':
               if (data.operationID != null) {
@@ -1590,6 +1594,14 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             calloc.free(operationID);
             break;
+          case _PortMethod.getAppUserId:
+            _sendPortMap[msg.data['operationID']] = msg.sendPort!;
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final userID = (msg.data['userID'] as String).toNativeUtf8().cast<ffi.Char>();
+            _imBindings.GetAppUserId(operationID, userID);
+            calloc.free(operationID);
+            calloc.free(userID);
+            break;
           //  case _PortMethod.unInitSDK:
           // final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
           // _imBindings.(operationID);
@@ -1617,6 +1629,9 @@ class OpenIMManager {
       if (msg is _PortModel) {
         _methodChannel(msg, completer);
         return;
+      }
+      if (msg is Map && _nativeStatus) {
+        _channel.invokeMethod('onEventCall', msg);
       }
       if (msg is SendPort) {
         _openIMSendPort = msg;

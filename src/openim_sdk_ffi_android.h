@@ -30,10 +30,14 @@ typedef struct {
 } CGO_OpenIM_Listener;
 
 static void callOnMethodChannel(CGO_OpenIM_Listener *listener, Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
-    listener->onMethodChannel(port, methodName, operationID, callMethodName, errCode, message);
+	if (listener->onMethodChannel != NULL) {
+		listener->onMethodChannel(port, methodName, operationID, callMethodName, errCode, message);
+	}
 }
 static void callOnNativeMethodChannel(CGO_OpenIM_Listener *listener, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
-    listener->onNativeMethodChannel(methodName, operationID, callMethodName, errCode, message);
+	if (listener->onNativeMethodChannel != NULL) {
+		listener->onNativeMethodChannel(methodName, operationID, callMethodName, errCode, message);
+	}
 }
 
 #line 1 "cgo-generated-wrapper"
@@ -70,6 +74,12 @@ typedef float _Complex GoComplex64;
 typedef double _Complex GoComplex128;
 #endif
 
+/*
+  static assertion to make sure the file is being used on architecture
+  at least with matching size of GoInt.
+*/
+// typedef char _check_for_64_bit_pointer_matching_GoInt[sizeof(void*)==64/8 ? 1:-1];
+
 #ifndef GO_CGO_GOSTRING_TYPEDEF
 typedef _GoString_ GoString;
 #endif
@@ -87,10 +97,9 @@ extern "C" {
 #endif
 
 extern void RegisterCallback(CGO_OpenIM_Listener* callback, Dart_Port_DL port);
-extern void NativeRegisterCallback(CGO_OpenIM_Listener* callback);
 extern char* GetSdkVersion();
 extern _Bool InitSDK(char* operationID, char* config);
-extern void Login(char* operationID, char* userID, char* token);
+extern void Login(char* operationID, char* userID);
 extern void WakeUp(char* operationID);
 extern void NetworkChanged(char* operationID);
 extern void UploadImage(char* operationID, char* filePath, char* token, char* obj);
@@ -243,6 +252,7 @@ extern void GetWorkMomentsNotification(char* operationID, int offset, int count)
 extern void ClearWorkMomentsNotification(char* operationID);
 extern void UpdateFcmToken(char* operationID, char* fmcToken);
 extern void SetAppBadge(char* operationID, int32_t appUnreadCount);
+extern void GetAppUserId(char* operationID, char* thirdPartyUserId);
 
 #ifdef __cplusplus
 }
