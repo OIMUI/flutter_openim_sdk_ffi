@@ -4,7 +4,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-08-25 17:25:25
  * Author: Spicely
  * -----
- * Last Modified: 2023-08-29 16:25:37
+ * Last Modified: 2023-08-30 11:51:35
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -23,7 +23,7 @@ Future<dynamic> _nativeCall(MethodCall call) async {
         InitSdkParams data = InitSdkParams(
           apiAddr: 'http://121.40.210.13:10002',
           wsAddr: 'ws://121.40.210.13:10001',
-          logLevel: 6,
+          logLevel: 1,
           appID: params['appID'],
           secret: params['secret'],
         );
