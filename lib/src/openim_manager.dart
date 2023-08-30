@@ -119,6 +119,17 @@ class OpenIMManager {
   /// 通信存储
   static final Map<String, SendPort> _sendPortMap = {};
 
+  /// 原生通信
+  static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
+
+  static bool _nativeStatus = false;
+
+  /// 监听ios事件
+  static void nativeChannel() {
+    _nativeStatus = true;
+    _channel.setMethodCallHandler(_nativeMethod);
+  }
+
   static int getIMPlatform() {
     if (kIsWeb) {
       return IMPlatform.web;
@@ -145,10 +156,12 @@ class OpenIMManager {
     if (task.rootIsolateToken != null) {
       BackgroundIsolateBinaryMessenger.ensureInitialized(task.rootIsolateToken!);
     }
+
     try {
       final receivePort = ReceivePort();
       task.sendPort.send(receivePort.sendPort);
 
+      _bindings.ffi_Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
       _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
 
       _imBindings = OpenimSdkFfiBindings(_imDylib);
@@ -1187,26 +1200,17 @@ class OpenIMManager {
   static Future<bool> init({InitSdkParams? params}) async {
     if (_isInit) return false;
     _isInit = true;
-    // _channel.setMethodCallHandler((call) {
-    //   try {
-    //     switch (call.method) {
-    //       default:
-    //     }
-    //   } catch (e) {
-    //     debugPrint(e.toString());
-    //   }
-    //   return Future.value(null);
-    // });
     RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
     await Isolate.spawn(_isolateEntry, _IsolateTaskData<InitSdkParams?>(_receivePort.sendPort, params, rootIsolateToken));
-
-    _bindings.ffi_Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
 
     final completer = Completer();
     _receivePort.listen((msg) {
       if (msg is _PortModel) {
         _methodChannel(msg, completer);
         return;
+      }
+      if (msg is Map && _nativeStatus) {
+        _channel.invokeMethod('onEventCall', msg);
       }
       if (msg is SendPort) {
         _openIMSendPort = msg;
