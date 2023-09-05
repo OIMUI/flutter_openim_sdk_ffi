@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-07-05 00:08:27
+ * Last Modified: 2023-09-04 14:33:29
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -41,6 +41,8 @@ class _PortMethod {
   /// 根据会话id获取多个会话
   static const String getMultipleConversation = 'GetMultipleConversation';
   static const String setSelfInfo = 'SetSelfInfo';
+  static const String disconnect = 'Disconnect';
+  static const String reconnection = 'Reconnection';
 
   /// 通过会话id删除指定会话
   static const String deleteConversation = 'DeleteConversation';
@@ -57,6 +59,8 @@ class _PortMethod {
   static const String getAtAllTag = 'GetAtAllTag';
   static const String setGlobalRecvMessageOpt = 'SetGlobalRecvMessageOpt';
   static const String setOneConversationBurnDuration = 'SetOneConversationBurnDuration';
+  static const String getLocalKey = 'GetLocalKey';
+  static const String getAllLocalKey = 'GetAllLocalKey';
 
   /// 消息
   static const String sendMessage = 'SendMessage';

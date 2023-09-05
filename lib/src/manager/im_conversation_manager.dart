@@ -352,6 +352,42 @@ class ConversationManager {
     }
   }
 
+  /// 获取秘密
+  /// [sessionID] 好友id，群id
+  /// [sessionType] 会话类型
+  Future<String> getLocalKey({
+    required String sessionID,
+    String? operationID,
+    required int sessionType,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getLocalKey,
+      data: {'sessionID': sessionID, 'sessionType': sessionType, 'operationID': IMUtils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+    return result.value;
+  }
+
+  /// 获取所有密钥
+  /// [sessionID] 好友id，群id
+  /// [sessionType] 会话类型
+  Future<dynamic> getAllLocalKey({
+    String? operationID,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.getAllLocalKey,
+      data: {'operationID': IMUtils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+    return result.value;
+  }
+
   /// 会话列表自定义排序规则。
   List<ConversationInfo> simpleSort(List<ConversationInfo> list) => list
     ..sort((a, b) {

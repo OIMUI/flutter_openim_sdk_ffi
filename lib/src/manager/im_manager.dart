@@ -12,9 +12,9 @@ class IMManager {
   late WorkMomentsManager workMomentsManager;
   late OrganizationManager organizationManager;
 
-  String? uid;
+  late String uid;
 
-  UserInfo? uInfo;
+  late UserInfo uInfo;
 
   bool isLogined = false;
   String? token;
@@ -289,26 +289,16 @@ class IMManager {
 
   /// 获取当前登录用户id
   Future<String> getLoginUserID() async {
-    if (uid == null) {
-      UserInfo info = await OpenIM.iMManager.userManager.getSelfUserInfo();
-      uInfo = info;
-      uid = info.userID;
-      return uid!;
-    } else {
-      return uid!;
-    }
+    UserInfo info = await OpenIM.iMManager.userManager.getSelfUserInfo();
+    uInfo = info;
+    return info.userID!;
   }
 
   /// 获取当前登录用户信息
   Future<UserInfo> getLoginUserInfo() async {
-    if (uInfo == null) {
-      UserInfo info = await OpenIM.iMManager.userManager.getSelfUserInfo();
-      uInfo = info;
-      uid = info.userID;
-      return info;
-    } else {
-      return uInfo!;
-    }
+    UserInfo info = await OpenIM.iMManager.userManager.getSelfUserInfo();
+    uInfo = info;
+    return info;
   }
 
   /// 从后台回到前台立刻唤醒
@@ -419,6 +409,40 @@ class IMManager {
     ));
     _PortResult result = await receivePort.first;
 
+    receivePort.close();
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
+    }
+  }
+
+  Future<void> disconnect({
+    String? operationID,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.disconnect,
+      data: {'operationID': IMUtils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+    if (result.error != null) {
+      throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);
+    }
+  }
+
+  Future<void> reconnection({
+    String? operationID,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.reconnection,
+      data: {'operationID': IMUtils.checkOperationID(operationID)},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
     receivePort.close();
     if (result.error != null) {
       throw OpenIMError(result.errCode!, result.error!, methodName: result.callMethodName);

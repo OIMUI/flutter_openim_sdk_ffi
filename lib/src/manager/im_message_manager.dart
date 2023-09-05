@@ -751,8 +751,7 @@ class MessageManager {
     ));
     _PortResult result = await receivePort.first;
     receivePort.close();
-
-    return SearchResult.fromJson(Map.from(result.value));
+    return result.value;
   }
 
   /// 删除本地跟服务器的指定的消息
