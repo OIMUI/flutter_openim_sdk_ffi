@@ -620,6 +620,16 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(imagePath);
             break;
+          case _PortMethod.createImageMessageFromFullPathAndInfo:
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final fullPath = (msg.data['fullPath'] as String).toNativeUtf8().cast<ffi.Char>();
+            final type = (msg.data['type'] as String).toNativeUtf8().cast<ffi.Char>();
+            final newMsg = _imBindings.CreateImageMessageFromFullPathAndInfo(operationID, fullPath, type, msg.data['w'], msg.data['h']);
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
+            calloc.free(operationID);
+            calloc.free(fullPath);
+            calloc.free(type);
+            break;
           case _PortMethod.createSoundMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final soundPath = (msg.data['soundPath'] as String).toNativeUtf8().cast<ffi.Char>();

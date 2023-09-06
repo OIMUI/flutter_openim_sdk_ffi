@@ -339,6 +339,27 @@ class MessageManager {
     return result.value;
   }
 
+  /// 创建图片消息
+  /// [imagePath] 路径
+  Future<Message> createImageMessageFromFullPathAndInfo({
+    required String fullPath,
+    required String type,
+    required int w,
+    required int h,
+    String? operationID,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createImageMessageFromFullPathAndInfo,
+      data: {'operationID': IMUtils.checkOperationID(operationID), 'fullPath': fullPath, 'type': type, 'w': w, 'h': h},
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return result.value;
+  }
+
   /// 创建语音消息
   /// [soundPath] 路径
   /// [duration] 时长s

@@ -257,9 +257,9 @@ class OpenimSdkFfiBindings {
   }
 
   late final _SetAppBackgroundStatusPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Bool)>>(
-      'SetAppBackgroundStatus');
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Bool)>>('SetAppBackgroundStatus');
   late final _SetAppBackgroundStatus = _SetAppBackgroundStatusPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, bool)>();
 
@@ -1286,9 +1286,9 @@ class OpenimSdkFfiBindings {
   }
 
   late final _SetGlobalRecvMessageOptPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int)>>(
-      'SetGlobalRecvMessageOpt');
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.Int)>>('SetGlobalRecvMessageOpt');
   late final _SetGlobalRecvMessageOpt = _SetGlobalRecvMessageOptPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, int)>();
 
@@ -1676,6 +1676,35 @@ class OpenimSdkFfiBindings {
       _CreateImageMessageFromFullPathPtr.asFunction<
           ffi.Pointer<ffi.Char> Function(
               ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  ffi.Pointer<ffi.Char> CreateImageMessageFromFullPathAndInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> imageFullPath,
+    ffi.Pointer<ffi.Char> t,
+    int x,
+    int y,
+  ) {
+    return _CreateImageMessageFromFullPathAndInfo(
+      operationID,
+      imageFullPath,
+      t,
+      x,
+      y,
+    );
+  }
+
+  late final _CreateImageMessageFromFullPathAndInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Int,
+              ffi.Int)>>('CreateImageMessageFromFullPathAndInfo');
+  late final _CreateImageMessageFromFullPathAndInfo =
+      _CreateImageMessageFromFullPathAndInfoPtr.asFunction<
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int)>();
 
   ffi.Pointer<ffi.Char> CreateSoundMessageFromFullPath(
     ffi.Pointer<ffi.Char> operationID,
@@ -3017,9 +3046,8 @@ class OpenimSdkFfiBindings {
   }
 
   late final _SetAppBadgePtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32)>>(
-      'SetAppBadge');
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32)>>('SetAppBadge');
   late final _SetAppBadge =
       _SetAppBadgePtr.asFunction<void Function(ffi.Pointer<ffi.Char>, int)>();
 
