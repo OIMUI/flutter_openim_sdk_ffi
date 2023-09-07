@@ -184,6 +184,7 @@ extern char* CreateCardMessage(char* operationID, char* cardInfo);
 extern char* CreateVideoMessageFromFullPath(char* operationID, char* videoFullPath, char* videoType, int64_t duration, char* snapshotFullPath);
 extern char* CreateImageMessageFromFullPath(char* operationID, char* imageFullPath);
 extern char* CreateImageMessageFromFullPathAndInfo(char* operationID, char* imageFullPath, char* t, int x, int y);
+extern char* CreateVideoMessagePathAndInfo(char* operationID, char* videoPath, char* videoType, int duration, char* snapshotPath, int snapshotSize, int videoSize, int x, int y);
 extern char* CreateSoundMessageFromFullPath(char* operationID, char* soundPath, int64_t duration);
 extern char* CreateFileMessageFromFullPath(char* operationID, char* fileFullPath, char* fileName);
 extern char* CreateImageMessage(char* operationID, char* imagePath);

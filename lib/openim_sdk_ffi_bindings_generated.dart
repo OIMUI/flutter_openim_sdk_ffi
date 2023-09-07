@@ -1706,6 +1706,55 @@ class OpenimSdkFfiBindings {
           ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, int, int)>();
 
+  ffi.Pointer<ffi.Char> CreateVideoMessagePathAndInfo(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> videoPath,
+    ffi.Pointer<ffi.Char> videoType,
+    int duration,
+    ffi.Pointer<ffi.Char> snapshotPath,
+    int snapshotSize,
+    int videoSize,
+    int x,
+    int y,
+  ) {
+    return _CreateVideoMessagePathAndInfo(
+      operationID,
+      videoPath,
+      videoType,
+      duration,
+      snapshotPath,
+      snapshotSize,
+      videoSize,
+      x,
+      y,
+    );
+  }
+
+  late final _CreateVideoMessagePathAndInfoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Int,
+              ffi.Pointer<ffi.Char>,
+              ffi.Int,
+              ffi.Int,
+              ffi.Int,
+              ffi.Int)>>('CreateVideoMessagePathAndInfo');
+  late final _CreateVideoMessagePathAndInfo =
+      _CreateVideoMessagePathAndInfoPtr.asFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>,
+              int,
+              ffi.Pointer<ffi.Char>,
+              int,
+              int,
+              int,
+              int)>();
+
   ffi.Pointer<ffi.Char> CreateSoundMessageFromFullPath(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> soundPath,

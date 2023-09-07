@@ -360,6 +360,39 @@ class MessageManager {
     return result.value;
   }
 
+  /// 创建图片消息
+  /// [imagePath] 路径
+  Future<Message> createVideoMessagePathAndInfo({
+    required String videoPath,
+    required String videoType,
+    required int videoSize,
+    required int duration,
+    required String snapshotPath,
+    required int width,
+    required int height,
+    String? operationID,
+  }) async {
+    ReceivePort receivePort = ReceivePort();
+    OpenIMManager._openIMSendPort.send(_PortModel(
+      method: _PortMethod.createVideoMessagePathAndInfo,
+      data: {
+        'operationID': IMUtils.checkOperationID(operationID),
+        'videoPath': videoPath,
+        'videoType': videoType,
+        'duration': duration,
+        'snapshotPath': snapshotPath,
+        'videoSize': videoSize,
+        'width': width,
+        'height': height
+      },
+      sendPort: receivePort.sendPort,
+    ));
+    _PortResult result = await receivePort.first;
+    receivePort.close();
+
+    return result.value;
+  }
+
   /// 创建语音消息
   /// [soundPath] 路径
   /// [duration] 时长s

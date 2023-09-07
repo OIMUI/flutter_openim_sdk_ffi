@@ -630,6 +630,29 @@ class OpenIMManager {
             calloc.free(fullPath);
             calloc.free(type);
             break;
+          case _PortMethod.createImageMessageFromFullPathAndInfo:
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final fullPath = (msg.data['fullPath'] as String).toNativeUtf8().cast<ffi.Char>();
+            final type = (msg.data['type'] as String).toNativeUtf8().cast<ffi.Char>();
+            final newMsg = _imBindings.CreateImageMessageFromFullPathAndInfo(operationID, fullPath, type, msg.data['w'], msg.data['h']);
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
+            calloc.free(operationID);
+            calloc.free(fullPath);
+            calloc.free(type);
+            break;
+          case _PortMethod.createVideoMessagePathAndInfo:
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final videoPath = (msg.data['videoPath'] as String).toNativeUtf8().cast<ffi.Char>();
+            final videoType = (msg.data['videoType'] as String).toNativeUtf8().cast<ffi.Char>();
+            final snapshotPath = (msg.data['snapshotPath'] as String).toNativeUtf8().cast<ffi.Char>();
+            final newMsg = _imBindings.CreateVideoMessagePathAndInfo(operationID, videoPath, videoType, msg.data['duration'], snapshotPath,
+                0, msg.data['videoSize'], msg.data['width'], msg.data['height']);
+            msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
+            calloc.free(operationID);
+            calloc.free(videoPath);
+            calloc.free(videoType);
+            calloc.free(snapshotPath);
+            break;
           case _PortMethod.createSoundMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final soundPath = (msg.data['soundPath'] as String).toNativeUtf8().cast<ffi.Char>();

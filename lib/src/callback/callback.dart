@@ -5,7 +5,7 @@ part of flutter_openim_sdk_ffi;
  * Created Date: 2023-06-11 17:47:26
  * Author: Spicely
  * -----
- * Last Modified: 2023-09-05 17:01:53
+ * Last Modified: 2023-09-07 10:01:17
  * Modified By: Spicely
  * -----
  * Copyright (c) 2023 Spicely Inc.
@@ -73,6 +73,7 @@ class _PortMethod {
   static const String createImageMessage = 'CreateImageMessage';
   static const String createImageMessageFromFullPath = 'CreateImageMessageFromFullPath';
   static const String createImageMessageFromFullPathAndInfo = 'CreateImageMessageFromFullPathAndInfo';
+  static const String createVideoMessagePathAndInfo = 'CreateVideoMessagePathAndInfo';
   static const String createSoundMessage = 'CreateSoundMessage';
   static const String createSoundMessageFromFullPath = 'CreateSoundMessageFromFullPath';
   static const String createVideoMessage = 'CreateVideoMessage';
