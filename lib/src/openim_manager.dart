@@ -297,10 +297,7 @@ class OpenIMManager {
           switch (data.method) {
             case 'OnError':
               if (data.operationID != null) {
-                _sendPortMap[data.operationID!]?.send(_PortResult(
-                    error: data.data,
-                    errCode: data.errCode is int ? (data.errCode as int).toDouble() : data.errCode,
-                    callMethodName: data.callMethodName));
+                _sendPortMap[data.operationID!]?.send(_PortResult(error: data.data, errCode: data.errCode is int ? (data.errCode as int).toDouble() : data.errCode, callMethodName: data.callMethodName));
                 _sendPortMap.remove(data.operationID!);
               }
               break;
@@ -645,8 +642,7 @@ class OpenIMManager {
             final videoPath = (msg.data['videoPath'] as String).toNativeUtf8().cast<ffi.Char>();
             final videoType = (msg.data['videoType'] as String).toNativeUtf8().cast<ffi.Char>();
             final snapshotPath = (msg.data['snapshotPath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateVideoMessagePathAndInfo(operationID, videoPath, videoType, msg.data['duration'], snapshotPath,
-                0, msg.data['videoSize'], msg.data['width'], msg.data['height']);
+            final newMsg = _imBindings.CreateVideoMessagePathAndInfo(operationID, videoPath, videoType, msg.data['duration'], snapshotPath, 0, msg.data['videoSize'], msg.data['width'], msg.data['height']);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(videoPath);
@@ -686,8 +682,7 @@ class OpenIMManager {
             final videoPath = (msg.data['videoPath'] as String).toNativeUtf8().cast<ffi.Char>();
             final videoType = (msg.data['videoType'] as String).toNativeUtf8().cast<ffi.Char>();
             final snapshotPath = (msg.data['snapshotPath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg =
-                _imBindings.CreateVideoMessageFromFullPath(operationID, videoPath, videoType, msg.data['duration'], snapshotPath);
+            final newMsg = _imBindings.CreateVideoMessageFromFullPath(operationID, videoPath, videoType, msg.data['duration'], snapshotPath);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(videoPath);
@@ -1524,8 +1519,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
             final uIds = jsonEncode(msg.data['excludeUserIDList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetGroupMemberListByJoinTimeFilter(
-                operationID, gid, msg.data['offset'], msg.data['count'], msg.data['joinTimeBegin'], msg.data['joinTimeEnd'], uIds);
+            _imBindings.GetGroupMemberListByJoinTimeFilter(operationID, gid, msg.data['offset'], msg.data['count'], msg.data['joinTimeBegin'], msg.data['joinTimeEnd'], uIds);
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             calloc.free(operationID);
             calloc.free(gid);
