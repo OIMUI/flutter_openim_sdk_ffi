@@ -45,7 +45,7 @@ Future<dynamic> _nativeCall(MethodCall call) async {
           );
           return userInfo.toJson();
         } catch (e) {
-          debugPrint(e.toString());
+          return e.toString();
         }
       case _PortMethod.getAppUserId:
         try {
@@ -53,7 +53,7 @@ Future<dynamic> _nativeCall(MethodCall call) async {
           String id = await OpenIM.iMManager.userManager.getAppUserId(userID: params['userID']);
           return id;
         } catch (e) {
-          return e;
+          return e.toString();
         }
       default:
     }

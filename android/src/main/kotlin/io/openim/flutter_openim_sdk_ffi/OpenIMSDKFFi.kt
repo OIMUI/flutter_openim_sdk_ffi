@@ -96,34 +96,86 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
         })
     }
 
-    fun login(userID: String) {
+    fun login(userID: String, callback: OnResult) {
         val hashMap = hashMapOf<String, Any?>()
         hashMap["userID"] = userID
-        channel?.invokeMethod("Login", hashMap)
+        channel?.invokeMethod("Login", hashMap, object : MethodChannel.Result {
+
+            override fun success(result: Any?) {
+                callback.success(result)
+            }
+
+            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                callback.error(errorCode, errorMessage, errorDetails)
+            }
+
+            override fun notImplemented() {
+            }
+
+        })
     }
 
-    fun login(userID: String, nickname: String) {
+    fun login(userID: String, nickname: String, callback: OnResult) {
         val hashMap = hashMapOf<String, Any?>()
         hashMap["userID"] = userID
         hashMap["nickname"] = nickname
-        channel?.invokeMethod("Login", hashMap)
+        channel?.invokeMethod("Login", hashMap, object : MethodChannel.Result {
+
+            override fun success(result: Any?) {
+                callback.success(result)
+            }
+
+            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                callback.error(errorCode, errorMessage, errorDetails)
+            }
+
+            override fun notImplemented() {
+            }
+
+        })
     }
 
-    fun login(userID: String, nickname: String, faceURL: String) {
+    fun login(userID: String, nickname: String, faceURL: String, callback: OnResult) {
         val hashMap = hashMapOf<String, Any?>()
         hashMap["userID"] = userID
         hashMap["nickname"] = nickname
         hashMap["faceURL"] = faceURL
-        channel?.invokeMethod("Login", hashMap)
+        channel?.invokeMethod("Login", hashMap, object : MethodChannel.Result {
+
+            override fun success(result: Any?) {
+                callback.success(result)
+            }
+
+            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                callback.error(errorCode, errorMessage, errorDetails)
+            }
+
+            override fun notImplemented() {
+            }
+
+        })
     }
 
-    fun login(userID: String, nickname: String, faceURL: String, phoneNumber: String) {
+    fun login(userID: String, nickname: String, faceURL: String, phoneNumber: String, callback: OnResult) {
         val hashMap = hashMapOf<String, Any?>()
         hashMap["userID"] = userID
         hashMap["nickname"] = nickname
         hashMap["faceURL"] = faceURL
         hashMap["phoneNumber"] = phoneNumber
-        channel?.invokeMethod("Login", hashMap)
+        channel?.invokeMethod("Login", hashMap, object : MethodChannel.Result {
+
+            override fun success(result: Any?) {
+                callback.success(result)
+            }
+
+            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                callback.error(errorCode, errorMessage, errorDetails)
+            }
+
+            override fun notImplemented() {
+            }
+
+        })
     }
 
 
