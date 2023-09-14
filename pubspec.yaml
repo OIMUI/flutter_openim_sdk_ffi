@@ -13,6 +13,7 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   ffi: ^2.0.2
   path_provider: ^2.0.15
+  uuid:
 
 dev_dependencies:
   ffigen: ^9.0.0
