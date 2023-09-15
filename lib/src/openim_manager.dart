@@ -122,15 +122,9 @@ class OpenIMManager {
   static final Map<String, SendPort> _sendPortMap = {};
 
   /// 原生通信
-  static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
+  static const channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
 
-  static bool _nativeStatus = false;
-
-  /// 监听ios事件
-  static void nativeListen() {
-    _nativeStatus = true;
-    _channel.setMethodCallHandler(_nativeCall);
-  }
+  static bool nativeStatus = false;
 
   static int getIMPlatform() {
     if (kIsWeb) {
@@ -1657,8 +1651,8 @@ class OpenIMManager {
         _methodChannel(msg, completer);
         return;
       }
-      if (msg is Map && _nativeStatus) {
-        _channel.invokeMethod('onEventCall', msg);
+      if (msg is Map && nativeStatus) {
+        channel.invokeMethod('onEventCall', msg);
       }
       if (msg is SendPort) {
         _openIMSendPort = msg;

@@ -77,6 +77,15 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
         open fun error(errorCode: String, errorMessage: String?, errorDetails: Any?)
     }
 
+    fun logout() {
+        channel?.invokeMethod("logout","")
+    }
+    // zh_CN
+    // en_US
+    fun setLocale(language: String) {
+        channel?.invokeMethod("setLocale",language)
+    }
+
     fun getAppUserID(userID: String, callback: OnResult) {
         val hashMap = hashMapOf<String, Any>()
         hashMap["userID"] = userID
