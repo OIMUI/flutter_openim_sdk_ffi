@@ -1651,7 +1651,7 @@ class OpenIMManager {
         _methodChannel(msg, completer);
         return;
       }
-      if (msg is Map && nativeStatus) {
+      if (msg is Map) {
         channel.invokeMethod('onEventCall', msg);
       }
       if (msg is SendPort) {
