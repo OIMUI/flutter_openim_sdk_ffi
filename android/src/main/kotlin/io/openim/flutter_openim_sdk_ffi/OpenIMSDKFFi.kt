@@ -51,7 +51,7 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
         val hashMap = hashMapOf<String, Any>()
         hashMap["appID"] = appID
         hashMap["secret"] = secret
-        channel?.invokeMethod("initSDK", hashMap)
+        channel?.invokeMethod("InitSDK", hashMap)
     }
 
     // 获取列表页面
@@ -78,12 +78,12 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
 
     fun logout() {
-        channel?.invokeMethod("logout","")
+        channel?.invokeMethod("Logout","")
     }
     // zh_CN
     // en_US
     fun setLocale(language: String) {
-        channel?.invokeMethod("setLocale",language)
+        channel?.invokeMethod("SetLocale",language)
     }
 
     fun getAppUserID(userID: String, callback: OnResult) {

@@ -128,7 +128,7 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         var dictionary = [String: Any]()
         dictionary["appID"] = appID
         dictionary["secret"] = secret
-        channel?.invokeMethod("initSDK", arguments: dictionary)
+        channel?.invokeMethod("InitSDK", arguments: dictionary)
         viewController = FlutterViewController(engine: flutterEngine!, nibName: nil, bundle: nil)
     }
     
@@ -152,9 +152,20 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         channel?.invokeMethod("Login", arguments: dictionary)
     }
     
+    // 登出
+    @objc public func logout() {
+        channel?.invokeMethod("Logout", arguments: "")
+    }
+    
+    // 设置语言
+    @objc public func setLocale(language: String) {
+        channel?.invokeMethod("SetLocale", arguments: language)
+    }
+    
     @objc public func getAppUserID(userID: String, callback: @escaping FlutterResult) {
         var dictionary = [String: Any]()
         dictionary["userID"] = userID
+        
         channel?.invokeMethod("GetAppUserId",arguments: dictionary, result: callback)
     }
 }
