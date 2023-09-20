@@ -31,31 +31,18 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         let method = call.method as String
         
         switch method {
+        case "OnInit": 
+            for listener in listeners {
+                if listener is OnConversationListener {
+                    let onConnListener = listener as! OnConversationListener
+                    onConnListener.onInit()
+                }
+            }
         case "onEventCall":
             let args = call.arguments as! [String: Any]
             let message = args["data"] as? String
             if let methodName = args["method"] as? String {
                 for listener in listeners {
-                    if listener is OnConnListener {
-                        let onConnListener = listener as! OnConnListener
-                        switch methodName {
-                        case "OnKickedOffline":
-                            onConnListener.onKickedOffline()
-                        case "OnConnecting":
-                            onConnListener.onConnecting()
-                        case "OnUserTokenExpired":
-                            onConnListener.onUserTokenExpired()
-                        case "OnConnectSuccess":
-                            onConnListener.onConnectSuccess()
-                        case "OnConnectFailed":
-                            if let errCode = args["errCode"] as? Int {
-                                onConnListener.onConnectFailed(code: Int64(errCode), error: message!)
-                            }
-                        default:
-                            break
-                        }
-                    }
-                    else if  listener is OnConversationListener {
                         let onConversationListener = listener as! OnConversationListener
                         switch methodName {
                             //                        case "OnConversationChanged":
@@ -69,9 +56,20 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
                         case "OnSyncServerFinish":
                             onConversationListener.onSyncServerFinish()
                         case "OnTotalUnreadMessageCountChanged":
-                            print(args["errCode"])
                             if let errCode = args["errCode"] as? Int {
                                 onConversationListener.onTotalUnreadMessageCountChanged(count: errCode)
+                            }
+                        case "OnKickedOffline":
+                            onConversationListener.onKickedOffline()
+                        case "OnConnecting":
+                            onConversationListener.onConnecting()
+                        case "OnUserTokenExpired":
+                            onConversationListener.onUserTokenExpired()
+                        case "OnConnectSuccess":
+                            onConversationListener.onConnectSuccess()
+                        case "OnConnectFailed":
+                            if let errCode = args["errCode"] as? Int {
+                                onConversationListener.onConnectFailed(code: Int64(errCode), error: message!)
                             }
                         default:
                             break
@@ -114,7 +112,7 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
                     //                        }
                     //                    }
                 }
-            }
+            
         default:
             break
         }
@@ -138,7 +136,7 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
     
     @objc public func getChatPage(userID: String, pageName: String) -> FlutterViewController {
         let route = String(format: "/chat?sourceID=%@&sessionType=1&showName=%@&native=1", userID, pageName)
-        viewController!.pushRoute(route)
+        channel?.invokeMethod("toNamed", arguments: route)
         return viewController!
     }
     
@@ -167,6 +165,10 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         dictionary["userID"] = userID
         
         channel?.invokeMethod("GetAppUserId",arguments: dictionary, result: callback)
+    }
+    
+    @objc public func getTotalUnreadMsgCount(callback: @escaping FlutterResult) {
+        channel?.invokeMethod("GetTotalUnreadMsgCount",arguments: nil, result: callback)
     }
 }
 

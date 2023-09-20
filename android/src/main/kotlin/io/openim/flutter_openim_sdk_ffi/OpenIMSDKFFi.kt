@@ -36,14 +36,12 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
         listeners.remove(listener)
     }
 
-    fun initSDK(context: Context, appID: String, secret: String) {
-        // 创建Flutter引擎
-
+    fun initSDK(context: Context, appID: String, secret: String, language: String) {
         // 创建Flutter引擎
         val flutterEngine = FlutterEngine(context)
         flutterEngine.plugins.add(this)
         navigationChannel = flutterEngine.navigationChannel
-
+        navigationChannel.setInitialRoute("/home?language=${language}")
         flutterEngine.dartExecutor.executeDartEntrypoint(DartExecutor.DartEntrypoint.createDefault())
         val flutterEngineCache = FlutterEngineCache.getInstance()
         flutterEngineCache.put("im", flutterEngine)
@@ -56,7 +54,6 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
 
     // 获取列表页面
     fun getListPage(context: Context) : Intent {
-        navigationChannel.setInitialRoute("/home")
         return FlutterActivity
             .withCachedEngine("im")
             .build(context)
@@ -64,7 +61,7 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
 
     /// 获取聊天页面
     fun getChatPage(context: Context, userID: String, pageName:String) : Intent {
-        navigationChannel.pushRoute("/chat?sourceID=${userID}&sessionType=1&showName=${pageName}&native=1")
+        channel?.invokeMethod("toNamed","/chat?sourceID=${userID}&sessionType=1&showName=${pageName}&native=1")
         return FlutterActivity
             .withCachedEngine("im")
             .build(context)
@@ -199,6 +196,11 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
+            "OnInit" -> {
+                for (listener in listeners) {
+                    (listener as OnConnListener).onInit()
+                }
+            }
             "onEventCall" -> {
                 var message = (call.argument("data") as String?)
                 var methodName = (call.argument("method") as String?)!!
