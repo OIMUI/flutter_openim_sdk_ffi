@@ -3,6 +3,7 @@ package io.openim.flutter_openim_sdk_ffi
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.FlutterEngineCache
@@ -87,6 +88,23 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
         val hashMap = hashMapOf<String, Any>()
         hashMap["userID"] = userID
         channel?.invokeMethod("GetAppUserId", hashMap, object : MethodChannel.Result {
+
+            override fun success(result: Any?) {
+                callback.success(result)
+            }
+
+            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                callback.error(errorCode, errorMessage, errorDetails)
+            }
+
+            override fun notImplemented() {
+            }
+
+        })
+    }
+
+    fun getTotalUnreadMsgCount(callback: OnResult) {
+        channel?.invokeMethod("GetTotalUnreadMsgCount", null, object : MethodChannel.Result {
 
             override fun success(result: Any?) {
                 callback.success(result)
