@@ -257,9 +257,9 @@ class OpenimSdkFfiBindings {
   }
 
   late final _SetAppBackgroundStatusPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Bool)>>('SetAppBackgroundStatus');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Bool)>>(
+      'SetAppBackgroundStatus');
   late final _SetAppBackgroundStatus = _SetAppBackgroundStatusPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, bool)>();
 
@@ -1286,9 +1286,9 @@ class OpenimSdkFfiBindings {
   }
 
   late final _SetGlobalRecvMessageOptPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Int)>>('SetGlobalRecvMessageOpt');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int)>>(
+      'SetGlobalRecvMessageOpt');
   late final _SetGlobalRecvMessageOpt = _SetGlobalRecvMessageOptPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, int)>();
 
@@ -3095,8 +3095,9 @@ class OpenimSdkFfiBindings {
   }
 
   late final _SetAppBadgePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32)>>('SetAppBadge');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int32)>>(
+      'SetAppBadge');
   late final _SetAppBadge =
       _SetAppBadgePtr.asFunction<void Function(ffi.Pointer<ffi.Char>, int)>();
 

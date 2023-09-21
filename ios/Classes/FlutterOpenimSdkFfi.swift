@@ -118,16 +118,25 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         }
     }
     
-    @objc public func initSDK(engine: FlutterEngine, appID: String, secret: String) {
+    @objc public func initEngine(engine: FlutterEngine, language:String) {
         flutterEngine = engine
+        engine.run(withEntrypoint: "main",initialRoute: "/home?language=\(language)" );
         channel = FlutterMethodChannel(name: "plugins.muka.site/flutter_openim_sdk_ffi", binaryMessenger: flutterEngine!.binaryMessenger)
         channel?.setMethodCallHandler(onMethodCall)
+        viewController = FlutterViewController(engine: flutterEngine!, nibName: nil, bundle: nil)
         
+        // 延迟1s执行
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.setLocale(language: language)
+        }
+    }
+    
+    @objc public func initSDK(appID: String, secret: String, environment: Int,callback: @escaping FlutterResult) {
         var dictionary = [String: Any]()
         dictionary["appID"] = appID
         dictionary["secret"] = secret
-        channel?.invokeMethod("InitSDK", arguments: dictionary)
-        viewController = FlutterViewController(engine: flutterEngine!, nibName: nil, bundle: nil)
+        dictionary["environment"] = environment
+        channel?.invokeMethod("InitSDK", arguments: dictionary, result: callback)
     }
     
     @objc public func getListPage() -> FlutterViewController {
@@ -136,7 +145,7 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
     
     @objc public func getChatPage(userID: String, pageName: String) -> FlutterViewController {
         let route = String(format: "/chat?sourceID=%@&sessionType=1&showName=%@&native=1", userID, pageName)
-        channel?.invokeMethod("toNamed", arguments: route)
+        viewController!.pushRoute(route)
         return viewController!
     }
     
@@ -154,6 +163,14 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
     @objc public func logout() {
         channel?.invokeMethod("Logout", arguments: "")
     }
+    // 设置信息
+    @objc public func setSelfInfo(nickname: String?, faceURL:String?, phoneNumber: String?) {
+        var dictionary = [String: Any]()
+        dictionary["nickname"] = nickname
+        dictionary["faceURL"] = faceURL
+        dictionary["phoneNumber"] = phoneNumber
+        channel?.invokeMethod("SetSelfInfo", arguments: dictionary)
+    }
     
     // 设置语言
     @objc public func setLocale(language: String) {
@@ -165,6 +182,10 @@ typealias NativeMethodCallback = @convention(c) (UnsafePointer<Int8>, UnsafePoin
         dictionary["userID"] = userID
         
         channel?.invokeMethod("GetAppUserId",arguments: dictionary, result: callback)
+    }
+    
+    @objc public func getLoginStatus( callback: @escaping FlutterResult) {
+        channel?.invokeMethod("GetLoginStatus",arguments: nil, result: callback)
     }
     
     @objc public func getTotalUnreadMsgCount(callback: @escaping FlutterResult) {

@@ -37,7 +37,7 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
         listeners.remove(listener)
     }
 
-    fun initSDK(context: Context, appID: String, secret: String, language: String) {
+    fun initEngine(context: Context, language: String){
         // 创建Flutter引擎
         val flutterEngine = FlutterEngine(context)
         flutterEngine.plugins.add(this)
@@ -46,11 +46,27 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
         flutterEngine.dartExecutor.executeDartEntrypoint(DartExecutor.DartEntrypoint.createDefault())
         val flutterEngineCache = FlutterEngineCache.getInstance()
         flutterEngineCache.put("im", flutterEngine)
+    }
 
+    fun initSDK(appID: String, secret: String, environment: Int, callback: OnResult) {
         val hashMap = hashMapOf<String, Any>()
         hashMap["appID"] = appID
         hashMap["secret"] = secret
-        channel?.invokeMethod("InitSDK", hashMap)
+        hashMap["environment"] = environment
+        channel?.invokeMethod("InitSDK", hashMap,object : MethodChannel.Result {
+
+            override fun success(result: Any?) {
+                callback.success(result)
+            }
+
+            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                callback.error(errorCode, errorMessage, errorDetails)
+            }
+
+            override fun notImplemented() {
+            }
+
+        })
     }
 
     // 获取列表页面
@@ -62,7 +78,7 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
 
     /// 获取聊天页面
     fun getChatPage(context: Context, userID: String, pageName:String) : Intent {
-        channel?.invokeMethod("toNamed","/chat?sourceID=${userID}&sessionType=1&showName=${pageName}&native=1")
+        navigationChannel.pushRoute("/chat?sourceID=${userID}&sessionType=1&showName=${pageName}&native=1")
         return FlutterActivity
             .withCachedEngine("im")
             .build(context)
@@ -103,6 +119,42 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
         })
     }
 
+    fun setSelfInfo(nickname: String?,faceURL: String?, phoneNumber: String?, callback: OnResult) {
+        val hashMap = hashMapOf<String, Any?>()
+        hashMap["nickname"] = nickname
+        hashMap["faceURL"] = faceURL
+        hashMap["phoneNumber"] = phoneNumber
+        channel?.invokeMethod("SetSelfInfo", hashMap, object : MethodChannel.Result {
+
+            override fun success(result: Any?) {
+                callback.success(result)
+            }
+
+            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                callback.error(errorCode, errorMessage, errorDetails)
+            }
+
+            override fun notImplemented() {
+            }
+
+        })
+    }
+    fun getLoginStatus(callback: OnResult) {
+        channel?.invokeMethod("GetLoginStatus", null, object : MethodChannel.Result {
+
+            override fun success(result: Any?) {
+                callback.success(result)
+            }
+
+            override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+                callback.error(errorCode, errorMessage, errorDetails)
+            }
+
+            override fun notImplemented() {
+            }
+
+        })
+    }
     fun getTotalUnreadMsgCount(callback: OnResult) {
         channel?.invokeMethod("GetTotalUnreadMsgCount", null, object : MethodChannel.Result {
 
@@ -213,6 +265,7 @@ class OpenIMSDKFFi : FlutterPlugin, MethodChannel.MethodCallHandler {
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        Log.d("=====", call.method)
         when (call.method) {
             "OnInit" -> {
                 for (listener in listeners) {

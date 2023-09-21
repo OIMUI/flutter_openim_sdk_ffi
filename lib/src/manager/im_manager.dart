@@ -14,6 +14,8 @@ class IMManager {
 
   String? uid;
 
+  String? loginID;
+
   UserInfo? uInfo;
 
   bool isLogined = false;
@@ -233,6 +235,7 @@ class IMManager {
     Future<UserInfo> Function()? defaultValue,
   }) async {
     this.isLogined = true;
+    this.loginID = userID;
     ReceivePort receivePort = ReceivePort();
     OpenIMManager._openIMSendPort.send(_PortModel(
       method: _PortMethod.login,
@@ -260,6 +263,7 @@ class IMManager {
 
   /// 登出
   Future<void> logout({String? operationID}) async {
+    loginID = null;
     ReceivePort receivePort = ReceivePort();
 
     OpenIMManager._openIMSendPort.send(_PortModel(

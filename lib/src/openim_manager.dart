@@ -91,12 +91,15 @@ class InitSdkParams {
   final String appID;
   final String secret;
 
+  final int environment;
+
   InitSdkParams({
     required this.apiAddr,
     required this.wsAddr,
     required this.logLevel,
     required this.appID,
     required this.secret,
+    required this.environment,
     this.dataDir,
     this.operationID,
     this.encryptionKey,
@@ -274,6 +277,7 @@ class OpenIMManager {
           'is_external_extensions': data.isExternalExtensions,
           'app_id': data.appID,
           'secret': data.secret,
+          'environment': data.environment,
         });
         status = _imBindings.InitSDK(
           IMUtils.checkOperationID(data.operationID).toNativeUtf8().cast<ffi.Char>(),
