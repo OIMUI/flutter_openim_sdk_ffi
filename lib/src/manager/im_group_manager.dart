@@ -9,9 +9,10 @@ class GroupManager {
     required List<String> uidList,
     String? reason,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.inviteUserToGroup,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -35,9 +36,10 @@ class GroupManager {
     required List<String> uidList,
     String? reason,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.kickGroupMember,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -59,9 +61,10 @@ class GroupManager {
     required String groupId,
     required List<String> uidList,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getGroupMembersInfo,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -90,9 +93,10 @@ class GroupManager {
     int offset = 0,
     int count = 0,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getGroupMemberList,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -121,7 +125,7 @@ class GroupManager {
   //   String? operationID,
   // }) async {
   //   ReceivePort receivePort = ReceivePort();
-  //   OpenIMManager._openIMSendPort.send(_PortModel(
+  //   OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
   //     method: _PortMethod.getGroupMemberList,
   //     data: {
   //       'operationID': IMUtils.checkOperationID(operationID),
@@ -139,9 +143,12 @@ class GroupManager {
   // }
 
   /// 查询已加入的组列表
-  Future<List<GroupInfo>> getJoinedGroupList({String? operationID}) async {
+  Future<List<GroupInfo>> getJoinedGroupList({
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getJoinedGroupList,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -156,7 +163,7 @@ class GroupManager {
   /// 查询已加入的组列表
   // Future<List<dynamic>> getJoinedGroupListMap({String? operationID}) async {
   //   ReceivePort receivePort = ReceivePort();
-  //   OpenIMManager._openIMSendPort.send(_PortModel(
+  //   OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
   //     method: _PortMethod.getJoinedGroupList,
   //     data: {
   //       'operationID': IMUtils.checkOperationID(operationID),
@@ -196,9 +203,10 @@ class GroupManager {
     List<String> adminUserIDs = const [],
     String? ownerUserID,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.createGroup,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -229,9 +237,10 @@ class GroupManager {
     String? faceUrl,
     String? ex,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setGroupInfo,
       data: {
         "gid": groupID,
@@ -258,9 +267,10 @@ class GroupManager {
   Future<List<GroupInfo>> getGroupsInfo({
     required List<String> gidList,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getGroupsInfo,
       data: {
         "gidList": gidList,
@@ -280,9 +290,10 @@ class GroupManager {
     String? reason,
     String? operationID,
     int joinSource = 3,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.joinGroup,
       data: {
         "gid": gid,
@@ -303,9 +314,10 @@ class GroupManager {
   Future<void> quitGroup({
     required String gid,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.quitGroup,
       data: {
         "gid": gid,
@@ -327,9 +339,10 @@ class GroupManager {
     required String gid,
     required String uid,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.transferGroupOwner,
       data: {
         "gid": gid,
@@ -346,9 +359,12 @@ class GroupManager {
   }
 
   /// 作为群主或者管理员，收到的群成员入群申请
-  Future<List<GroupApplicationInfo>> getRecvGroupApplicationList({String? operationID}) async {
+  Future<List<GroupApplicationInfo>> getRecvGroupApplicationList({
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getRecvGroupApplicationList,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -361,9 +377,12 @@ class GroupManager {
   }
 
   /// 获取自己发出的入群申请记录
-  Future<List<GroupApplicationInfo>> getSendGroupApplicationList({String? operationID}) async {
+  Future<List<GroupApplicationInfo>> getSendGroupApplicationList({
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getSendGroupApplicationList,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -384,9 +403,10 @@ class GroupManager {
     required String uid,
     String? handleMsg,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.acceptGroupApplication,
       data: {
         'gid': gid,
@@ -413,9 +433,10 @@ class GroupManager {
     required String uid,
     String? handleMsg,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.refuseGroupApplication,
       data: {
         'gid': gid,
@@ -437,9 +458,10 @@ class GroupManager {
   Future<void> dismissGroup({
     required String groupID,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.dismissGroup,
       data: {
         'gid': groupID,
@@ -461,9 +483,10 @@ class GroupManager {
     required String groupID,
     required bool mute,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.changeGroupMute,
       data: {
         'gid': groupID,
@@ -488,9 +511,10 @@ class GroupManager {
     required String userID,
     int seconds = 0,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.changeGroupMemberMute,
       data: {
         'gid': groupID,
@@ -516,9 +540,10 @@ class GroupManager {
     required String userID,
     String? groupNickname,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setGroupMemberNickname,
       data: {
         'gid': groupID,
@@ -544,9 +569,10 @@ class GroupManager {
     bool isSearchGroupID = false,
     bool isSearchGroupName = false,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.searchGroups,
       data: {
         'keywordList': keywordList,
@@ -570,9 +596,10 @@ class GroupManager {
     required String userID,
     required int roleLevel,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setGroupMemberRoleLevel,
       data: {
         'gid': groupID,
@@ -604,9 +631,10 @@ class GroupManager {
     int joinTimeEnd = 0,
     List<String> excludeUserIDList = const [],
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getGroupMemberListByJoinTimeFilter,
       data: {
         'gid': groupID,
@@ -631,9 +659,10 @@ class GroupManager {
     required String groupID,
     required int needVerification,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setGroupVerification,
       data: {
         'gid': groupID,
@@ -656,9 +685,10 @@ class GroupManager {
     required String groupID,
     required int status,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setGroupLookMemberInfo,
       data: {
         'gid': groupID,
@@ -681,9 +711,10 @@ class GroupManager {
     required String groupID,
     required int status,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setGroupApplyMemberFriend,
       data: {
         'gid': groupID,
@@ -704,9 +735,10 @@ class GroupManager {
   Future<List<GroupMembersInfo>> getGroupOwnerAndAdmin({
     required String groupID,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getGroupMemberOwnerAndAdmin,
       data: {
         'gid': groupID,
@@ -734,9 +766,10 @@ class GroupManager {
     int offset = 0,
     int count = 40,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.searchGroupMembers,
       data: {
         'searchParam': {
@@ -773,7 +806,7 @@ class GroupManager {
   //   String? operationID,
   // }) async {
   //   ReceivePort receivePort = ReceivePort();
-  //   OpenIMManager._openIMSendPort.send(_PortModel(
+  //   OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
   //     method: _PortMethod.searchGroupMembers,
   //     data: {
   //       'searchParam': {
@@ -800,9 +833,10 @@ class GroupManager {
     required String userID,
     String? ex,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setGroupMemberInfo,
       data: {
         'groupID': groupID,

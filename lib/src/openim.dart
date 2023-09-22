@@ -36,12 +36,12 @@ final ffi.DynamicLibrary _imDylib = () {
   throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
 }();
 
-final FlutterOpenimSdkFfiBindings _bindings = FlutterOpenimSdkFfiBindings(_dylib);
-
 class OpenIM {
-  static Future<String> get version async {
+  static Future<String> version({
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(method: _PortMethod.version, sendPort: receivePort.sendPort));
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(method: _PortMethod.version, sendPort: receivePort.sendPort));
     _PortResult<String> data = await receivePort.first;
     receivePort.close();
     return data.value;

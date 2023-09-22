@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "flutter_openim_sdk_ffi.h"
+#include "openim_sdk_ffi.h"
 #include "include/dart_api_dl.c"
 #include "cJSON/cJSON.c"
 
@@ -13,25 +14,23 @@
 // 定义回调函数
 PrintCallback printCallback;
 
-static CGO_OpenIM_Listener g_listener;
+CGO_OpenIM_Listener g_listener;
 
-static void* dlfHandle;
-
-bool registerNativeCallback = false;
-
+void *dlfHandle;
 
 // 定义参数结构体
-typedef struct {
+typedef struct
+{
     Dart_Port_DL port;
-    char* methodName;
-    char* operationID;
-    char* callMethodName;
-    double* errCode;
-    char* message;
+    char *methodName;
+    char *operationID;
+    char *callMethodName;
+    double *errCode;
+    char *message;
 } ThreadArgs;
 
 // 设置回调函数
-void setPrintCallback(PrintCallback callback)
+FFI_PLUGIN_EXPORT void setPrintCallback(PrintCallback callback)
 {
     printCallback = callback;
 }
@@ -48,32 +47,36 @@ void printMessage(const char *message)
 
 #if defined(_WIN32) || defined(_WIN64)
 
-    DWORD WINAPI entry_point(LPVOID arg)
+DWORD WINAPI entry_point(LPVOID arg)
 {
-    ThreadArgs* args = (ThreadArgs*)arg;
+    ThreadArgs *args = (ThreadArgs *)arg;
 
     Dart_Port_DL port = args->port;
-    char* methodName = args->methodName;
-    char* operationID = args->operationID;
-    double* errCode = args->errCode;
-    char* message = args->message;
-    char* callMethodName = args->callMethodName;
+    char *methodName = args->methodName;
+    char *operationID = args->operationID;
+    double *errCode = args->errCode;
+    char *message = args->message;
+    char *callMethodName = args->callMethodName;
 
     Dart_CObject dart_object;
     dart_object.type = Dart_CObject_kString;
     cJSON *json = cJSON_CreateObject();
 
     cJSON_AddStringToObject(json, "method", methodName);
-    if (operationID != NULL) {
+    if (operationID != NULL)
+    {
         cJSON_AddStringToObject(json, "operationID", operationID);
     }
-    if (callMethodName != NULL) {
+    if (callMethodName != NULL)
+    {
         cJSON_AddStringToObject(json, "callMethodName", callMethodName);
     }
-    if (errCode != NULL) {
+    if (errCode != NULL)
+    {
         cJSON_AddNumberToObject(json, "errCode", *errCode);
     }
-    if (message != NULL) {
+    if (message != NULL)
+    {
         cJSON_AddStringToObject(json, "data", message);
     }
 
@@ -92,9 +95,9 @@ void printMessage(const char *message)
     return 0;
 }
 
-void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message)
+void onMethodChannelFunc(Dart_Port_DL port, char *methodName, char *operationID, char *callMethodName, double *errCode, char *message)
 {
-    ThreadArgs* args = (ThreadArgs*)malloc(sizeof(ThreadArgs));
+    ThreadArgs *args = (ThreadArgs *)malloc(sizeof(ThreadArgs));
 
     args->port = port;
     args->methodName = methodName;
@@ -114,35 +117,39 @@ void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID,
     CloseHandle(thread);
 }
 #else
-void *entry_point(void* arg)
+void *entry_point(void *arg)
 {
 
     // 将void指针转换回ThreadArgs结构体指针
-    ThreadArgs* args = (ThreadArgs*)arg;
+    ThreadArgs *args = (ThreadArgs *)arg;
 
     // 从结构体中获取参数
     Dart_Port_DL port = args->port;
-    char* methodName = args->methodName;
-    char* operationID = args->operationID;
-    double* errCode = args->errCode;
-    char* message = args->message;
-    char* callMethodName = args->callMethodName;
+    char *methodName = args->methodName;
+    char *operationID = args->operationID;
+    double *errCode = args->errCode;
+    char *message = args->message;
+    char *callMethodName = args->callMethodName;
 
     Dart_CObject dart_object;
     dart_object.type = Dart_CObject_kString;
     cJSON *json = cJSON_CreateObject();
 
     cJSON_AddStringToObject(json, "method", methodName);
-    if (operationID != NULL) {
+    if (operationID != NULL)
+    {
         cJSON_AddStringToObject(json, "operationID", operationID);
     }
-    if (callMethodName != NULL) {
+    if (callMethodName != NULL)
+    {
         cJSON_AddStringToObject(json, "callMethodName", callMethodName);
     }
-    if (errCode != NULL) {
+    if (errCode != NULL)
+    {
         cJSON_AddNumberToObject(json, "errCode", *errCode);
     }
-    if (message != NULL) {
+    if (message != NULL)
+    {
         cJSON_AddStringToObject(json, "data", message);
     }
 
@@ -161,10 +168,10 @@ void *entry_point(void* arg)
     pthread_exit(NULL);
 }
 
-void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message)
+void onMethodChannelFunc(Dart_Port_DL port, char *methodName, char *operationID, char *callMethodName, double *errCode, char *message)
 {
     // 创建参数结构体并分配内存
-    ThreadArgs* args = (ThreadArgs*)malloc(sizeof(ThreadArgs));
+    ThreadArgs *args = (ThreadArgs *)malloc(sizeof(ThreadArgs));
 
     // 设置参数值
     args->port = port;
@@ -180,29 +187,22 @@ void onMethodChannelFunc(Dart_Port_DL port, char* methodName, char* operationID,
 }
 #endif
 
-
 FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
 {
     return Dart_InitializeApiDL(data);
 }
 
 // 在Dart中注册回调函数
-FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isolate_send_port) {
+FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isolate_send_port)
+{
     dlfHandle = handle;
     g_listener.onMethodChannel = onMethodChannelFunc;
-    #if defined(_WIN32) || defined(_WIN64)
-        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = GetProcAddress(dlfHandle, "RegisterCallback");
-    #else
-        void (*RegisterCallback)(CGO_OpenIM_Listener*, Dart_Port_DL) = dlsym(dlfHandle, "RegisterCallback");
-    #endif
+#if defined(_WIN32) || defined(_WIN64)
+    void (*RegisterCallback)(CGO_OpenIM_Listener *, Dart_Port_DL) = GetProcAddress(dlfHandle, "RegisterCallback");
+#else
+    void (*RegisterCallback)(CGO_OpenIM_Listener *, Dart_Port_DL) = dlsym(dlfHandle, "RegisterCallback");
+#endif
     RegisterCallback(&g_listener, isolate_send_port);
 
     printMessage("注册dart回调成功");
-}
-
-FFI_PLUGIN_EXPORT void ffi_Dart_InitSDK() {
-    if (registerNativeCallback) {
-        printf("Native回调注册通知\n");
-        g_listener.onNativeMethodChannel("OnInitSDK", "", "", 0, "OK");
-    }
 }

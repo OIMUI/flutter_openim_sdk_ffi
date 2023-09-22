@@ -208,31 +208,25 @@ class IMManager {
         OpenIMManager._onEvent((listener) => listener.onUploadFileOpen(channel.operationID!, channel.data['size']));
         break;
       case ListenerType.partSize:
-        OpenIMManager._onEvent(
-            (listener) => listener.onUploadFilePartSize(channel.operationID!, channel.data['partSize'], channel.data['num']));
+        OpenIMManager._onEvent((listener) => listener.onUploadFilePartSize(channel.operationID!, channel.data['partSize'], channel.data['num']));
         break;
       case ListenerType.hashPartProgress:
-        OpenIMManager._onEvent((listener) => listener.onUploadFileHashPartProgress(
-            channel.operationID!, channel.data['index'], channel.data['size'], channel.data['partHash']));
+        OpenIMManager._onEvent((listener) => listener.onUploadFileHashPartProgress(channel.operationID!, channel.data['index'], channel.data['size'], channel.data['partHash']));
         break;
       case ListenerType.hashPartComplete:
-        OpenIMManager._onEvent(
-            (listener) => listener.onUploadFileHashPartComplete(channel.operationID!, channel.data['partsHash'], channel.data['fileHash']));
+        OpenIMManager._onEvent((listener) => listener.onUploadFileHashPartComplete(channel.operationID!, channel.data['partsHash'], channel.data['fileHash']));
         break;
       case ListenerType.uploadID:
         OpenIMManager._onEvent((listener) => listener.onUploadFileID(channel.operationID!, channel.data));
         break;
       case ListenerType.uploadPartComplete:
-        OpenIMManager._onEvent((listener) => listener.onUploadFilePartComplete(
-            channel.operationID!, channel.data['index'], channel.data['partSize'], channel.data['partHash']));
+        OpenIMManager._onEvent((listener) => listener.onUploadFilePartComplete(channel.operationID!, channel.data['index'], channel.data['partSize'], channel.data['partHash']));
         break;
       case ListenerType.uploadComplete:
-        OpenIMManager._onEvent((listener) => listener.onUploadFileProgress(
-            channel.operationID!, channel.data['fileSize'], channel.data['streamSize'], channel.data['storageSize']));
+        OpenIMManager._onEvent((listener) => listener.onUploadFileProgress(channel.operationID!, channel.data['fileSize'], channel.data['streamSize'], channel.data['storageSize']));
         break;
       case ListenerType.complete:
-        OpenIMManager._onEvent((listener) =>
-            listener.onUploadFileComplete(channel.operationID!, channel.data['size'], channel.data['url'], channel.data['typ']));
+        OpenIMManager._onEvent((listener) => listener.onUploadFileComplete(channel.operationID!, channel.data['size'], channel.data['url'], channel.data['typ']));
         break;
     }
   }
@@ -241,7 +235,7 @@ class IMManager {
   // Future<void> unInitSDK() async {
   //   ReceivePort receivePort = ReceivePort();
 
-  //   OpenIMManager._openIMSendPort.send(_PortModel(
+  //   OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
   //     method: _PortMethod.unInitSDK,
   //     sendPort: receivePort.sendPort,
   //   ));
@@ -261,13 +255,14 @@ class IMManager {
     required String token,
     String? operationID,
     Future<UserInfo> Function()? defaultValue,
+    String tag = 'openim_ffi',
   }) async {
     isLogined = true;
     this.uid = uid;
     this.token = token;
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.login,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'uid': uid, 'token': token},
       sendPort: receivePort.sendPort,
@@ -290,10 +285,13 @@ class IMManager {
   }
 
   /// 登出
-  Future<void> logout({String? operationID}) async {
+  Future<void> logout({
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.logout,
       data: {'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -305,9 +303,11 @@ class IMManager {
   }
 
   /// 获取登录状态
-  Future<int?> getLoginStatus() async {
+  Future<int?> getLoginStatus({
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getLoginStatus,
       sendPort: receivePort.sendPort,
     ));
@@ -329,7 +329,9 @@ class IMManager {
   }
 
   /// 获取当前登录用户信息
-  Future<UserInfo> getLoginUserInfo() async {
+  Future<UserInfo> getLoginUserInfo({
+    String tag = 'openim_ffi',
+  }) async {
     if (uInfo == null) {
       UserInfo info = await OpenIM.iMManager.userManager.getSelfUserInfo();
       uInfo = info;
@@ -341,10 +343,13 @@ class IMManager {
   }
 
   /// 从后台回到前台立刻唤醒
-  Future wakeUp({String? operationID}) async {
+  Future wakeUp({
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.wakeUp,
       data: {'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -367,9 +372,10 @@ class IMManager {
     String? contentType,
     String? cause,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.uploadFile,
       data: {
         'filePath': filePath,
@@ -393,10 +399,11 @@ class IMManager {
   Future<void> updateFcmToken({
     required String fcmToken,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.updateFcmToken,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -416,10 +423,11 @@ class IMManager {
   Future<void> setAppBackgroundStatus({
     required bool isBackground,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setAppBackgroundStatus,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -438,10 +446,11 @@ class IMManager {
   /// 网络改变
   Future<void> networkChanged({
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.networkStatusChanged,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -457,9 +466,13 @@ class IMManager {
   }
 
   /// 设置角标
-  Future<void> setAppBadge(int unreadCount, {String? operationID}) async {
+  Future<void> setAppBadge(
+    int unreadCount, {
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setAppBadge,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),

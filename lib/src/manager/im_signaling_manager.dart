@@ -6,10 +6,11 @@ class SignalingManager {
   Future<SignalingCertificate> signalingInvite({
     required SignalingInfo info,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingInvite,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
       sendPort: receivePort.sendPort,
@@ -25,10 +26,11 @@ class SignalingManager {
   Future<SignalingCertificate> signalingInviteInGroup({
     required SignalingInfo info,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingInviteInGroup,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
       sendPort: receivePort.sendPort,
@@ -44,10 +46,11 @@ class SignalingManager {
   Future<SignalingCertificate> signalingAccept({
     required SignalingInfo info,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingAccept,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
       sendPort: receivePort.sendPort,
@@ -63,10 +66,11 @@ class SignalingManager {
   Future<void> signalingReject({
     required SignalingInfo info,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingReject,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
       sendPort: receivePort.sendPort,
@@ -84,10 +88,11 @@ class SignalingManager {
   Future<void> signalingCancel({
     required SignalingInfo info,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingCancel,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
       sendPort: receivePort.sendPort,
@@ -105,10 +110,11 @@ class SignalingManager {
   Future<void> signalingHungUp({
     required SignalingInfo info,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingHungUp,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info.toJson()},
       sendPort: receivePort.sendPort,
@@ -126,10 +132,11 @@ class SignalingManager {
   Future<RoomCallingInfo> signalingGetRoomByGroupID({
     required String groupID,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingGetRoomByGroupID,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'groupID': groupID},
       sendPort: receivePort.sendPort,
@@ -145,10 +152,11 @@ class SignalingManager {
   Future<SignalingCertificate> signalingGetTokenByRoomID({
     required String roomID,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingGetTokenByRoomID,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'roomID': roomID},
       sendPort: receivePort.sendPort,
@@ -208,6 +216,7 @@ class SignalingManager {
   Future<void> signalingUpdateMeetingInfo({
     required Map info,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     if (info['meetingID'] != null) {
       info['roomID'] = info['meetingID'];
@@ -215,7 +224,7 @@ class SignalingManager {
     assert(info['roomID'] != null);
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingUpdateMeetingInfo,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'info': info},
       sendPort: receivePort.sendPort,
@@ -243,10 +252,11 @@ class SignalingManager {
     List<String> inviteeUserIDList = const [],
     String? ex,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingCreateMeeting,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -274,10 +284,11 @@ class SignalingManager {
     String? meetingName,
     String? participantNickname,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingJoinMeeting,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -306,10 +317,11 @@ class SignalingManager {
     bool mute = false,
     bool muteAll = false,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingOperateStream,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -333,10 +345,11 @@ class SignalingManager {
   /// [roomID] 会议ID
   Future<MeetingInfoList> signalingGetMeetings({
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingGetMeetings,
       data: {'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -351,10 +364,11 @@ class SignalingManager {
   Future<dynamic> signalingCloseRoom({
     required String roomID,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingCloseRoom,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'roomID': roomID},
       sendPort: receivePort.sendPort,
@@ -374,10 +388,11 @@ class SignalingManager {
     required String roomID,
     required String customInfo,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.signalingSendCustomSignal,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'roomID': roomID, 'customInfo': customInfo},
       sendPort: receivePort.sendPort,

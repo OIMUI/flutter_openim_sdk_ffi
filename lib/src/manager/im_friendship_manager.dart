@@ -7,9 +7,10 @@ class FriendshipManager {
   Future<List<UserInfo>> getFriendsInfo({
     required List<String> uidList,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getFriendsInfo,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -29,9 +30,10 @@ class FriendshipManager {
     required String uid,
     String? reason,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.addFriend,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -49,9 +51,12 @@ class FriendshipManager {
   }
 
   /// 获取别人加我为好友的申请
-  Future<List<FriendApplicationInfo>> getRecvFriendApplicationList({String? operationID}) async {
+  Future<List<FriendApplicationInfo>> getRecvFriendApplicationList({
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getRecvFriendApplicationList,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -65,9 +70,12 @@ class FriendshipManager {
   }
 
   /// 获取我发出的好友申请
-  Future<List<FriendApplicationInfo>> getSendFriendApplicationList({String? operationID}) async {
+  Future<List<FriendApplicationInfo>> getSendFriendApplicationList({
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getSendFriendApplicationList,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -81,9 +89,12 @@ class FriendshipManager {
   }
 
   /// 获取好友列表，返回的列表包含了已拉入黑名单的好友
-  Future<List<UserInfo>> getFriendList({String? operationID}) async {
+  Future<List<UserInfo>> getFriendList({
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getFriendList,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -97,9 +108,12 @@ class FriendshipManager {
   }
 
   /// 获取好友列表，返回的列表包含了已拉入黑名单的好友
-  Future<List<UserInfo>> getFriendListMap({String? operationID}) async {
+  Future<List<UserInfo>> getFriendListMap({
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getFriendList,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -119,9 +133,10 @@ class FriendshipManager {
     required String uid,
     required String remark,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setFriendRemark,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -143,9 +158,10 @@ class FriendshipManager {
   Future<dynamic> addBlacklist({
     required String uid,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.addBlacklist,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -162,9 +178,12 @@ class FriendshipManager {
   }
 
   /// 获取黑名单列表
-  Future<List<UserInfo>> getBlacklist({String? operationID}) async {
+  Future<List<UserInfo>> getBlacklist({
+    String? operationID,
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getBlacklist,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -182,9 +201,10 @@ class FriendshipManager {
   Future<dynamic> removeBlacklist({
     required String uid,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.removeBlacklist,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -205,9 +225,10 @@ class FriendshipManager {
   Future<List<FriendshipInfo>> checkFriend({
     required List<String> uidList,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.checkFriend,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -226,9 +247,10 @@ class FriendshipManager {
   Future<void> deleteFriend({
     required String uid,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.deleteFriend,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -251,9 +273,10 @@ class FriendshipManager {
     required String uid,
     String? handleMsg,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.acceptFriendApplication,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -277,9 +300,10 @@ class FriendshipManager {
     required String uid,
     String? handleMsg,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.refuseFriendApplication,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -307,12 +331,13 @@ class FriendshipManager {
     bool isSearchNickname = false,
     bool isSearchRemark = false,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     if (keywordList.isEmpty) {
       throw Exception('keywordList is empty');
     }
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.searchFriends,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),

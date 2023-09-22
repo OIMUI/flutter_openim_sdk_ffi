@@ -27,6 +27,7 @@ part 'src/models/organization_info.dart';
 part 'src/models/search_info.dart';
 part 'src/models/signaling_info.dart';
 part 'src/models/user_info.dart';
+part 'src/models/openim.dart';
 
 part 'src/enum/conversation_type.dart';
 part 'src/enum/group_at_type.dart';
@@ -55,4 +56,3 @@ part 'src/manager/im_user_manager.dart';
 
 part 'src/openim_error.dart';
 part 'src/callback/callback.dart';
-part 'src/callback/native_method.dart';

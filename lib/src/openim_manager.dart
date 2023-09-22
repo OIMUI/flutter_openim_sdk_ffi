@@ -1,133 +1,25 @@
 part of flutter_openim_sdk_ffi;
 
-class _PortResult<T> {
-  final T? data;
-
-  final String? error;
-
-  final int? errCode;
-
-  final String? callMethodName;
-
-  _PortResult({
-    this.data,
-    this.error,
-    this.errCode,
-    this.callMethodName,
-  });
-
-  T get value {
-    if (error != null) {
-      throw OpenIMError(errCode!, error!, methodName: callMethodName);
-    }
-    return data!;
-  }
-}
-
-class _PortModel {
-  final String method;
-
-  dynamic data;
-
-  final SendPort? sendPort;
-
-  final dynamic errCode;
-
-  final String? operationID;
-
-  final String? callMethodName;
-
-  _PortModel({
-    required this.method,
-    this.data,
-    this.sendPort,
-    this.errCode,
-    this.operationID,
-    this.callMethodName,
-  });
-
-  factory _PortModel.fromJson(Map<String, dynamic> json) => _PortModel(
-        method: json['method'] as String,
-        data: json['data'],
-        errCode: json['errCode'],
-        operationID: json['operationID'] as String?,
-        callMethodName: json['callMethodName'] as String?,
-      );
-
-  toJson() => {
-        'method': method,
-        'data': data,
-        'errCode': errCode,
-        'operationID': operationID,
-        'callMethodName': callMethodName,
-      };
-}
-
-class _IsolateTaskData<T> {
-  final SendPort sendPort;
-
-  RootIsolateToken? rootIsolateToken;
-
-  final T data;
-
-  _IsolateTaskData(this.sendPort, this.data, this.rootIsolateToken);
-}
-
-class InitSdkParams {
-  final String apiAddr;
-  final String wsAddr;
-  final String? dataDir;
-
-  final int logLevel;
-  final String objectStorage;
-
-  final String? operationID;
-
-  final bool isLogStandardOutput;
-  final String? logFilePath;
-  final bool isExternalExtensions;
-
-  final String? appID;
-  final String? secret;
-
-  InitSdkParams({
-    required this.apiAddr,
-    required this.wsAddr,
-    this.logLevel = 6,
-    this.objectStorage = 'cos',
-    this.dataDir,
-    this.operationID,
-    this.isLogStandardOutput = false,
-    this.logFilePath,
-    this.isExternalExtensions = false,
-    this.appID,
-    this.secret,
-  });
-}
-
 class OpenIMManager {
-  static bool _isInit = false;
-
   static late final OpenimSdkFfiBindings _imBindings;
 
   /// 主进程通信端口
-  static final ReceivePort _receivePort = ReceivePort();
+  static final Map<String, ReceivePort> _receivePorts = {};
 
   /// openIm 通信端口
-  static late final SendPort _openIMSendPort;
+  static final Map<String, SendPort> _openIMSendPorts = {};
 
   /// 通信存储
   static final Map<String, SendPort> _sendPortMap = {};
 
-  /// 原生通信
-  static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
+  /// 获取通信端口
+  static ReceivePort? _getTagReceivePort(String tag) {
+    return _receivePorts[tag];
+  }
 
-  static bool _nativeStatus = false;
-
-  /// 监听ios事件
-  static void nativeChannel() {
-    _nativeStatus = true;
-    _channel.setMethodCallHandler(_nativeMethod);
+  /// 获取线程里的通信端口
+  static SendPort? _getTagSendPort(String tag) {
+    return _openIMSendPorts[tag];
   }
 
   static int getIMPlatform() {
@@ -152,7 +44,7 @@ class OpenIMManager {
     return IMPlatform.ipad;
   }
 
-  static Future<void> _isolateEntry(_IsolateTaskData<InitSdkParams?> task) async {
+  static Future<void> _isolateEntry(_IsolateTaskData<_InitSdkParams?> task) async {
     if (task.rootIsolateToken != null) {
       BackgroundIsolateBinaryMessenger.ensureInitialized(task.rootIsolateToken!);
     }
@@ -161,13 +53,14 @@ class OpenIMManager {
       final receivePort = ReceivePort();
       task.sendPort.send(receivePort.sendPort);
 
+      final FlutterOpenimSdkFfiBindings _bindings = FlutterOpenimSdkFfiBindings(_dylib);
       _bindings.ffi_Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
       _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
 
       _imBindings = OpenimSdkFfiBindings(_imDylib);
       bool status = true;
       if (task.data != null) {
-        InitSdkParams data = task.data!;
+        _InitSdkParams data = task.data!;
         String? dataDir = data.dataDir;
         if (dataDir == null) {
           Directory document = await getApplicationDocumentsDirectory();
@@ -179,12 +72,9 @@ class OpenIMManager {
           'wsAddr': data.wsAddr,
           'dataDir': dataDir,
           'logLevel': data.logLevel,
-          "objectStorage": data.objectStorage,
           'LogFilePath': data.logFilePath,
           'isLogStandardOutput': data.isLogStandardOutput,
           'isExternalExtensions': data.isExternalExtensions,
-          'app_id': data.appID,
-          'secret': data.secret,
         });
         status = _imBindings.InitSDK(
           IMUtils.checkOperationID(data.operationID).toNativeUtf8().cast<ffi.Char>(),
@@ -1172,25 +1062,44 @@ class OpenIMManager {
   }
 
   /// 初始化
-  ///
-  /// [params] 在flutter中使用必传 如果混合开发则不需要传
-  static Future<bool> init({InitSdkParams? params}) async {
-    if (_isInit) return false;
-    _isInit = true;
+  static Future<bool> init({
+    required String apiAddr,
+    required String wsAddr,
+    String? dataDir,
+    int logLevel = 6,
+    String? operationID,
+    bool isLogStandardOutput = false,
+    String? logFilePath,
+    bool isExternalExtensions = false,
+    String tag = 'openim_ffi',
+  }) async {
+    ReceivePort? port = _getTagReceivePort(tag);
+    if (port != null) {
+      return true;
+    }
+    port = ReceivePort();
+    _receivePorts[tag] = port;
     RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
-    await Isolate.spawn(_isolateEntry, _IsolateTaskData<InitSdkParams?>(_receivePort.sendPort, params, rootIsolateToken));
+    _InitSdkParams params = _InitSdkParams(
+      apiAddr: apiAddr,
+      wsAddr: wsAddr,
+      dataDir: dataDir,
+      logLevel: logLevel,
+      operationID: operationID,
+      isLogStandardOutput: isLogStandardOutput,
+      logFilePath: logFilePath,
+      isExternalExtensions: isExternalExtensions,
+    );
+    await Isolate.spawn(_isolateEntry, _IsolateTaskData<_InitSdkParams?>(port.sendPort, params, rootIsolateToken));
 
     final completer = Completer();
-    _receivePort.listen((msg) {
+    port.listen((msg) {
       if (msg is _PortModel) {
         _methodChannel(msg, completer);
         return;
       }
-      if (msg is Map && _nativeStatus) {
-        _channel.invokeMethod('onEventCall', msg);
-      }
       if (msg is SendPort) {
-        _openIMSendPort = msg;
+        _openIMSendPorts[tag] = msg;
         return;
       }
     });

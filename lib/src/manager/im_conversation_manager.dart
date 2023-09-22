@@ -4,10 +4,11 @@ class ConversationManager {
   /// 获取所有会话
   Future<List<ConversationInfo>> getAllConversationList({
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getAllConversationList,
       data: {'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -24,10 +25,11 @@ class ConversationManager {
     int offset = 0,
     int count = 20,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getConversationListSplit,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'offset': offset, 'count': count},
       sendPort: receivePort.sendPort,
@@ -45,10 +47,11 @@ class ConversationManager {
     required String sourceID,
     required int sessionType,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getOneConversation,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'sessionType': sessionType, 'sourceID': sourceID},
       sendPort: receivePort.sendPort,
@@ -63,10 +66,11 @@ class ConversationManager {
   Future<List<ConversationInfo>> getMultipleConversation({
     required List<String> conversationIDList,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getMultipleConversation,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'conversationIDList': conversationIDList},
       sendPort: receivePort.sendPort,
@@ -82,10 +86,11 @@ class ConversationManager {
   Future<void> deleteConversation({
     required String conversationID,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.deleteConversation,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'conversationID': conversationID},
       sendPort: receivePort.sendPort,
@@ -105,10 +110,11 @@ class ConversationManager {
     required String conversationID,
     required String draftText,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setConversationDraft,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'conversationID': conversationID, 'draftText': draftText},
       sendPort: receivePort.sendPort,
@@ -128,9 +134,10 @@ class ConversationManager {
     required String conversationID,
     required bool isPinned,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.pinConversation,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'conversationID': conversationID, 'isPinned': isPinned},
       sendPort: receivePort.sendPort,
@@ -147,9 +154,10 @@ class ConversationManager {
   /// int.tryParse(count) ?? 0;
   Future<int> getTotalUnreadMsgCount({
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getTotalUnreadMsgCount,
       data: {'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -166,9 +174,10 @@ class ConversationManager {
   Future<int> getConversationIDBySessionType({
     required String sourceID,
     required int sessionType,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getConversationIDBySessionType,
       data: {'sessionType': sessionType, 'sourceID': sourceID},
       sendPort: receivePort.sendPort,
@@ -185,9 +194,10 @@ class ConversationManager {
     required List<String> conversationIDList,
     required int status,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setConversationRecvMessageOpt,
       data: {'conversationIDList': conversationIDList, 'status': status, 'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -206,9 +216,10 @@ class ConversationManager {
   Future<List<dynamic>> getConversationRecvMessageOpt({
     required List<String> conversationIDList,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getConversationRecvMessageOpt,
       data: {'conversationIDList': conversationIDList, 'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -225,9 +236,10 @@ class ConversationManager {
     required String conversationID,
     required bool isPrivate,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setOneConversationPrivateChat,
       data: {'conversationID': conversationID, 'isPrivate': isPrivate, 'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -245,9 +257,10 @@ class ConversationManager {
   Future<void> deleteConversationFromLocalAndSvr({
     required String conversationID,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.deleteConversationFromLocalAndSvr,
       data: {'conversationID': conversationID, 'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -262,9 +275,10 @@ class ConversationManager {
   /// 删除所有本地会话
   Future<void> deleteAllConversationFromLocal({
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.deleteAllConversationFromLocal,
       data: {'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -281,9 +295,10 @@ class ConversationManager {
   Future<void> resetConversationGroupAtType({
     required String conversationID,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.resetConversationGroupAtType,
       data: {'conversationID': conversationID, 'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -296,9 +311,11 @@ class ConversationManager {
   }
 
   /// 查询@所有人标识
-  Future<dynamic> getAtAllTag() async {
+  Future<dynamic> getAtAllTag({
+    String tag = 'openim_ffi',
+  }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.getAtAllTag,
       sendPort: receivePort.sendPort,
     ));
@@ -315,9 +332,10 @@ class ConversationManager {
   Future<void> setGlobalRecvMessageOpt({
     required int status,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setGlobalRecvMessageOpt,
       data: {'status': status, 'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -337,9 +355,10 @@ class ConversationManager {
     required String conversationID,
     int burnDuration = 30,
     String? operationID,
+    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._openIMSendPort.send(_PortModel(
+    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
       method: _PortMethod.setOneConversationBurnDuration,
       data: {'conversationID': conversationID, 'burnDuration': burnDuration, 'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
