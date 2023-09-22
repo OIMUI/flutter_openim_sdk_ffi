@@ -35,7 +35,7 @@ class FriendshipManager {
       method: _PortMethod.addFriend,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
-        'uid': uid,
+        'toUserID': uid,
         'reason': reason,
       },
       sendPort: receivePort.sendPort,
