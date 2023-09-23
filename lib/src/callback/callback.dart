@@ -193,36 +193,24 @@ class _PortMethod {
   // static const String unInitSDK = 'UnInitSDK';
 }
 
-void _printMessage(ffi.Pointer<ffi.Char> message) {
-  if (message == ffi.nullptr) {
-    Logger.print('nullptr');
-    return;
-  }
-  final msg = message.cast<Utf8>().toDartString();
-  Logger.print(msg);
-}
-
 class NativeCall {
   /// 请求成功  返回数据
   static onSuccess(_PortModel msg) {
     switch (msg.callMethodName) {
       case _PortMethod.getAllConversationList:
         if (msg.operationID != null) {
-          OpenIMManager._sendPortMap[msg.operationID!]
-              ?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => ConversationInfo.fromJson(v))));
+          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => ConversationInfo.fromJson(v))));
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
       case _PortMethod.getOneConversation:
         if (msg.operationID != null) {
-          OpenIMManager._sendPortMap[msg.operationID!]
-              ?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => ConversationInfo.fromJson(v))));
+          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => ConversationInfo.fromJson(v))));
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
       case _PortMethod.getAdvancedHistoryMessageList:
       case _PortMethod.getAdvancedHistoryMessageListReverse:
         if (msg.operationID != null) {
-          OpenIMManager._sendPortMap[msg.operationID!]
-              ?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => AdvancedMessage.fromJson(v))));
+          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => AdvancedMessage.fromJson(v))));
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
         break;
@@ -247,8 +235,7 @@ class NativeCall {
       case _PortMethod.inviteUserToGroup:
       case _PortMethod.kickGroupMember:
         if (msg.operationID != null) {
-          OpenIMManager._sendPortMap[msg.operationID!]
-              ?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => GroupInviteResult.fromJson(v))));
+          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => GroupInviteResult.fromJson(v))));
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
         break;
@@ -258,8 +245,7 @@ class NativeCall {
       case _PortMethod.getGroupMemberOwnerAndAdmin:
       case _PortMethod.searchGroupMembers:
         if (msg.operationID != null) {
-          OpenIMManager._sendPortMap[msg.operationID!]
-              ?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => GroupMembersInfo.fromJson(v))));
+          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toList(msg.data, (v) => GroupMembersInfo.fromJson(v))));
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
         break;
@@ -280,8 +266,7 @@ class NativeCall {
       case _PortMethod.getRecvGroupApplicationList:
       case _PortMethod.getSendGroupApplicationList:
         if (msg.operationID != null) {
-          OpenIMManager._sendPortMap[msg.operationID!]
-              ?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => GroupApplicationInfo.fromJson(v))));
+          OpenIMManager._sendPortMap[msg.operationID!]?.send(_PortResult(data: IMUtils.toObj(msg.data, (v) => GroupApplicationInfo.fromJson(v))));
           OpenIMManager._sendPortMap.remove(msg.operationID!);
         }
         break;

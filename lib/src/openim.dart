@@ -10,38 +10,10 @@ const mode = kReleaseMode
         ? 'Profile'
         : 'Debug';
 
-final ffi.DynamicLibrary _dylib = () {
-  if (Platform.isMacOS || Platform.isIOS) {
-    return ffi.DynamicLibrary.open('$_libName.framework/$_libName');
-  }
-  if (Platform.isAndroid || Platform.isLinux) {
-    return ffi.DynamicLibrary.open('lib$_libName.so');
-  }
-  if (Platform.isWindows) {
-    return ffi.DynamicLibrary.open('$_libName.dll');
-  }
-  throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
-}();
-
-final ffi.DynamicLibrary _imDylib = () {
-  if (Platform.isMacOS || Platform.isIOS) {
-    return ffi.DynamicLibrary.open('lib$_imLibName.dylib');
-  }
-  if (Platform.isAndroid || Platform.isLinux) {
-    return ffi.DynamicLibrary.open('lib$_imLibName.so');
-  }
-  if (Platform.isWindows) {
-    return ffi.DynamicLibrary.open('$_imLibName.dll');
-  }
-  throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
-}();
-
 class OpenIM {
-  static Future<String> version({
-    String tag = 'openim_ffi',
-  }) async {
+  static Future<String> version() async {
     ReceivePort receivePort = ReceivePort();
-    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(method: _PortMethod.version, sendPort: receivePort.sendPort));
+    OpenIMManager._sendPort.send(_PortModel(method: _PortMethod.version, sendPort: receivePort.sendPort));
     _PortResult<String> data = await receivePort.first;
     receivePort.close();
     return data.value;

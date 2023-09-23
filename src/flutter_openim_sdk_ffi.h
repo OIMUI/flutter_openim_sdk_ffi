@@ -1,15 +1,32 @@
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "./include/dart_api_dl.h"
 #include "cJSON/cJSON.h"
 
-// #if _WIN32
-// #include <windows.h>
-// #else
-// #include <pthread.h>
-// #include <unistd.h>
-// #endif
+#ifdef _WIN32 // Windows平台
+#include "openim_sdk_ffi_windows.h"
+#elif defined(__APPLE__) && defined(__MACH__) // macOS平台
+#include "openim_sdk_ffi_macos.h"
+#elif TARGET_OS_IOS // iOS平台
+#include "openim_sdk_ffi_ios.h"
+#elif defined(__ANDROID__) // Android平台
+#include "openim_sdk_ffi_android.h"
+#else
+#error "未知平台"
+#endif
+
+#if _WIN32
+#include <windows.h>
+#else
+#include <pthread.h>
+#endif
+
+typedef struct
+{
+    Dart_Port_DL port;
+    char *methodName;
+    char *operationID;
+    char *callMethodName;
+    double *errCode;
+    char *message;
+} ThreadArgs;
 
 #if _WIN32
 #define FFI_PLUGIN_EXPORT __declspec(dllexport)
@@ -17,14 +34,4 @@
 #define FFI_PLUGIN_EXPORT
 #endif
 
-typedef struct
-{
-    void (*onMethodChannel)(Dart_Port_DL port, char *, char *, char *, double *, char *);
-    void (*onNativeMethodChannel)(char *, char *, char *, double *, char *);
-} CGO_OpenIM_Listener;
-
-typedef void (*PrintCallback)(const char *);
-
-FFI_PLUGIN_EXPORT void setPrintCallback(PrintCallback callback);
-FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isolate_send_port);
-FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data);
+FFI_PLUGIN_EXPORT Openim_Listener getIMListener();

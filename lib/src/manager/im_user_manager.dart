@@ -6,11 +6,10 @@ class UserManager {
   Future<List<UserInfo>> getUsersInfo({
     required List<String> uidList,
     String? operationID,
-    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
+    OpenIMManager._sendPort.send(_PortModel(
       method: _PortMethod.getUsersInfo,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),
@@ -27,11 +26,10 @@ class UserManager {
   /// 获取当前登录用户的信息
   Future<UserInfo> getSelfUserInfo({
     String? operationID,
-    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
+    OpenIMManager._sendPort.send(_PortModel(
       method: _PortMethod.getSelfUserInfo,
       data: {'operationID': IMUtils.checkOperationID(operationID)},
       sendPort: receivePort.sendPort,
@@ -61,11 +59,10 @@ class UserManager {
     String? email,
     String? ex,
     String? operationID,
-    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
+    OpenIMManager._sendPort.send(_PortModel(
       method: _PortMethod.setSelfInfo,
       data: {
         'nickname': nickname,

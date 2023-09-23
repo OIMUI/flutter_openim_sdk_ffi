@@ -3,4 +3,4 @@
 typedef struct
 {
     void (*onMethodChannel)(Dart_Port_DL port, char *, char *, char *, double *, char *);
-} CGO_OpenIM_Listener;
+} Openim_Listener;

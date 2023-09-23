@@ -14,7 +14,6 @@ import 'package:ffi/ffi.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'flutter_openim_sdk_ffi_bindings_generated.dart';
-import 'openim_sdk_ffi_bindings_generated.dart';
 import 'src/utils.dart';
 
 part 'src/openim.dart';

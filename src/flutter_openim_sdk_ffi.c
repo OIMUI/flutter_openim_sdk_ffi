@@ -1,49 +1,7 @@
 #include <stdio.h>
 #include "flutter_openim_sdk_ffi.h"
-#include "openim_sdk_ffi.h"
 #include "include/dart_api_dl.c"
 #include "cJSON/cJSON.c"
-
-#if _WIN32
-#include <windows.h>
-#else
-#include <dlfcn.h>
-#include <pthread.h>
-#endif
-
-// 定义回调函数
-PrintCallback printCallback;
-
-CGO_OpenIM_Listener g_listener;
-
-void *dlfHandle;
-
-// 定义参数结构体
-typedef struct
-{
-    Dart_Port_DL port;
-    char *methodName;
-    char *operationID;
-    char *callMethodName;
-    double *errCode;
-    char *message;
-} ThreadArgs;
-
-// 设置回调函数
-FFI_PLUGIN_EXPORT void setPrintCallback(PrintCallback callback)
-{
-    printCallback = callback;
-}
-
-// 打印函数
-void printMessage(const char *message)
-{
-    // 调用回调函数，将打印的内容传递给Dart层
-    if (printCallback)
-    {
-        printCallback(message);
-    }
-}
 
 #if defined(_WIN32) || defined(_WIN64)
 
@@ -187,22 +145,10 @@ void onMethodChannelFunc(Dart_Port_DL port, char *methodName, char *operationID,
 }
 #endif
 
-FFI_PLUGIN_EXPORT intptr_t ffi_Dart_InitializeApiDL(void *data)
+FFI_PLUGIN_EXPORT Openim_Listener getIMListener()
 {
-    return Dart_InitializeApiDL(data);
-}
-
-// 在Dart中注册回调函数
-FFI_PLUGIN_EXPORT void ffi_Dart_RegisterCallback(void *handle, Dart_Port_DL isolate_send_port)
-{
-    dlfHandle = handle;
-    g_listener.onMethodChannel = onMethodChannelFunc;
-#if defined(_WIN32) || defined(_WIN64)
-    void (*RegisterCallback)(CGO_OpenIM_Listener *, Dart_Port_DL) = GetProcAddress(dlfHandle, "RegisterCallback");
-#else
-    void (*RegisterCallback)(CGO_OpenIM_Listener *, Dart_Port_DL) = dlsym(dlfHandle, "RegisterCallback");
-#endif
-    RegisterCallback(&g_listener, isolate_send_port);
-
-    printMessage("注册dart回调成功");
+    Openim_Listener openimListener = {
+        .onMethodChannel = onMethodChannelFunc,
+    };
+    return openimListener;
 }

@@ -97,3 +97,18 @@ class _InitSdkParams {
     this.isExternalExtensions = false,
   });
 }
+
+class _IMManager {
+  /// 主进程通信端口
+  final ReceivePort receivePort;
+
+  final Isolate isolate;
+
+  final SendPort isolatePort;
+
+  _IMManager({
+    required this.receivePort,
+    required this.isolate,
+    required this.isolatePort,
+  });
+}

@@ -10,11 +10,10 @@ class OrganizationManager {
     int offset = 0,
     int count = 40,
     String? operationID,
-    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
+    OpenIMManager._sendPort.send(_PortModel(
       method: _PortMethod.getSubDepartment,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'departmentID': departmentID, 'offset': offset, 'count': count},
       sendPort: receivePort.sendPort,
@@ -34,11 +33,10 @@ class OrganizationManager {
     int offset = 0,
     int count = 40,
     String? operationID,
-    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
+    OpenIMManager._sendPort.send(_PortModel(
       method: _PortMethod.getDepartmentMember,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'departmentID': departmentID, 'offset': offset, 'count': count},
       sendPort: receivePort.sendPort,
@@ -54,11 +52,10 @@ class OrganizationManager {
   Future<List<UserInDept>> getUserInDepartment({
     required String userID,
     String? operationID,
-    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
+    OpenIMManager._sendPort.send(_PortModel(
       method: _PortMethod.getUserInDepartment,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'userID': userID},
       sendPort: receivePort.sendPort,
@@ -78,11 +75,10 @@ class OrganizationManager {
     // int memberOffset = 0,
     // int memberCount = 40,
     String? operationID,
-    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
+    OpenIMManager._sendPort.send(_PortModel(
       method: _PortMethod.getDepartmentMemberAndSubDepartment,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'departmentID': departmentID},
       sendPort: receivePort.sendPort,
@@ -98,11 +94,10 @@ class OrganizationManager {
   Future<DeptInfo> getDepartmentInfo({
     required String departmentID,
     String? operationID,
-    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
+    OpenIMManager._sendPort.send(_PortModel(
       method: _PortMethod.getDepartmentInfo,
       data: {'operationID': IMUtils.checkOperationID(operationID), 'departmentID': departmentID},
       sendPort: receivePort.sendPort,
@@ -136,11 +131,10 @@ class OrganizationManager {
     int offset = 0,
     int count = 40,
     String? operationID,
-    String tag = 'openim_ffi',
   }) async {
     ReceivePort receivePort = ReceivePort();
 
-    OpenIMManager._getTagSendPort(tag)?.send(_PortModel(
+    OpenIMManager._sendPort.send(_PortModel(
       method: _PortMethod.searchOrganization,
       data: {
         'operationID': IMUtils.checkOperationID(operationID),

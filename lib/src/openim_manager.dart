@@ -1,26 +1,16 @@
 part of flutter_openim_sdk_ffi;
 
 class OpenIMManager {
-  static late final OpenimSdkFfiBindings _imBindings;
+  static late final _IMManager _imManager;
 
-  /// 主进程通信端口
-  static final Map<String, ReceivePort> _receivePorts = {};
-
-  /// openIm 通信端口
-  static final Map<String, SendPort> _openIMSendPorts = {};
+  /// 获取通信端口
+  static ReceivePort get _receivePort => _imManager.receivePort;
 
   /// 通信存储
   static final Map<String, SendPort> _sendPortMap = {};
 
-  /// 获取通信端口
-  static ReceivePort? _getTagReceivePort(String tag) {
-    return _receivePorts[tag];
-  }
-
   /// 获取线程里的通信端口
-  static SendPort? _getTagSendPort(String tag) {
-    return _openIMSendPorts[tag];
-  }
+  static SendPort get _sendPort => _imManager.isolatePort;
 
   static int getIMPlatform() {
     if (kIsWeb) {
@@ -44,20 +34,83 @@ class OpenIMManager {
     return IMPlatform.ipad;
   }
 
+  /// 初始化
+  static Future<bool> init({
+    required String apiAddr,
+    required String wsAddr,
+    String? dataDir,
+    int logLevel = 6,
+    String? operationID,
+    bool isLogStandardOutput = false,
+    String? logFilePath,
+    bool isExternalExtensions = false,
+  }) async {
+    ReceivePort port = ReceivePort();
+    RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
+    _InitSdkParams params = _InitSdkParams(
+      apiAddr: apiAddr,
+      wsAddr: wsAddr,
+      dataDir: dataDir,
+      logLevel: logLevel,
+      operationID: operationID,
+      isLogStandardOutput: isLogStandardOutput,
+      logFilePath: logFilePath,
+      isExternalExtensions: isExternalExtensions,
+    );
+    Isolate isolate = await Isolate.spawn(
+      _isolateEntry,
+      _IsolateTaskData<_InitSdkParams?>(port.sendPort, params, rootIsolateToken),
+      errorsAreFatal: false,
+    );
+
+    final completer = Completer();
+    port.listen((msg) {
+      if (msg is _PortModel) {
+        _methodChannel(msg, completer);
+        return;
+      }
+      if (msg is SendPort) {
+        _imManager = _IMManager(receivePort: port, isolate: isolate, isolatePort: msg);
+        return;
+      }
+    });
+
+    return await completer.future;
+  }
+
+  static void _methodChannel(_PortModel port, Completer completer) {
+    switch (port.method) {
+      case _PortMethod.initSDK:
+        completer.complete(port.data);
+        break;
+      default:
+        OpenIM.iMManager._nativeCallback(port);
+    }
+  }
+
   static Future<void> _isolateEntry(_IsolateTaskData<_InitSdkParams?> task) async {
     if (task.rootIsolateToken != null) {
       BackgroundIsolateBinaryMessenger.ensureInitialized(task.rootIsolateToken!);
     }
+    final ffi.DynamicLibrary dylib = () {
+      if (Platform.isMacOS || Platform.isIOS) {
+        return ffi.DynamicLibrary.open('$_libName.framework/$_libName');
+      }
+      if (Platform.isAndroid || Platform.isLinux) {
+        return ffi.DynamicLibrary.open('lib$_libName.so');
+      }
+      if (Platform.isWindows) {
+        return ffi.DynamicLibrary.open('$_libName.dll');
+      }
+      throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
+    }();
+    final FlutterOpenimSdkFfiBindings bindings = FlutterOpenimSdkFfiBindings(dylib);
 
     try {
       final receivePort = ReceivePort();
       task.sendPort.send(receivePort.sendPort);
+      bindings.Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
 
-      final FlutterOpenimSdkFfiBindings _bindings = FlutterOpenimSdkFfiBindings(_dylib);
-      _bindings.ffi_Dart_InitializeApiDL(ffi.NativeApi.initializeApiDLData);
-      _bindings.setPrintCallback(ffi.Pointer.fromFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>(_printMessage));
-
-      _imBindings = OpenimSdkFfiBindings(_imDylib);
       bool status = true;
       if (task.data != null) {
         _InitSdkParams data = task.data!;
@@ -76,13 +129,14 @@ class OpenIMManager {
           'isLogStandardOutput': data.isLogStandardOutput,
           'isExternalExtensions': data.isExternalExtensions,
         });
-        status = _imBindings.InitSDK(
+        final listenerPtr = bindings.getIMListener();
+        status = bindings.InitSDK(
+          listenerPtr,
+          receivePort.sendPort.nativePort,
           IMUtils.checkOperationID(data.operationID).toNativeUtf8().cast<ffi.Char>(),
           config.toNativeUtf8().cast<ffi.Char>(),
         );
       }
-      _bindings.ffi_Dart_RegisterCallback(_imDylib.handle, receivePort.sendPort.nativePort);
-      _bindings.ffi_Dart_InitSDK();
       task.sendPort.send(_PortModel(method: _PortMethod.initSDK, data: status));
 
       receivePort.listen((msg) {
@@ -219,47 +273,47 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
             final token = (msg.data['token'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.Login(operationID, uid, token);
+            bindings.Login(operationID, uid, token);
             calloc.free(operationID);
             calloc.free(uid);
             calloc.free(token);
             break;
           case _PortMethod.version:
-            String version = _imBindings.GetSdkVersion().cast<Utf8>().toDartString();
+            String version = bindings.GetSdkVersion().cast<Utf8>().toDartString();
             msg.sendPort?.send(_PortResult(data: version));
             break;
           case _PortMethod.getUsersInfo:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final uidList = (jsonEncode(msg.data['uidList'] as List<String>)).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetUsersInfo(operationID, uidList);
+            bindings.GetUsersInfo(operationID, uidList);
             calloc.free(operationID);
             calloc.free(uidList);
             break;
           case _PortMethod.getSelfUserInfo:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetSelfUserInfo(operationID);
+            bindings.GetSelfUserInfo(operationID);
             calloc.free(operationID);
             break;
           case _PortMethod.getAllConversationList:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetAllConversationList(operationID);
+            bindings.GetAllConversationList(operationID);
             calloc.free(operationID);
             break;
           case _PortMethod.getOneConversation:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final sourceID = (msg.data['sourceID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetOneConversation(operationID, msg.data['sessionType'], sourceID);
+            bindings.GetOneConversation(operationID, msg.data['sessionType'], sourceID);
             calloc.free(operationID);
             calloc.free(sourceID);
             break;
           case _PortMethod.getConversationListSplit:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetConversationListSplit(operationID, msg.data['offset'], msg.data['count']);
+            bindings.GetConversationListSplit(operationID, msg.data['offset'], msg.data['count']);
             calloc.free(operationID);
             break;
 
@@ -271,7 +325,7 @@ class OpenIMManager {
             final groupID = (msg.data['groupID'] as String).toNativeUtf8().cast<ffi.Char>();
             final offlinePushInfo = jsonEncode(msg.data['offlinePushInfo']).toNativeUtf8().cast<ffi.Char>();
             final clientMsgID = jsonEncode(msg.data['message']['clientMsgID']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SendMessage(operationID, message, userID, groupID, offlinePushInfo);
+            bindings.SendMessage(operationID, message, userID, groupID, offlinePushInfo);
             calloc.free(operationID);
             calloc.free(message);
             calloc.free(userID);
@@ -286,7 +340,7 @@ class OpenIMManager {
             final groupID = (msg.data['groupID'] as String).toNativeUtf8().cast<ffi.Char>();
             final offlinePushInfo = jsonEncode(msg.data['offlinePushInfo']).toNativeUtf8().cast<ffi.Char>();
             final clientMsgID = jsonEncode(msg.data['message']['clientMsgID']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SendMessageNotOss(operationID, message, userID, groupID, offlinePushInfo);
+            bindings.SendMessageNotOss(operationID, message, userID, groupID, offlinePushInfo);
             calloc.free(operationID);
             calloc.free(message);
             calloc.free(userID);
@@ -300,7 +354,7 @@ class OpenIMManager {
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
             final receiverID = (msg.data['receiverID'] as String).toNativeUtf8().cast<ffi.Char>();
             final senderID = (msg.data['senderID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.InsertSingleMessageToLocalStorage(operationID, message, receiverID, senderID);
+            bindings.InsertSingleMessageToLocalStorage(operationID, message, receiverID, senderID);
             calloc.free(operationID);
             calloc.free(message);
             calloc.free(receiverID);
@@ -312,7 +366,7 @@ class OpenIMManager {
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
             final groupID = (msg.data['groupID'] as String).toNativeUtf8().cast<ffi.Char>();
             final senderID = (msg.data['senderID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.InsertGroupMessageToLocalStorage(operationID, message, groupID, senderID);
+            bindings.InsertGroupMessageToLocalStorage(operationID, message, groupID, senderID);
             calloc.free(operationID);
             calloc.free(message);
             calloc.free(groupID);
@@ -323,7 +377,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final conversationID = (msg.data['conversationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final messageIDList = jsonEncode(msg.data['messageIDList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.MarkMessagesAsReadByMsgID(operationID, conversationID, messageIDList);
+            bindings.MarkMessagesAsReadByMsgID(operationID, conversationID, messageIDList);
             calloc.free(operationID);
             calloc.free(conversationID);
             calloc.free(messageIDList);
@@ -333,7 +387,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final userID = (msg.data['userID'] as String).toNativeUtf8().cast<ffi.Char>();
             final msgTip = (msg.data['msgTip'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.TypingStatusUpdate(operationID, userID, msgTip);
+            bindings.TypingStatusUpdate(operationID, userID, msgTip);
             calloc.free(operationID);
             calloc.free(userID);
             calloc.free(msgTip);
@@ -341,7 +395,7 @@ class OpenIMManager {
           case _PortMethod.createTextMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final text = (msg.data['text'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateTextMessage(operationID, text);
+            final newMsg = bindings.CreateTextMessage(operationID, text);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(text);
@@ -352,7 +406,7 @@ class OpenIMManager {
             final atUserList = jsonEncode(msg.data['atUserList']).toNativeUtf8().cast<ffi.Char>();
             final atUsersInfo = jsonEncode(msg.data['atUsersInfo']).toNativeUtf8().cast<ffi.Char>();
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateTextAtMessage(operationID, text, atUserList, atUsersInfo, message);
+            final newMsg = bindings.CreateTextAtMessage(operationID, text, atUserList, atUsersInfo, message);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(text);
@@ -363,7 +417,7 @@ class OpenIMManager {
           case _PortMethod.createImageMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final imagePath = (msg.data['imagePath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateImageMessage(operationID, imagePath);
+            final newMsg = bindings.CreateImageMessage(operationID, imagePath);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(imagePath);
@@ -371,7 +425,7 @@ class OpenIMManager {
           case _PortMethod.createImageMessageFromFullPath:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final imagePath = (msg.data['imagePath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateImageMessageFromFullPath(operationID, imagePath);
+            final newMsg = bindings.CreateImageMessageFromFullPath(operationID, imagePath);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(imagePath);
@@ -379,7 +433,7 @@ class OpenIMManager {
           case _PortMethod.createSoundMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final soundPath = (msg.data['soundPath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateSoundMessage(operationID, soundPath, msg.data['duration']);
+            final newMsg = bindings.CreateSoundMessage(operationID, soundPath, msg.data['duration']);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(soundPath);
@@ -387,7 +441,7 @@ class OpenIMManager {
           case _PortMethod.createSoundMessageFromFullPath:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final soundPath = (msg.data['soundPath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateSoundMessageFromFullPath(operationID, soundPath, msg.data['duration']);
+            final newMsg = bindings.CreateSoundMessageFromFullPath(operationID, soundPath, msg.data['duration']);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(soundPath);
@@ -397,7 +451,7 @@ class OpenIMManager {
             final videoPath = (msg.data['videoPath'] as String).toNativeUtf8().cast<ffi.Char>();
             final videoType = (msg.data['videoType'] as String).toNativeUtf8().cast<ffi.Char>();
             final snapshotPath = (msg.data['snapshotPath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateVideoMessage(operationID, videoPath, videoType, msg.data['duration'], snapshotPath);
+            final newMsg = bindings.CreateVideoMessage(operationID, videoPath, videoType, msg.data['duration'], snapshotPath);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(videoPath);
@@ -409,7 +463,7 @@ class OpenIMManager {
             final videoPath = (msg.data['videoPath'] as String).toNativeUtf8().cast<ffi.Char>();
             final videoType = (msg.data['videoType'] as String).toNativeUtf8().cast<ffi.Char>();
             final snapshotPath = (msg.data['snapshotPath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateVideoMessageFromFullPath(operationID, videoPath, videoType, msg.data['duration'], snapshotPath);
+            final newMsg = bindings.CreateVideoMessageFromFullPath(operationID, videoPath, videoType, msg.data['duration'], snapshotPath);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(videoPath);
@@ -420,7 +474,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final filePath = (msg.data['filePath'] as String).toNativeUtf8().cast<ffi.Char>();
             final fileName = (msg.data['fileName'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateFileMessage(operationID, filePath, fileName);
+            final newMsg = bindings.CreateFileMessage(operationID, filePath, fileName);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(filePath);
@@ -430,7 +484,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final filePath = (msg.data['filePath'] as String).toNativeUtf8().cast<ffi.Char>();
             final fileName = (msg.data['fileName'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateFileMessageFromFullPath(operationID, filePath, fileName);
+            final newMsg = bindings.CreateFileMessageFromFullPath(operationID, filePath, fileName);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(filePath);
@@ -441,7 +495,7 @@ class OpenIMManager {
             final messageList = jsonEncode(msg.data['messageList']).toNativeUtf8().cast<ffi.Char>();
             final title = (msg.data['title'] as String).toNativeUtf8().cast<ffi.Char>();
             final summaryList = jsonEncode(msg.data['summaryList']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateMergerMessage(operationID, messageList, title, summaryList);
+            final newMsg = bindings.CreateMergerMessage(operationID, messageList, title, summaryList);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(messageList);
@@ -451,7 +505,7 @@ class OpenIMManager {
           case _PortMethod.createForwardMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateForwardMessage(operationID, message);
+            final newMsg = bindings.CreateForwardMessage(operationID, message);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(message);
@@ -459,7 +513,7 @@ class OpenIMManager {
           case _PortMethod.createLocationMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final description = (msg.data['description'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateLocationMessage(operationID, description, msg.data['longitude'], msg.data['latitude']);
+            final newMsg = bindings.CreateLocationMessage(operationID, description, msg.data['longitude'], msg.data['latitude']);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(description);
@@ -469,7 +523,7 @@ class OpenIMManager {
             final data = (msg.data['data'] as String).toNativeUtf8().cast<ffi.Char>();
             final extension = (msg.data['extension'] as String).toNativeUtf8().cast<ffi.Char>();
             final description = (msg.data['description'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateCustomMessage(operationID, data, extension, description);
+            final newMsg = bindings.CreateCustomMessage(operationID, data, extension, description);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(data);
@@ -480,7 +534,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final text = (msg.data['text'] as String).toNativeUtf8().cast<ffi.Char>();
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateQuoteMessage(operationID, text, message);
+            final newMsg = bindings.CreateQuoteMessage(operationID, text, message);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(text);
@@ -489,7 +543,7 @@ class OpenIMManager {
           case _PortMethod.createCardMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final data = jsonEncode(msg.data['data']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateCardMessage(operationID, data);
+            final newMsg = bindings.CreateCardMessage(operationID, data);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(data);
@@ -497,7 +551,7 @@ class OpenIMManager {
           case _PortMethod.createFaceMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final data = (msg.data['data'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateFaceMessage(operationID, msg.data['index'], data);
+            final newMsg = bindings.CreateFaceMessage(operationID, msg.data['index'], data);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(data);
@@ -506,27 +560,27 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final searchParam = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SearchLocalMessages(operationID, searchParam);
+            bindings.SearchLocalMessages(operationID, searchParam);
             calloc.free(operationID);
             calloc.free(searchParam);
             break;
           case _PortMethod.deleteAllMsgFromLocal:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.DeleteAllMsgFromLocal(operationID);
+            bindings.DeleteAllMsgFromLocal(operationID);
             calloc.free(operationID);
             break;
           case _PortMethod.deleteAllMsgFromLocalAndSvr:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.DeleteAllMsgFromLocalAndSvr(operationID);
+            bindings.DeleteAllMsgFromLocalAndSvr(operationID);
             calloc.free(operationID);
             break;
           case _PortMethod.findMessageList:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final searchParams = jsonEncode(msg.data['searchParams']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.FindMessageList(operationID, searchParams);
+            bindings.FindMessageList(operationID, searchParams);
             calloc.free(operationID);
             calloc.free(searchParams);
             break;
@@ -534,7 +588,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final text = (msg.data['text'] as String).toNativeUtf8().cast<ffi.Char>();
             final messageEntityList = jsonEncode(msg.data['richMessageInfoList']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateAdvancedTextMessage(operationID, text, messageEntityList);
+            final newMsg = bindings.CreateAdvancedTextMessage(operationID, text, messageEntityList);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(text);
@@ -545,7 +599,7 @@ class OpenIMManager {
             final text = (msg.data['text'] as String).toNativeUtf8().cast<ffi.Char>();
             final message = jsonEncode(msg.data['message']).toNativeUtf8().cast<ffi.Char>();
             final messageEntityList = jsonEncode(msg.data['richMessageInfoList']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateAdvancedQuoteMessage(operationID, text, message, messageEntityList);
+            final newMsg = bindings.CreateAdvancedQuoteMessage(operationID, text, message, messageEntityList);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(text);
@@ -557,7 +611,7 @@ class OpenIMManager {
             final sourcePicture = jsonEncode(msg.data['sourcePicture']).toNativeUtf8().cast<ffi.Char>();
             final bigPicture = jsonEncode(msg.data['bigPicture']).toNativeUtf8().cast<ffi.Char>();
             final snapshotPicture = jsonEncode(msg.data['snapshotPicture']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateImageMessageByURL(operationID, sourcePicture, bigPicture, snapshotPicture);
+            final newMsg = bindings.CreateImageMessageByURL(operationID, sourcePicture, bigPicture, snapshotPicture);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(sourcePicture);
@@ -568,7 +622,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final soundElem = jsonEncode(msg.data['soundElem']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateSoundMessageByURL(operationID, soundElem);
+            final newMsg = bindings.CreateSoundMessageByURL(operationID, soundElem);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(soundElem);
@@ -578,7 +632,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final videoElem = jsonEncode(msg.data['videoElem']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateVideoMessageByURL(operationID, videoElem);
+            final newMsg = bindings.CreateVideoMessageByURL(operationID, videoElem);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(videoElem);
@@ -586,7 +640,7 @@ class OpenIMManager {
           case _PortMethod.createFileMessageByURL:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final fileElem = jsonEncode(msg.data['fileElem']).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = _imBindings.CreateFileMessageByURL(operationID, fileElem);
+            final newMsg = bindings.CreateFileMessageByURL(operationID, fileElem);
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(fileElem);
@@ -595,7 +649,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final getMessageOptions = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetAdvancedHistoryMessageList(operationID, getMessageOptions);
+            bindings.GetAdvancedHistoryMessageList(operationID, getMessageOptions);
             calloc.free(operationID);
             calloc.free(getMessageOptions);
             break;
@@ -603,7 +657,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final getMessageOptions = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetAdvancedHistoryMessageListReverse(operationID, getMessageOptions);
+            bindings.GetAdvancedHistoryMessageListReverse(operationID, getMessageOptions);
             calloc.free(operationID);
             calloc.free(getMessageOptions);
             break;
@@ -612,7 +666,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final conversationID = (msg.data['conversationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final draftText = (msg.data['draftText'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetConversationDraft(operationID, conversationID, draftText);
+            bindings.SetConversationDraft(operationID, conversationID, draftText);
             calloc.free(operationID);
             calloc.free(conversationID);
             calloc.free(draftText);
@@ -621,14 +675,14 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final conversationID = (msg.data['conversationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.PinConversation(operationID, conversationID, msg.data['isPinned']);
+            bindings.PinConversation(operationID, conversationID, msg.data['isPinned']);
             calloc.free(operationID);
             calloc.free(conversationID);
             break;
           case _PortMethod.getTotalUnreadMsgCount:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetTotalUnreadMsgCount(operationID);
+            bindings.GetTotalUnreadMsgCount(operationID);
             calloc.free(operationID);
             break;
 
@@ -636,7 +690,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final conversationIDList = jsonEncode(msg.data['conversationIDList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetConversationRecvMessageOpt(operationID, conversationIDList, msg.data['status']);
+            bindings.SetConversationRecvMessageOpt(operationID, conversationIDList, msg.data['status']);
             calloc.free(operationID);
             calloc.free(conversationIDList);
             break;
@@ -644,7 +698,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final conversationIDList = jsonEncode(msg.data['conversationIDList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetConversationRecvMessageOpt(operationID, conversationIDList);
+            bindings.GetConversationRecvMessageOpt(operationID, conversationIDList);
             calloc.free(operationID);
             calloc.free(conversationIDList);
             break;
@@ -652,14 +706,14 @@ class OpenIMManager {
           case _PortMethod.deleteAllConversationFromLocal:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.DeleteAllConversationFromLocal(operationID);
+            bindings.DeleteAllConversationFromLocal(operationID);
             calloc.free(operationID);
             break;
           case _PortMethod.resetConversationGroupAtType:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final conversationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.ResetConversationGroupAtType(operationID, conversationID);
+            bindings.ResetConversationGroupAtType(operationID, conversationID);
             calloc.free(operationID);
             calloc.free(conversationID);
             break;
@@ -667,7 +721,7 @@ class OpenIMManager {
           case _PortMethod.setGlobalRecvMessageOpt:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetGlobalRecvMessageOpt(operationID, msg.data['status']);
+            bindings.SetGlobalRecvMessageOpt(operationID, msg.data['status']);
             calloc.free(operationID);
             break;
 
@@ -675,7 +729,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final userIDReqMsg = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.AddFriend(operationID, userIDReqMsg);
+            bindings.AddFriend(operationID, userIDReqMsg);
             calloc.free(operationID);
             calloc.free(userIDReqMsg);
             break;
@@ -683,14 +737,14 @@ class OpenIMManager {
           case _PortMethod.getFriendList:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetFriendList(operationID);
+            bindings.GetFriendList(operationID);
             calloc.free(operationID);
             break;
           case _PortMethod.setFriendRemark:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final ops = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetFriendRemark(operationID, ops);
+            bindings.SetFriendRemark(operationID, ops);
             calloc.free(operationID);
             calloc.free(ops);
             break;
@@ -698,21 +752,21 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.AddBlack(operationID, uid);
+            bindings.AddBlack(operationID, uid);
             calloc.free(operationID);
             calloc.free(uid);
             break;
           case _PortMethod.getBlacklist:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetBlackList(operationID);
+            bindings.GetBlackList(operationID);
             calloc.free(operationID);
             break;
           case _PortMethod.removeBlacklist:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.RemoveBlack(operationID, uid);
+            bindings.RemoveBlack(operationID, uid);
             calloc.free(operationID);
             calloc.free(uid);
             break;
@@ -720,7 +774,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final uidList = jsonEncode(msg.data['uidList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.CheckFriend(operationID, uidList);
+            bindings.CheckFriend(operationID, uidList);
             calloc.free(operationID);
             calloc.free(uidList);
             break;
@@ -728,7 +782,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final uidList = jsonEncode(msg.data['uidList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.DeleteFriend(operationID, uidList);
+            bindings.DeleteFriend(operationID, uidList);
             calloc.free(operationID);
             calloc.free(uidList);
             break;
@@ -736,7 +790,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final ops = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.AcceptFriendApplication(operationID, ops);
+            bindings.AcceptFriendApplication(operationID, ops);
             calloc.free(operationID);
             calloc.free(ops);
             break;
@@ -744,7 +798,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final ops = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.RefuseFriendApplication(operationID, ops);
+            bindings.RefuseFriendApplication(operationID, ops);
             calloc.free(operationID);
             calloc.free(ops);
             break;
@@ -752,7 +806,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final ops = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SearchFriends(operationID, ops);
+            bindings.SearchFriends(operationID, ops);
             calloc.free(operationID);
             calloc.free(ops);
             break;
@@ -760,7 +814,7 @@ class OpenIMManager {
           // case _PortMethod.signalingUpdateMeetingInfo:
           //   final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
           //   final roomID = (msg.data['roomID'] as String).toNativeUtf8().cast<ffi.Char>();
-          //   _imBindings.SignalingUpdateMeetingInfo(operationID, roomID);
+          //   bindings.SignalingUpdateMeetingInfo(operationID, roomID);
           //   _sendPortMap[msg.data['operationID']] = msg.sendPort!;
           //   calloc.free(operationID);
           //   calloc.free(roomID);
@@ -771,7 +825,7 @@ class OpenIMManager {
             final groupId = (msg.data['groupId'] as String).toNativeUtf8().cast<ffi.Char>();
             final reason = (msg.data['reason'] as String).toNativeUtf8().cast<ffi.Char>();
             final uidList = jsonEncode(msg.data['uidList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.InviteUserToGroup(operationID, groupId, reason, uidList);
+            bindings.InviteUserToGroup(operationID, groupId, reason, uidList);
             calloc.free(operationID);
             calloc.free(groupId);
             calloc.free(reason);
@@ -783,7 +837,7 @@ class OpenIMManager {
             final groupId = (msg.data['groupId'] as String).toNativeUtf8().cast<ffi.Char>();
             final reason = (msg.data['reason'] as String).toNativeUtf8().cast<ffi.Char>();
             final uidList = jsonEncode(msg.data['uidList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.KickGroupMember(operationID, groupId, reason, uidList);
+            bindings.KickGroupMember(operationID, groupId, reason, uidList);
             calloc.free(operationID);
             calloc.free(groupId);
             calloc.free(reason);
@@ -794,21 +848,21 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final groupId = (msg.data['groupId'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetGroupMemberList(operationID, groupId, msg.data['filter'], msg.data['offset'], msg.data['count']);
+            bindings.GetGroupMemberList(operationID, groupId, msg.data['filter'], msg.data['offset'], msg.data['count']);
             calloc.free(operationID);
             calloc.free(groupId);
             break;
           case _PortMethod.getJoinedGroupList:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetJoinedGroupList(operationID);
+            bindings.GetJoinedGroupList(operationID);
             calloc.free(operationID);
             break;
           case _PortMethod.createGroup:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gInfo = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.CreateGroup(operationID, gInfo);
+            bindings.CreateGroup(operationID, gInfo);
             calloc.free(operationID);
             calloc.free(gInfo);
             break;
@@ -818,7 +872,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
             final reason = (msg.data['reason'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.JoinGroup(operationID, gid, reason, msg.data['joinSource']);
+            bindings.JoinGroup(operationID, gid, reason, msg.data['joinSource']);
             calloc.free(operationID);
             calloc.free(gid);
             calloc.free(reason);
@@ -827,7 +881,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.QuitGroup(operationID, gid);
+            bindings.QuitGroup(operationID, gid);
             calloc.free(operationID);
             calloc.free(gid);
             break;
@@ -836,7 +890,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
             final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.TransferGroupOwner(operationID, gid, uid);
+            bindings.TransferGroupOwner(operationID, gid, uid);
             calloc.free(operationID);
             calloc.free(gid);
             calloc.free(uid);
@@ -848,7 +902,7 @@ class OpenIMManager {
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
             final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
             final handleMsg = (msg.data['handleMsg'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.AcceptGroupApplication(operationID, gid, uid, handleMsg);
+            bindings.AcceptGroupApplication(operationID, gid, uid, handleMsg);
             calloc.free(operationID);
             calloc.free(gid);
             calloc.free(uid);
@@ -860,7 +914,7 @@ class OpenIMManager {
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
             final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
             final handleMsg = (msg.data['handleMsg'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.RefuseGroupApplication(operationID, gid, uid, handleMsg);
+            bindings.RefuseGroupApplication(operationID, gid, uid, handleMsg);
             calloc.free(operationID);
             calloc.free(gid);
             calloc.free(uid);
@@ -870,7 +924,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.DismissGroup(operationID, gid);
+            bindings.DismissGroup(operationID, gid);
             calloc.free(operationID);
             calloc.free(gid);
             break;
@@ -878,7 +932,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.ChangeGroupMute(operationID, gid, msg.data['mute']);
+            bindings.ChangeGroupMute(operationID, gid, msg.data['mute']);
             calloc.free(operationID);
             calloc.free(gid);
             break;
@@ -887,7 +941,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
             final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.ChangeGroupMemberMute(operationID, gid, uid, msg.data['seconds']);
+            bindings.ChangeGroupMemberMute(operationID, gid, uid, msg.data['seconds']);
             calloc.free(operationID);
             calloc.free(gid);
             calloc.free(uid);
@@ -898,7 +952,7 @@ class OpenIMManager {
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
             final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
             final groupNickname = (msg.data['groupNickname'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetGroupMemberNickname(operationID, gid, uid, msg.data['groupNickname']);
+            bindings.SetGroupMemberNickname(operationID, gid, uid, msg.data['groupNickname']);
             calloc.free(operationID);
             calloc.free(gid);
             calloc.free(uid);
@@ -908,7 +962,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final ops = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SearchGroups(operationID, ops);
+            bindings.SearchGroups(operationID, ops);
             calloc.free(operationID);
             calloc.free(ops);
             break;
@@ -917,7 +971,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
             final uid = (msg.data['uid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetGroupMemberRoleLevel(operationID, gid, uid, msg.data['roleLevel']);
+            bindings.SetGroupMemberRoleLevel(operationID, gid, uid, msg.data['roleLevel']);
             calloc.free(operationID);
             calloc.free(gid);
             calloc.free(uid);
@@ -927,7 +981,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
             final uIds = jsonEncode(msg.data['excludeUserIDList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetGroupMemberListByJoinTimeFilter(operationID, gid, msg.data['offset'], msg.data['count'], msg.data['joinTimeBegin'], msg.data['joinTimeEnd'], uIds);
+            bindings.GetGroupMemberListByJoinTimeFilter(operationID, gid, msg.data['offset'], msg.data['count'], msg.data['joinTimeBegin'], msg.data['joinTimeEnd'], uIds);
             calloc.free(operationID);
             calloc.free(gid);
             calloc.free(uIds);
@@ -936,7 +990,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetGroupVerification(operationID, gid, msg.data['needVerification']);
+            bindings.SetGroupVerification(operationID, gid, msg.data['needVerification']);
             calloc.free(operationID);
             calloc.free(gid);
             break;
@@ -944,7 +998,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetGroupLookMemberInfo(operationID, gid, msg.data['status']);
+            bindings.SetGroupLookMemberInfo(operationID, gid, msg.data['status']);
             calloc.free(operationID);
             calloc.free(gid);
             break;
@@ -952,7 +1006,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetGroupApplyMemberFriend(operationID, gid, msg.data['status']);
+            bindings.SetGroupApplyMemberFriend(operationID, gid, msg.data['status']);
             calloc.free(operationID);
             calloc.free(gid);
             break;
@@ -961,7 +1015,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final gid = (msg.data['gid'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetGroupMemberOwnerAndAdmin(operationID, gid);
+            bindings.GetGroupMemberOwnerAndAdmin(operationID, gid);
             calloc.free(operationID);
             calloc.free(gid);
             break;
@@ -969,7 +1023,7 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final searchParam = jsonEncode(msg.data['searchParam']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SearchGroupMembers(operationID, searchParam);
+            bindings.SearchGroupMembers(operationID, searchParam);
             calloc.free(operationID);
             calloc.free(searchParam);
             break;
@@ -977,27 +1031,27 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final groupMemberInfo = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetGroupMemberInfo(operationID, groupMemberInfo);
+            bindings.SetGroupMemberInfo(operationID, groupMemberInfo);
             calloc.free(operationID);
             calloc.free(groupMemberInfo);
             break;
           case _PortMethod.networkStatusChanged:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.NetworkStatusChanged(operationID);
+            bindings.NetworkStatusChanged(operationID);
             calloc.free(operationID);
             break;
           case _PortMethod.setAppBackgroundStatus:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetAppBackgroundStatus(operationID, msg.data['isBackground']);
+            bindings.SetAppBackgroundStatus(operationID, msg.data['isBackground']);
             calloc.free(operationID);
             break;
           case _PortMethod.updateFcmToken:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final fcmToken = (msg.data['fcmToken'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.UpdateFcmToken(operationID, fcmToken);
+            bindings.UpdateFcmToken(operationID, fcmToken);
             calloc.free(operationID);
             calloc.free(fcmToken);
             break;
@@ -1005,7 +1059,7 @@ class OpenIMManager {
           case _PortMethod.logout:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.Logout(operationID);
+            bindings.Logout(operationID);
             calloc.free(operationID);
             break;
           case _PortMethod.uploadFile:
@@ -1013,7 +1067,7 @@ class OpenIMManager {
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final uuid = (msg.data['uuid'] as String).toNativeUtf8().cast<ffi.Char>();
             final req = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.UploadFile(operationID, req, uuid);
+            bindings.UploadFile(operationID, req, uuid);
             calloc.free(operationID);
             calloc.free(req);
             calloc.free(uuid);
@@ -1022,27 +1076,27 @@ class OpenIMManager {
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final userInfo = jsonEncode(msg.data).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetSelfInfo(operationID, userInfo);
+            bindings.SetSelfInfo(operationID, userInfo);
             calloc.free(operationID);
             calloc.free(userInfo);
             break;
           case _PortMethod.setAppBadge:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.SetAppBadge(operationID, msg.data['unreadCount']);
+            bindings.SetAppBadge(operationID, msg.data['unreadCount']);
             calloc.free(operationID);
             break;
           case _PortMethod.getFriendsInfo:
             _sendPortMap[msg.data['operationID']] = msg.sendPort!;
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final userIDList = jsonEncode(msg.data['uidList']).toNativeUtf8().cast<ffi.Char>();
-            _imBindings.GetSpecifiedFriendsInfo(operationID, userIDList);
+            bindings.GetSpecifiedFriendsInfo(operationID, userIDList);
             calloc.free(operationID);
             calloc.free(userIDList);
             break;
           //  case _PortMethod.unInitSDK:
           // final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-          // _imBindings.(operationID);
+          // bindings.(operationID);
           // _sendPortMap[msg.data['operationID']] = msg.sendPort!;
           // calloc.free(operationID);
           // break;
@@ -1050,69 +1104,6 @@ class OpenIMManager {
       });
     } catch (e) {
       print(e);
-    }
-  }
-
-  /// 原生通信
-  // static const _channel = MethodChannel('plugins.muka.site/flutter_openim_sdk_ffi');
-
-  /// 通知原生初始化完成
-  static Future<void> notifyNativeInit() async {
-    // _channel.invokeMethod('OnInitSDK');
-  }
-
-  /// 初始化
-  static Future<bool> init({
-    required String apiAddr,
-    required String wsAddr,
-    String? dataDir,
-    int logLevel = 6,
-    String? operationID,
-    bool isLogStandardOutput = false,
-    String? logFilePath,
-    bool isExternalExtensions = false,
-    String tag = 'openim_ffi',
-  }) async {
-    ReceivePort? port = _getTagReceivePort(tag);
-    if (port != null) {
-      return true;
-    }
-    port = ReceivePort();
-    _receivePorts[tag] = port;
-    RootIsolateToken? rootIsolateToken = RootIsolateToken.instance;
-    _InitSdkParams params = _InitSdkParams(
-      apiAddr: apiAddr,
-      wsAddr: wsAddr,
-      dataDir: dataDir,
-      logLevel: logLevel,
-      operationID: operationID,
-      isLogStandardOutput: isLogStandardOutput,
-      logFilePath: logFilePath,
-      isExternalExtensions: isExternalExtensions,
-    );
-    await Isolate.spawn(_isolateEntry, _IsolateTaskData<_InitSdkParams?>(port.sendPort, params, rootIsolateToken));
-
-    final completer = Completer();
-    port.listen((msg) {
-      if (msg is _PortModel) {
-        _methodChannel(msg, completer);
-        return;
-      }
-      if (msg is SendPort) {
-        _openIMSendPorts[tag] = msg;
-        return;
-      }
-    });
-    return await completer.future;
-  }
-
-  static void _methodChannel(_PortModel port, Completer completer) {
-    switch (port.method) {
-      case _PortMethod.initSDK:
-        completer.complete(port.data);
-        break;
-      default:
-        OpenIM.iMManager._nativeCallback(port);
     }
   }
 
