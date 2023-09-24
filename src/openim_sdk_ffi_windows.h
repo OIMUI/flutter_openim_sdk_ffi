@@ -47,23 +47,15 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "include/dart_api_dl.h"
+#include <stdbool.h>
+#include "openim_sdk_ffi.h"
 
-typedef struct {
-    void (*onMethodChannel)(Dart_Port_DL port, char*, char*, char*, double*, char*);
-	void (*onNativeMethodChannel)(char*, char*, char*, double*, char*);
-} CGO_OpenIM_Listener;
 
-static void callOnMethodChannel(CGO_OpenIM_Listener *listener, Dart_Port_DL port, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
-	if (listener->onMethodChannel != NULL) {
-		listener->onMethodChannel(port, methodName, operationID, callMethodName, errCode, message);
-	}
+static void callOnMethodChannel(Openim_Listener listener, Dart_Port_DL port, char *methodName, char *operationID, char *callMethodName, double *errCode, char *message)
+{
+    listener.onMethodChannel(port, methodName, operationID, callMethodName, errCode, message);
 }
-static void callOnNativeMethodChannel(CGO_OpenIM_Listener *listener, char* methodName, char* operationID, char* callMethodName, double* errCode, char* message) {
-	if (listener->onNativeMethodChannel != NULL) {
-		listener->onNativeMethodChannel(methodName, operationID, callMethodName, errCode, message);
-	}
-}
+
 
 #line 1 "cgo-generated-wrapper"
 
@@ -241,9 +233,8 @@ extern __declspec(dllexport) void RefuseGroupApplication(char* operationID, char
 extern __declspec(dllexport) void SetGroupMemberNickname(char* operationID, char* groupID, char* userID, char* groupMemberNickname);
 extern __declspec(dllexport) void SearchGroupMembers(char* operationID, char* searchParam);
 extern __declspec(dllexport) void IsJoinGroup(char* operationID, char* groupID);
-extern __declspec(dllexport) void RegisterCallback(CGO_OpenIM_Listener* callback, Dart_Port_DL port);
 extern __declspec(dllexport) char* GetSdkVersion();
-extern __declspec(dllexport) _Bool InitSDK(char* operationID, char* config);
+extern __declspec(dllexport) _Bool InitSDK(Openim_Listener imListener, Dart_Port_DL port, char* operationID, char* config);
 extern __declspec(dllexport) void Login(char* operationID, char* userID, char* token);
 extern __declspec(dllexport) void Logout(char* operationID);
 extern __declspec(dllexport) void SetAppBackgroundStatus(char* operationID, _Bool isBackground);

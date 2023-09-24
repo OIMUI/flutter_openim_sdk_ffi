@@ -19,16 +19,6 @@ set(flutter_openim_sdk_ffi_bundled_libraries
   # Defined in ../src/CMakeLists.txt.
   # This can be changed to accommodate different builds.
   $<TARGET_FILE:flutter_openim_sdk_ffi>
+  "${CMAKE_CURRENT_SOURCE_DIR}/libopenim_sdk_ffi.dll"
   PARENT_SCOPE
 )
-
-
-# 复制DLL文件到运行时目录
-
-set(DEST_DEBUG_DIR "${PROJECT_BINARY_DIR}/../../runner/Debug")
-set(DEST_RELEASE_DIR "${PROJECT_BINARY_DIR}/../../runner/Release")
-
-install(FILES ${PROJECT_SOURCE_DIR}/openim_sdk_ffi.dll
-        DESTINATION ${DEST_DEBUG_DIR})
-install(FILES ${PROJECT_SOURCE_DIR}/openim_sdk_ffi.dll
-        DESTINATION ${DEST_RELEASE_DIR})

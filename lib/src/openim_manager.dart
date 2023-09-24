@@ -104,7 +104,7 @@ class OpenIMManager {
       }
       throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
     }();
-    final FlutterOpenimSdkFfiBindings bindings = FlutterOpenimSdkFfiBindings(dylib);
+    FlutterOpenimSdkFfiBindings bindings = FlutterOpenimSdkFfiBindings(dylib);
 
     try {
       final receivePort = ReceivePort();
@@ -130,6 +130,12 @@ class OpenIMManager {
           'isExternalExtensions': data.isExternalExtensions,
         });
         final listenerPtr = bindings.getIMListener();
+
+        /// 临时解决方案
+        if (Platform.isWindows) {
+          bindings = FlutterOpenimSdkFfiBindings(ffi.DynamicLibrary.open('libopenim_sdk_ffi.dll'));
+        }
+
         status = bindings.InitSDK(
           listenerPtr,
           receivePort.sendPort.nativePort,
