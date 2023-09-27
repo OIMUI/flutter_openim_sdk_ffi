@@ -27,6 +27,611 @@ class FlutterOpenimSdkFfiBindings {
           lookup)
       : _lookup = lookup;
 
+  /// Supply malloc, realloc and free functions to cJSON
+  void cJSON_InitHooks(
+    ffi.Pointer<cJSON_Hooks> hooks,
+  ) {
+    return _cJSON_InitHooks(
+      hooks,
+    );
+  }
+
+  late final _cJSON_InitHooksPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<cJSON_Hooks>)>>(
+          'cJSON_InitHooks');
+  late final _cJSON_InitHooks =
+      _cJSON_InitHooksPtr.asFunction<void Function(ffi.Pointer<cJSON_Hooks>)>();
+
+  /// Supply a block of JSON, and this returns a cJSON object you can interrogate. Call cJSON_Delete when finished.
+  ffi.Pointer<cJSON> cJSON_Parse(
+    ffi.Pointer<ffi.Char> value,
+  ) {
+    return _cJSON_Parse(
+      value,
+    );
+  }
+
+  late final _cJSON_ParsePtr = _lookup<
+          ffi
+          .NativeFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Char>)>>(
+      'cJSON_Parse');
+  late final _cJSON_Parse = _cJSON_ParsePtr
+      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Char>)>();
+
+  /// Render a cJSON entity to text for transfer/storage. Free the char* when finished.
+  ffi.Pointer<ffi.Char> cJSON_Print(
+    ffi.Pointer<cJSON> item,
+  ) {
+    return _cJSON_Print(
+      item,
+    );
+  }
+
+  late final _cJSON_PrintPtr = _lookup<
+          ffi
+          .NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<cJSON>)>>(
+      'cJSON_Print');
+  late final _cJSON_Print = _cJSON_PrintPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<cJSON>)>();
+
+  /// Render a cJSON entity to text for transfer/storage without any formatting. Free the char* when finished.
+  ffi.Pointer<ffi.Char> cJSON_PrintUnformatted(
+    ffi.Pointer<cJSON> item,
+  ) {
+    return _cJSON_PrintUnformatted(
+      item,
+    );
+  }
+
+  late final _cJSON_PrintUnformattedPtr = _lookup<
+          ffi
+          .NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<cJSON>)>>(
+      'cJSON_PrintUnformatted');
+  late final _cJSON_PrintUnformatted = _cJSON_PrintUnformattedPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<cJSON>)>();
+
+  /// Render a cJSON entity to text using a buffered strategy. prebuffer is a guess at the final size. guessing well reduces reallocation. fmt=0 gives unformatted, =1 gives formatted
+  ffi.Pointer<ffi.Char> cJSON_PrintBuffered(
+    ffi.Pointer<cJSON> item,
+    int prebuffer,
+    int fmt,
+  ) {
+    return _cJSON_PrintBuffered(
+      item,
+      prebuffer,
+      fmt,
+    );
+  }
+
+  late final _cJSON_PrintBufferedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<cJSON>, ffi.Int, ffi.Int)>>('cJSON_PrintBuffered');
+  late final _cJSON_PrintBuffered = _cJSON_PrintBufferedPtr.asFunction<
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<cJSON>, int, int)>();
+
+  /// Delete a cJSON entity and all subentities.
+  void cJSON_Delete(
+    ffi.Pointer<cJSON> c,
+  ) {
+    return _cJSON_Delete(
+      c,
+    );
+  }
+
+  late final _cJSON_DeletePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<cJSON>)>>(
+          'cJSON_Delete');
+  late final _cJSON_Delete =
+      _cJSON_DeletePtr.asFunction<void Function(ffi.Pointer<cJSON>)>();
+
+  /// Returns the number of items in an array (or object).
+  int cJSON_GetArraySize(
+    ffi.Pointer<cJSON> array,
+  ) {
+    return _cJSON_GetArraySize(
+      array,
+    );
+  }
+
+  late final _cJSON_GetArraySizePtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<cJSON>)>>(
+          'cJSON_GetArraySize');
+  late final _cJSON_GetArraySize =
+      _cJSON_GetArraySizePtr.asFunction<int Function(ffi.Pointer<cJSON>)>();
+
+  /// Retrieve item number "item" from array "array". Returns NULL if unsuccessful.
+  ffi.Pointer<cJSON> cJSON_GetArrayItem(
+    ffi.Pointer<cJSON> array,
+    int item,
+  ) {
+    return _cJSON_GetArrayItem(
+      array,
+      item,
+    );
+  }
+
+  late final _cJSON_GetArrayItemPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<cJSON> Function(
+              ffi.Pointer<cJSON>, ffi.Int)>>('cJSON_GetArrayItem');
+  late final _cJSON_GetArrayItem = _cJSON_GetArrayItemPtr
+      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>, int)>();
+
+  /// Get item "string" from object. Case insensitive.
+  ffi.Pointer<cJSON> cJSON_GetObjectItem(
+    ffi.Pointer<cJSON> object,
+    ffi.Pointer<ffi.Char> string,
+  ) {
+    return _cJSON_GetObjectItem(
+      object,
+      string,
+    );
+  }
+
+  late final _cJSON_GetObjectItemPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>,
+              ffi.Pointer<ffi.Char>)>>('cJSON_GetObjectItem');
+  late final _cJSON_GetObjectItem = _cJSON_GetObjectItemPtr.asFunction<
+      ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>)>();
+
+  /// For analysing failed parses. This returns a pointer to the parse error. You'll probably need to look a few chars back to make sense of it. Defined when cJSON_Parse() returns 0. 0 when cJSON_Parse() succeeds.
+  ffi.Pointer<ffi.Char> cJSON_GetErrorPtr() {
+    return _cJSON_GetErrorPtr();
+  }
+
+  late final _cJSON_GetErrorPtrPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+          'cJSON_GetErrorPtr');
+  late final _cJSON_GetErrorPtr =
+      _cJSON_GetErrorPtrPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
+
+  /// These calls create a cJSON item of the appropriate type.
+  ffi.Pointer<cJSON> cJSON_CreateNull() {
+    return _cJSON_CreateNull();
+  }
+
+  late final _cJSON_CreateNullPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function()>>(
+          'cJSON_CreateNull');
+  late final _cJSON_CreateNull =
+      _cJSON_CreateNullPtr.asFunction<ffi.Pointer<cJSON> Function()>();
+
+  ffi.Pointer<cJSON> cJSON_CreateTrue() {
+    return _cJSON_CreateTrue();
+  }
+
+  late final _cJSON_CreateTruePtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function()>>(
+          'cJSON_CreateTrue');
+  late final _cJSON_CreateTrue =
+      _cJSON_CreateTruePtr.asFunction<ffi.Pointer<cJSON> Function()>();
+
+  ffi.Pointer<cJSON> cJSON_CreateFalse() {
+    return _cJSON_CreateFalse();
+  }
+
+  late final _cJSON_CreateFalsePtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function()>>(
+          'cJSON_CreateFalse');
+  late final _cJSON_CreateFalse =
+      _cJSON_CreateFalsePtr.asFunction<ffi.Pointer<cJSON> Function()>();
+
+  ffi.Pointer<cJSON> cJSON_CreateBool(
+    int b,
+  ) {
+    return _cJSON_CreateBool(
+      b,
+    );
+  }
+
+  late final _cJSON_CreateBoolPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function(ffi.Int)>>(
+          'cJSON_CreateBool');
+  late final _cJSON_CreateBool =
+      _cJSON_CreateBoolPtr.asFunction<ffi.Pointer<cJSON> Function(int)>();
+
+  ffi.Pointer<cJSON> cJSON_CreateNumber(
+    double num,
+  ) {
+    return _cJSON_CreateNumber(
+      num,
+    );
+  }
+
+  late final _cJSON_CreateNumberPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function(ffi.Double)>>(
+          'cJSON_CreateNumber');
+  late final _cJSON_CreateNumber =
+      _cJSON_CreateNumberPtr.asFunction<ffi.Pointer<cJSON> Function(double)>();
+
+  ffi.Pointer<cJSON> cJSON_CreateString(
+    ffi.Pointer<ffi.Char> string,
+  ) {
+    return _cJSON_CreateString(
+      string,
+    );
+  }
+
+  late final _cJSON_CreateStringPtr = _lookup<
+          ffi
+          .NativeFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Char>)>>(
+      'cJSON_CreateString');
+  late final _cJSON_CreateString = _cJSON_CreateStringPtr
+      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Char>)>();
+
+  ffi.Pointer<cJSON> cJSON_CreateArray() {
+    return _cJSON_CreateArray();
+  }
+
+  late final _cJSON_CreateArrayPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function()>>(
+          'cJSON_CreateArray');
+  late final _cJSON_CreateArray =
+      _cJSON_CreateArrayPtr.asFunction<ffi.Pointer<cJSON> Function()>();
+
+  ffi.Pointer<cJSON> cJSON_CreateObject() {
+    return _cJSON_CreateObject();
+  }
+
+  late final _cJSON_CreateObjectPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function()>>(
+          'cJSON_CreateObject');
+  late final _cJSON_CreateObject =
+      _cJSON_CreateObjectPtr.asFunction<ffi.Pointer<cJSON> Function()>();
+
+  /// These utilities create an Array of count items.
+  ffi.Pointer<cJSON> cJSON_CreateIntArray(
+    ffi.Pointer<ffi.Int> numbers,
+    int count,
+  ) {
+    return _cJSON_CreateIntArray(
+      numbers,
+      count,
+    );
+  }
+
+  late final _cJSON_CreateIntArrayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<cJSON> Function(
+              ffi.Pointer<ffi.Int>, ffi.Int)>>('cJSON_CreateIntArray');
+  late final _cJSON_CreateIntArray = _cJSON_CreateIntArrayPtr
+      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Int>, int)>();
+
+  ffi.Pointer<cJSON> cJSON_CreateFloatArray(
+    ffi.Pointer<ffi.Float> numbers,
+    int count,
+  ) {
+    return _cJSON_CreateFloatArray(
+      numbers,
+      count,
+    );
+  }
+
+  late final _cJSON_CreateFloatArrayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<cJSON> Function(
+              ffi.Pointer<ffi.Float>, ffi.Int)>>('cJSON_CreateFloatArray');
+  late final _cJSON_CreateFloatArray = _cJSON_CreateFloatArrayPtr
+      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Float>, int)>();
+
+  ffi.Pointer<cJSON> cJSON_CreateDoubleArray(
+    ffi.Pointer<ffi.Double> numbers,
+    int count,
+  ) {
+    return _cJSON_CreateDoubleArray(
+      numbers,
+      count,
+    );
+  }
+
+  late final _cJSON_CreateDoubleArrayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<cJSON> Function(
+              ffi.Pointer<ffi.Double>, ffi.Int)>>('cJSON_CreateDoubleArray');
+  late final _cJSON_CreateDoubleArray = _cJSON_CreateDoubleArrayPtr
+      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Double>, int)>();
+
+  ffi.Pointer<cJSON> cJSON_CreateStringArray(
+    ffi.Pointer<ffi.Pointer<ffi.Char>> strings,
+    int count,
+  ) {
+    return _cJSON_CreateStringArray(
+      strings,
+      count,
+    );
+  }
+
+  late final _cJSON_CreateStringArrayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Int)>>('cJSON_CreateStringArray');
+  late final _cJSON_CreateStringArray = _cJSON_CreateStringArrayPtr.asFunction<
+      ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
+
+  /// Append item to the specified array/object.
+  void cJSON_AddItemToArray(
+    ffi.Pointer<cJSON> array,
+    ffi.Pointer<cJSON> item,
+  ) {
+    return _cJSON_AddItemToArray(
+      array,
+      item,
+    );
+  }
+
+  late final _cJSON_AddItemToArrayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<cJSON>, ffi.Pointer<cJSON>)>>('cJSON_AddItemToArray');
+  late final _cJSON_AddItemToArray = _cJSON_AddItemToArrayPtr
+      .asFunction<void Function(ffi.Pointer<cJSON>, ffi.Pointer<cJSON>)>();
+
+  void cJSON_AddItemToObject(
+    ffi.Pointer<cJSON> object,
+    ffi.Pointer<ffi.Char> string,
+    ffi.Pointer<cJSON> item,
+  ) {
+    return _cJSON_AddItemToObject(
+      object,
+      string,
+      item,
+    );
+  }
+
+  late final _cJSON_AddItemToObjectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<cJSON>)>>('cJSON_AddItemToObject');
+  late final _cJSON_AddItemToObject = _cJSON_AddItemToObjectPtr.asFunction<
+      void Function(
+          ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>, ffi.Pointer<cJSON>)>();
+
+  void cJSON_AddItemToObjectCS(
+    ffi.Pointer<cJSON> object,
+    ffi.Pointer<ffi.Char> string,
+    ffi.Pointer<cJSON> item,
+  ) {
+    return _cJSON_AddItemToObjectCS(
+      object,
+      string,
+      item,
+    );
+  }
+
+  late final _cJSON_AddItemToObjectCSPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<cJSON>)>>('cJSON_AddItemToObjectCS');
+  late final _cJSON_AddItemToObjectCS = _cJSON_AddItemToObjectCSPtr.asFunction<
+      void Function(
+          ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>, ffi.Pointer<cJSON>)>();
+
+  /// Append reference to item to the specified array/object. Use this when you want to add an existing cJSON to a new cJSON, but don't want to corrupt your existing cJSON.
+  void cJSON_AddItemReferenceToArray(
+    ffi.Pointer<cJSON> array,
+    ffi.Pointer<cJSON> item,
+  ) {
+    return _cJSON_AddItemReferenceToArray(
+      array,
+      item,
+    );
+  }
+
+  late final _cJSON_AddItemReferenceToArrayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<cJSON>,
+              ffi.Pointer<cJSON>)>>('cJSON_AddItemReferenceToArray');
+  late final _cJSON_AddItemReferenceToArray = _cJSON_AddItemReferenceToArrayPtr
+      .asFunction<void Function(ffi.Pointer<cJSON>, ffi.Pointer<cJSON>)>();
+
+  void cJSON_AddItemReferenceToObject(
+    ffi.Pointer<cJSON> object,
+    ffi.Pointer<ffi.Char> string,
+    ffi.Pointer<cJSON> item,
+  ) {
+    return _cJSON_AddItemReferenceToObject(
+      object,
+      string,
+      item,
+    );
+  }
+
+  late final _cJSON_AddItemReferenceToObjectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<cJSON>)>>('cJSON_AddItemReferenceToObject');
+  late final _cJSON_AddItemReferenceToObject =
+      _cJSON_AddItemReferenceToObjectPtr.asFunction<
+          void Function(
+              ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>, ffi.Pointer<cJSON>)>();
+
+  /// Remove/Detatch items from Arrays/Objects.
+  ffi.Pointer<cJSON> cJSON_DetachItemFromArray(
+    ffi.Pointer<cJSON> array,
+    int which,
+  ) {
+    return _cJSON_DetachItemFromArray(
+      array,
+      which,
+    );
+  }
+
+  late final _cJSON_DetachItemFromArrayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<cJSON> Function(
+              ffi.Pointer<cJSON>, ffi.Int)>>('cJSON_DetachItemFromArray');
+  late final _cJSON_DetachItemFromArray = _cJSON_DetachItemFromArrayPtr
+      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>, int)>();
+
+  void cJSON_DeleteItemFromArray(
+    ffi.Pointer<cJSON> array,
+    int which,
+  ) {
+    return _cJSON_DeleteItemFromArray(
+      array,
+      which,
+    );
+  }
+
+  late final _cJSON_DeleteItemFromArrayPtr = _lookup<
+          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<cJSON>, ffi.Int)>>(
+      'cJSON_DeleteItemFromArray');
+  late final _cJSON_DeleteItemFromArray = _cJSON_DeleteItemFromArrayPtr
+      .asFunction<void Function(ffi.Pointer<cJSON>, int)>();
+
+  ffi.Pointer<cJSON> cJSON_DetachItemFromObject(
+    ffi.Pointer<cJSON> object,
+    ffi.Pointer<ffi.Char> string,
+  ) {
+    return _cJSON_DetachItemFromObject(
+      object,
+      string,
+    );
+  }
+
+  late final _cJSON_DetachItemFromObjectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>,
+              ffi.Pointer<ffi.Char>)>>('cJSON_DetachItemFromObject');
+  late final _cJSON_DetachItemFromObject =
+      _cJSON_DetachItemFromObjectPtr.asFunction<
+          ffi.Pointer<cJSON> Function(
+              ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>)>();
+
+  void cJSON_DeleteItemFromObject(
+    ffi.Pointer<cJSON> object,
+    ffi.Pointer<ffi.Char> string,
+  ) {
+    return _cJSON_DeleteItemFromObject(
+      object,
+      string,
+    );
+  }
+
+  late final _cJSON_DeleteItemFromObjectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<cJSON>,
+              ffi.Pointer<ffi.Char>)>>('cJSON_DeleteItemFromObject');
+  late final _cJSON_DeleteItemFromObject = _cJSON_DeleteItemFromObjectPtr
+      .asFunction<void Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>)>();
+
+  /// Update array items.
+  void cJSON_InsertItemInArray(
+    ffi.Pointer<cJSON> array,
+    int which,
+    ffi.Pointer<cJSON> newitem,
+  ) {
+    return _cJSON_InsertItemInArray(
+      array,
+      which,
+      newitem,
+    );
+  }
+
+  late final _cJSON_InsertItemInArrayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Int,
+              ffi.Pointer<cJSON>)>>('cJSON_InsertItemInArray');
+  late final _cJSON_InsertItemInArray = _cJSON_InsertItemInArrayPtr
+      .asFunction<void Function(ffi.Pointer<cJSON>, int, ffi.Pointer<cJSON>)>();
+
+  void cJSON_ReplaceItemInArray(
+    ffi.Pointer<cJSON> array,
+    int which,
+    ffi.Pointer<cJSON> newitem,
+  ) {
+    return _cJSON_ReplaceItemInArray(
+      array,
+      which,
+      newitem,
+    );
+  }
+
+  late final _cJSON_ReplaceItemInArrayPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Int,
+              ffi.Pointer<cJSON>)>>('cJSON_ReplaceItemInArray');
+  late final _cJSON_ReplaceItemInArray = _cJSON_ReplaceItemInArrayPtr
+      .asFunction<void Function(ffi.Pointer<cJSON>, int, ffi.Pointer<cJSON>)>();
+
+  void cJSON_ReplaceItemInObject(
+    ffi.Pointer<cJSON> object,
+    ffi.Pointer<ffi.Char> string,
+    ffi.Pointer<cJSON> newitem,
+  ) {
+    return _cJSON_ReplaceItemInObject(
+      object,
+      string,
+      newitem,
+    );
+  }
+
+  late final _cJSON_ReplaceItemInObjectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>,
+              ffi.Pointer<cJSON>)>>('cJSON_ReplaceItemInObject');
+  late final _cJSON_ReplaceItemInObject =
+      _cJSON_ReplaceItemInObjectPtr.asFunction<
+          void Function(
+              ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>, ffi.Pointer<cJSON>)>();
+
+  /// Duplicate a cJSON item
+  ffi.Pointer<cJSON> cJSON_Duplicate(
+    ffi.Pointer<cJSON> item,
+    int recurse,
+  ) {
+    return _cJSON_Duplicate(
+      item,
+      recurse,
+    );
+  }
+
+  late final _cJSON_DuplicatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<cJSON> Function(
+              ffi.Pointer<cJSON>, ffi.Int)>>('cJSON_Duplicate');
+  late final _cJSON_Duplicate = _cJSON_DuplicatePtr
+      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>, int)>();
+
+  /// ParseWithOpts allows you to require (and check) that the JSON is null terminated, and to retrieve the pointer to the final byte parsed.
+  ffi.Pointer<cJSON> cJSON_ParseWithOpts(
+    ffi.Pointer<ffi.Char> value,
+    ffi.Pointer<ffi.Pointer<ffi.Char>> return_parse_end,
+    int require_null_terminated,
+  ) {
+    return _cJSON_ParseWithOpts(
+      value,
+      return_parse_end,
+      require_null_terminated,
+    );
+  }
+
+  late final _cJSON_ParseWithOptsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<cJSON> Function(
+              ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Pointer<ffi.Char>>,
+              ffi.Int)>>('cJSON_ParseWithOpts');
+  late final _cJSON_ParseWithOpts = _cJSON_ParseWithOptsPtr.asFunction<
+      ffi.Pointer<cJSON> Function(
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
+
+  void cJSON_Minify(
+    ffi.Pointer<ffi.Char> json,
+  ) {
+    return _cJSON_Minify(
+      json,
+    );
+  }
+
+  late final _cJSON_MinifyPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'cJSON_Minify');
+  late final _cJSON_Minify =
+      _cJSON_MinifyPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
   int renameat(
     int arg0,
     ffi.Pointer<ffi.Char> arg1,
@@ -694,7 +1299,7 @@ class FlutterOpenimSdkFfiBindings {
   int vfprintf(
     ffi.Pointer<FILE> arg0,
     ffi.Pointer<ffi.Char> arg1,
-    ffi.Pointer<__va_list_tag> arg2,
+    va_list arg2,
   ) {
     return _vfprintf(
       arg0,
@@ -705,15 +1310,14 @@ class FlutterOpenimSdkFfiBindings {
 
   late final _vfprintfPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int Function(ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<__va_list_tag>)>>('vfprintf');
+          ffi.Int Function(
+              ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>, va_list)>>('vfprintf');
   late final _vfprintf = _vfprintfPtr.asFunction<
-      int Function(ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<__va_list_tag>)>();
+      int Function(ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>, va_list)>();
 
   int vprintf(
     ffi.Pointer<ffi.Char> arg0,
-    ffi.Pointer<__va_list_tag> arg1,
+    va_list arg1,
   ) {
     return _vprintf(
       arg0,
@@ -722,16 +1326,15 @@ class FlutterOpenimSdkFfiBindings {
   }
 
   late final _vprintfPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<__va_list_tag>)>>('vprintf');
-  late final _vprintf = _vprintfPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<__va_list_tag>)>();
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>, va_list)>>(
+      'vprintf');
+  late final _vprintf =
+      _vprintfPtr.asFunction<int Function(ffi.Pointer<ffi.Char>, va_list)>();
 
   int vsprintf(
     ffi.Pointer<ffi.Char> arg0,
     ffi.Pointer<ffi.Char> arg1,
-    ffi.Pointer<__va_list_tag> arg2,
+    va_list arg2,
   ) {
     return _vsprintf(
       arg0,
@@ -743,10 +1346,9 @@ class FlutterOpenimSdkFfiBindings {
   late final _vsprintfPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<__va_list_tag>)>>('vsprintf');
+              va_list)>>('vsprintf');
   late final _vsprintf = _vsprintfPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<__va_list_tag>)>();
+      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, va_list)>();
 
   ffi.Pointer<ffi.Char> ctermid(
     ffi.Pointer<ffi.Char> arg0,
@@ -841,7 +1443,7 @@ class FlutterOpenimSdkFfiBindings {
   int __svfscanf(
     ffi.Pointer<FILE> arg0,
     ffi.Pointer<ffi.Char> arg1,
-    ffi.Pointer<__va_list_tag> arg2,
+    va_list arg2,
   ) {
     return ___svfscanf(
       arg0,
@@ -853,10 +1455,9 @@ class FlutterOpenimSdkFfiBindings {
   late final ___svfscanfPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int Function(ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<__va_list_tag>)>>('__svfscanf');
+              va_list)>>('__svfscanf');
   late final ___svfscanf = ___svfscanfPtr.asFunction<
-      int Function(ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<__va_list_tag>)>();
+      int Function(ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>, va_list)>();
 
   int __swbuf(
     int arg0,
@@ -1068,7 +1669,7 @@ class FlutterOpenimSdkFfiBindings {
   int vfscanf(
     ffi.Pointer<FILE> __stream,
     ffi.Pointer<ffi.Char> __format,
-    ffi.Pointer<__va_list_tag> arg2,
+    va_list arg2,
   ) {
     return _vfscanf(
       __stream,
@@ -1079,15 +1680,14 @@ class FlutterOpenimSdkFfiBindings {
 
   late final _vfscanfPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int Function(ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<__va_list_tag>)>>('vfscanf');
+          ffi.Int Function(
+              ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>, va_list)>>('vfscanf');
   late final _vfscanf = _vfscanfPtr.asFunction<
-      int Function(ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<__va_list_tag>)>();
+      int Function(ffi.Pointer<FILE>, ffi.Pointer<ffi.Char>, va_list)>();
 
   int vscanf(
     ffi.Pointer<ffi.Char> __format,
-    ffi.Pointer<__va_list_tag> arg1,
+    va_list arg1,
   ) {
     return _vscanf(
       __format,
@@ -1096,17 +1696,16 @@ class FlutterOpenimSdkFfiBindings {
   }
 
   late final _vscanfPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<__va_list_tag>)>>('vscanf');
-  late final _vscanf = _vscanfPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<__va_list_tag>)>();
+          ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>, va_list)>>(
+      'vscanf');
+  late final _vscanf =
+      _vscanfPtr.asFunction<int Function(ffi.Pointer<ffi.Char>, va_list)>();
 
   int vsnprintf(
     ffi.Pointer<ffi.Char> __str,
     int __size,
     ffi.Pointer<ffi.Char> __format,
-    ffi.Pointer<__va_list_tag> arg3,
+    va_list arg3,
   ) {
     return _vsnprintf(
       __str,
@@ -1119,15 +1718,15 @@ class FlutterOpenimSdkFfiBindings {
   late final _vsnprintfPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Size,
-              ffi.Pointer<ffi.Char>, ffi.Pointer<__va_list_tag>)>>('vsnprintf');
+              ffi.Pointer<ffi.Char>, va_list)>>('vsnprintf');
   late final _vsnprintf = _vsnprintfPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<__va_list_tag>)>();
+      int Function(
+          ffi.Pointer<ffi.Char>, int, ffi.Pointer<ffi.Char>, va_list)>();
 
   int vsscanf(
     ffi.Pointer<ffi.Char> __str,
     ffi.Pointer<ffi.Char> __format,
-    ffi.Pointer<__va_list_tag> arg2,
+    va_list arg2,
   ) {
     return _vsscanf(
       __str,
@@ -1139,10 +1738,9 @@ class FlutterOpenimSdkFfiBindings {
   late final _vsscanfPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<__va_list_tag>)>>('vsscanf');
+              va_list)>>('vsscanf');
   late final _vsscanf = _vsscanfPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<__va_list_tag>)>();
+      int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>, va_list)>();
 
   int dprintf(
     int arg0,
@@ -1163,7 +1761,7 @@ class FlutterOpenimSdkFfiBindings {
   int vdprintf(
     int arg0,
     ffi.Pointer<ffi.Char> arg1,
-    ffi.Pointer<__va_list_tag> arg2,
+    va_list arg2,
   ) {
     return _vdprintf(
       arg0,
@@ -1174,10 +1772,10 @@ class FlutterOpenimSdkFfiBindings {
 
   late final _vdprintfPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int Function(ffi.Int, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<__va_list_tag>)>>('vdprintf');
-  late final _vdprintf = _vdprintfPtr.asFunction<
-      int Function(int, ffi.Pointer<ffi.Char>, ffi.Pointer<__va_list_tag>)>();
+          ffi.Int Function(
+              ffi.Int, ffi.Pointer<ffi.Char>, va_list)>>('vdprintf');
+  late final _vdprintf = _vdprintfPtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Char>, va_list)>();
 
   int getdelim(
     ffi.Pointer<ffi.Pointer<ffi.Char>> __linep,
@@ -1391,7 +1989,7 @@ class FlutterOpenimSdkFfiBindings {
   int vasprintf(
     ffi.Pointer<ffi.Pointer<ffi.Char>> arg0,
     ffi.Pointer<ffi.Char> arg1,
-    ffi.Pointer<__va_list_tag> arg2,
+    va_list arg2,
   ) {
     return _vasprintf(
       arg0,
@@ -1403,10 +2001,10 @@ class FlutterOpenimSdkFfiBindings {
   late final _vasprintfPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Pointer<ffi.Char>, ffi.Pointer<__va_list_tag>)>>('vasprintf');
+              ffi.Pointer<ffi.Char>, va_list)>>('vasprintf');
   late final _vasprintf = _vasprintfPtr.asFunction<
       int Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<__va_list_tag>)>();
+          va_list)>();
 
   /// Stdio function-access interface.
   ffi.Pointer<FILE> funopen(
@@ -1522,7 +2120,7 @@ class FlutterOpenimSdkFfiBindings {
     int arg1,
     int arg2,
     ffi.Pointer<ffi.Char> arg3,
-    ffi.Pointer<__va_list_tag> arg4,
+    va_list arg4,
   ) {
     return ___vsprintf_chk(
       arg0,
@@ -1535,15 +2133,11 @@ class FlutterOpenimSdkFfiBindings {
 
   late final ___vsprintf_chkPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Int,
-              ffi.Size,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<__va_list_tag>)>>('__vsprintf_chk');
+          ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Int, ffi.Size,
+              ffi.Pointer<ffi.Char>, va_list)>>('__vsprintf_chk');
   late final ___vsprintf_chk = ___vsprintf_chkPtr.asFunction<
-      int Function(ffi.Pointer<ffi.Char>, int, int, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<__va_list_tag>)>();
+      int Function(
+          ffi.Pointer<ffi.Char>, int, int, ffi.Pointer<ffi.Char>, va_list)>();
 
   int __vsnprintf_chk(
     ffi.Pointer<ffi.Char> arg0,
@@ -1551,7 +2145,7 @@ class FlutterOpenimSdkFfiBindings {
     int arg2,
     int arg3,
     ffi.Pointer<ffi.Char> arg4,
-    ffi.Pointer<__va_list_tag> arg5,
+    va_list arg5,
   ) {
     return ___vsnprintf_chk(
       arg0,
@@ -1565,16 +2159,11 @@ class FlutterOpenimSdkFfiBindings {
 
   late final ___vsnprintf_chkPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Size,
-              ffi.Int,
-              ffi.Size,
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<__va_list_tag>)>>('__vsnprintf_chk');
+          ffi.Int Function(ffi.Pointer<ffi.Char>, ffi.Size, ffi.Int, ffi.Size,
+              ffi.Pointer<ffi.Char>, va_list)>>('__vsnprintf_chk');
   late final ___vsnprintf_chk = ___vsnprintf_chkPtr.asFunction<
       int Function(ffi.Pointer<ffi.Char>, int, int, int, ffi.Pointer<ffi.Char>,
-          ffi.Pointer<__va_list_tag>)>();
+          va_list)>();
 
   /// For historical reasons; programs expect signal's return value to be
   /// defined by <sys/signal.h>.
@@ -11565,6 +12154,44 @@ class FlutterOpenimSdkFfiBindings {
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
+  ffi.Pointer<ffi.Char> DecryptFile(
+    ffi.Pointer<ffi.Char> encryptedFilePath,
+    ffi.Pointer<ffi.Char> privateKeyPath,
+  ) {
+    return _DecryptFile(
+      encryptedFilePath,
+      privateKeyPath,
+    );
+  }
+
+  late final _DecryptFilePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('DecryptFile');
+  late final _DecryptFile = _DecryptFilePtr.asFunction<
+      ffi.Pointer<ffi.Char> Function(
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  ffi.Pointer<ffi.Char> EncryptFile(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> filePath,
+    ffi.Pointer<ffi.Char> publicKeyFilePath,
+  ) {
+    return _EncryptFile(
+      operationID,
+      filePath,
+      publicKeyFilePath,
+    );
+  }
+
+  late final _EncryptFilePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('EncryptFile');
+  late final _EncryptFile = _EncryptFilePtr.asFunction<
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
   void UploadFile(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> req,
@@ -12654,611 +13281,6 @@ class FlutterOpenimSdkFfiBindings {
   late final _UpdateMsgSenderInfo = _UpdateMsgSenderInfoPtr.asFunction<
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>)>();
-
-  /// Supply malloc, realloc and free functions to cJSON
-  void cJSON_InitHooks(
-    ffi.Pointer<cJSON_Hooks> hooks,
-  ) {
-    return _cJSON_InitHooks(
-      hooks,
-    );
-  }
-
-  late final _cJSON_InitHooksPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<cJSON_Hooks>)>>(
-          'cJSON_InitHooks');
-  late final _cJSON_InitHooks =
-      _cJSON_InitHooksPtr.asFunction<void Function(ffi.Pointer<cJSON_Hooks>)>();
-
-  /// Supply a block of JSON, and this returns a cJSON object you can interrogate. Call cJSON_Delete when finished.
-  ffi.Pointer<cJSON> cJSON_Parse(
-    ffi.Pointer<ffi.Char> value,
-  ) {
-    return _cJSON_Parse(
-      value,
-    );
-  }
-
-  late final _cJSON_ParsePtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Char>)>>(
-      'cJSON_Parse');
-  late final _cJSON_Parse = _cJSON_ParsePtr
-      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Char>)>();
-
-  /// Render a cJSON entity to text for transfer/storage. Free the char* when finished.
-  ffi.Pointer<ffi.Char> cJSON_Print(
-    ffi.Pointer<cJSON> item,
-  ) {
-    return _cJSON_Print(
-      item,
-    );
-  }
-
-  late final _cJSON_PrintPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<cJSON>)>>(
-      'cJSON_Print');
-  late final _cJSON_Print = _cJSON_PrintPtr
-      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<cJSON>)>();
-
-  /// Render a cJSON entity to text for transfer/storage without any formatting. Free the char* when finished.
-  ffi.Pointer<ffi.Char> cJSON_PrintUnformatted(
-    ffi.Pointer<cJSON> item,
-  ) {
-    return _cJSON_PrintUnformatted(
-      item,
-    );
-  }
-
-  late final _cJSON_PrintUnformattedPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<cJSON>)>>(
-      'cJSON_PrintUnformatted');
-  late final _cJSON_PrintUnformatted = _cJSON_PrintUnformattedPtr
-      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<cJSON>)>();
-
-  /// Render a cJSON entity to text using a buffered strategy. prebuffer is a guess at the final size. guessing well reduces reallocation. fmt=0 gives unformatted, =1 gives formatted
-  ffi.Pointer<ffi.Char> cJSON_PrintBuffered(
-    ffi.Pointer<cJSON> item,
-    int prebuffer,
-    int fmt,
-  ) {
-    return _cJSON_PrintBuffered(
-      item,
-      prebuffer,
-      fmt,
-    );
-  }
-
-  late final _cJSON_PrintBufferedPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<cJSON>, ffi.Int, ffi.Int)>>('cJSON_PrintBuffered');
-  late final _cJSON_PrintBuffered = _cJSON_PrintBufferedPtr.asFunction<
-      ffi.Pointer<ffi.Char> Function(ffi.Pointer<cJSON>, int, int)>();
-
-  /// Delete a cJSON entity and all subentities.
-  void cJSON_Delete(
-    ffi.Pointer<cJSON> c,
-  ) {
-    return _cJSON_Delete(
-      c,
-    );
-  }
-
-  late final _cJSON_DeletePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<cJSON>)>>(
-          'cJSON_Delete');
-  late final _cJSON_Delete =
-      _cJSON_DeletePtr.asFunction<void Function(ffi.Pointer<cJSON>)>();
-
-  /// Returns the number of items in an array (or object).
-  int cJSON_GetArraySize(
-    ffi.Pointer<cJSON> array,
-  ) {
-    return _cJSON_GetArraySize(
-      array,
-    );
-  }
-
-  late final _cJSON_GetArraySizePtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<cJSON>)>>(
-          'cJSON_GetArraySize');
-  late final _cJSON_GetArraySize =
-      _cJSON_GetArraySizePtr.asFunction<int Function(ffi.Pointer<cJSON>)>();
-
-  /// Retrieve item number "item" from array "array". Returns NULL if unsuccessful.
-  ffi.Pointer<cJSON> cJSON_GetArrayItem(
-    ffi.Pointer<cJSON> array,
-    int item,
-  ) {
-    return _cJSON_GetArrayItem(
-      array,
-      item,
-    );
-  }
-
-  late final _cJSON_GetArrayItemPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<cJSON> Function(
-              ffi.Pointer<cJSON>, ffi.Int)>>('cJSON_GetArrayItem');
-  late final _cJSON_GetArrayItem = _cJSON_GetArrayItemPtr
-      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>, int)>();
-
-  /// Get item "string" from object. Case insensitive.
-  ffi.Pointer<cJSON> cJSON_GetObjectItem(
-    ffi.Pointer<cJSON> object,
-    ffi.Pointer<ffi.Char> string,
-  ) {
-    return _cJSON_GetObjectItem(
-      object,
-      string,
-    );
-  }
-
-  late final _cJSON_GetObjectItemPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>,
-              ffi.Pointer<ffi.Char>)>>('cJSON_GetObjectItem');
-  late final _cJSON_GetObjectItem = _cJSON_GetObjectItemPtr.asFunction<
-      ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>)>();
-
-  /// For analysing failed parses. This returns a pointer to the parse error. You'll probably need to look a few chars back to make sense of it. Defined when cJSON_Parse() returns 0. 0 when cJSON_Parse() succeeds.
-  ffi.Pointer<ffi.Char> cJSON_GetErrorPtr() {
-    return _cJSON_GetErrorPtr();
-  }
-
-  late final _cJSON_GetErrorPtrPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
-          'cJSON_GetErrorPtr');
-  late final _cJSON_GetErrorPtr =
-      _cJSON_GetErrorPtrPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
-
-  /// These calls create a cJSON item of the appropriate type.
-  ffi.Pointer<cJSON> cJSON_CreateNull() {
-    return _cJSON_CreateNull();
-  }
-
-  late final _cJSON_CreateNullPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function()>>(
-          'cJSON_CreateNull');
-  late final _cJSON_CreateNull =
-      _cJSON_CreateNullPtr.asFunction<ffi.Pointer<cJSON> Function()>();
-
-  ffi.Pointer<cJSON> cJSON_CreateTrue() {
-    return _cJSON_CreateTrue();
-  }
-
-  late final _cJSON_CreateTruePtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function()>>(
-          'cJSON_CreateTrue');
-  late final _cJSON_CreateTrue =
-      _cJSON_CreateTruePtr.asFunction<ffi.Pointer<cJSON> Function()>();
-
-  ffi.Pointer<cJSON> cJSON_CreateFalse() {
-    return _cJSON_CreateFalse();
-  }
-
-  late final _cJSON_CreateFalsePtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function()>>(
-          'cJSON_CreateFalse');
-  late final _cJSON_CreateFalse =
-      _cJSON_CreateFalsePtr.asFunction<ffi.Pointer<cJSON> Function()>();
-
-  ffi.Pointer<cJSON> cJSON_CreateBool(
-    int b,
-  ) {
-    return _cJSON_CreateBool(
-      b,
-    );
-  }
-
-  late final _cJSON_CreateBoolPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function(ffi.Int)>>(
-          'cJSON_CreateBool');
-  late final _cJSON_CreateBool =
-      _cJSON_CreateBoolPtr.asFunction<ffi.Pointer<cJSON> Function(int)>();
-
-  ffi.Pointer<cJSON> cJSON_CreateNumber(
-    double num,
-  ) {
-    return _cJSON_CreateNumber(
-      num,
-    );
-  }
-
-  late final _cJSON_CreateNumberPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function(ffi.Double)>>(
-          'cJSON_CreateNumber');
-  late final _cJSON_CreateNumber =
-      _cJSON_CreateNumberPtr.asFunction<ffi.Pointer<cJSON> Function(double)>();
-
-  ffi.Pointer<cJSON> cJSON_CreateString(
-    ffi.Pointer<ffi.Char> string,
-  ) {
-    return _cJSON_CreateString(
-      string,
-    );
-  }
-
-  late final _cJSON_CreateStringPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Char>)>>(
-      'cJSON_CreateString');
-  late final _cJSON_CreateString = _cJSON_CreateStringPtr
-      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Char>)>();
-
-  ffi.Pointer<cJSON> cJSON_CreateArray() {
-    return _cJSON_CreateArray();
-  }
-
-  late final _cJSON_CreateArrayPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function()>>(
-          'cJSON_CreateArray');
-  late final _cJSON_CreateArray =
-      _cJSON_CreateArrayPtr.asFunction<ffi.Pointer<cJSON> Function()>();
-
-  ffi.Pointer<cJSON> cJSON_CreateObject() {
-    return _cJSON_CreateObject();
-  }
-
-  late final _cJSON_CreateObjectPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<cJSON> Function()>>(
-          'cJSON_CreateObject');
-  late final _cJSON_CreateObject =
-      _cJSON_CreateObjectPtr.asFunction<ffi.Pointer<cJSON> Function()>();
-
-  /// These utilities create an Array of count items.
-  ffi.Pointer<cJSON> cJSON_CreateIntArray(
-    ffi.Pointer<ffi.Int> numbers,
-    int count,
-  ) {
-    return _cJSON_CreateIntArray(
-      numbers,
-      count,
-    );
-  }
-
-  late final _cJSON_CreateIntArrayPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<cJSON> Function(
-              ffi.Pointer<ffi.Int>, ffi.Int)>>('cJSON_CreateIntArray');
-  late final _cJSON_CreateIntArray = _cJSON_CreateIntArrayPtr
-      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Int>, int)>();
-
-  ffi.Pointer<cJSON> cJSON_CreateFloatArray(
-    ffi.Pointer<ffi.Float> numbers,
-    int count,
-  ) {
-    return _cJSON_CreateFloatArray(
-      numbers,
-      count,
-    );
-  }
-
-  late final _cJSON_CreateFloatArrayPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<cJSON> Function(
-              ffi.Pointer<ffi.Float>, ffi.Int)>>('cJSON_CreateFloatArray');
-  late final _cJSON_CreateFloatArray = _cJSON_CreateFloatArrayPtr
-      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Float>, int)>();
-
-  ffi.Pointer<cJSON> cJSON_CreateDoubleArray(
-    ffi.Pointer<ffi.Double> numbers,
-    int count,
-  ) {
-    return _cJSON_CreateDoubleArray(
-      numbers,
-      count,
-    );
-  }
-
-  late final _cJSON_CreateDoubleArrayPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<cJSON> Function(
-              ffi.Pointer<ffi.Double>, ffi.Int)>>('cJSON_CreateDoubleArray');
-  late final _cJSON_CreateDoubleArray = _cJSON_CreateDoubleArrayPtr
-      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Double>, int)>();
-
-  ffi.Pointer<cJSON> cJSON_CreateStringArray(
-    ffi.Pointer<ffi.Pointer<ffi.Char>> strings,
-    int count,
-  ) {
-    return _cJSON_CreateStringArray(
-      strings,
-      count,
-    );
-  }
-
-  late final _cJSON_CreateStringArrayPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Int)>>('cJSON_CreateStringArray');
-  late final _cJSON_CreateStringArray = _cJSON_CreateStringArrayPtr.asFunction<
-      ffi.Pointer<cJSON> Function(ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
-
-  /// Append item to the specified array/object.
-  void cJSON_AddItemToArray(
-    ffi.Pointer<cJSON> array,
-    ffi.Pointer<cJSON> item,
-  ) {
-    return _cJSON_AddItemToArray(
-      array,
-      item,
-    );
-  }
-
-  late final _cJSON_AddItemToArrayPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<cJSON>, ffi.Pointer<cJSON>)>>('cJSON_AddItemToArray');
-  late final _cJSON_AddItemToArray = _cJSON_AddItemToArrayPtr
-      .asFunction<void Function(ffi.Pointer<cJSON>, ffi.Pointer<cJSON>)>();
-
-  void cJSON_AddItemToObject(
-    ffi.Pointer<cJSON> object,
-    ffi.Pointer<ffi.Char> string,
-    ffi.Pointer<cJSON> item,
-  ) {
-    return _cJSON_AddItemToObject(
-      object,
-      string,
-      item,
-    );
-  }
-
-  late final _cJSON_AddItemToObjectPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<cJSON>)>>('cJSON_AddItemToObject');
-  late final _cJSON_AddItemToObject = _cJSON_AddItemToObjectPtr.asFunction<
-      void Function(
-          ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>, ffi.Pointer<cJSON>)>();
-
-  void cJSON_AddItemToObjectCS(
-    ffi.Pointer<cJSON> object,
-    ffi.Pointer<ffi.Char> string,
-    ffi.Pointer<cJSON> item,
-  ) {
-    return _cJSON_AddItemToObjectCS(
-      object,
-      string,
-      item,
-    );
-  }
-
-  late final _cJSON_AddItemToObjectCSPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<cJSON>)>>('cJSON_AddItemToObjectCS');
-  late final _cJSON_AddItemToObjectCS = _cJSON_AddItemToObjectCSPtr.asFunction<
-      void Function(
-          ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>, ffi.Pointer<cJSON>)>();
-
-  /// Append reference to item to the specified array/object. Use this when you want to add an existing cJSON to a new cJSON, but don't want to corrupt your existing cJSON.
-  void cJSON_AddItemReferenceToArray(
-    ffi.Pointer<cJSON> array,
-    ffi.Pointer<cJSON> item,
-  ) {
-    return _cJSON_AddItemReferenceToArray(
-      array,
-      item,
-    );
-  }
-
-  late final _cJSON_AddItemReferenceToArrayPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<cJSON>,
-              ffi.Pointer<cJSON>)>>('cJSON_AddItemReferenceToArray');
-  late final _cJSON_AddItemReferenceToArray = _cJSON_AddItemReferenceToArrayPtr
-      .asFunction<void Function(ffi.Pointer<cJSON>, ffi.Pointer<cJSON>)>();
-
-  void cJSON_AddItemReferenceToObject(
-    ffi.Pointer<cJSON> object,
-    ffi.Pointer<ffi.Char> string,
-    ffi.Pointer<cJSON> item,
-  ) {
-    return _cJSON_AddItemReferenceToObject(
-      object,
-      string,
-      item,
-    );
-  }
-
-  late final _cJSON_AddItemReferenceToObjectPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<cJSON>)>>('cJSON_AddItemReferenceToObject');
-  late final _cJSON_AddItemReferenceToObject =
-      _cJSON_AddItemReferenceToObjectPtr.asFunction<
-          void Function(
-              ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>, ffi.Pointer<cJSON>)>();
-
-  /// Remove/Detatch items from Arrays/Objects.
-  ffi.Pointer<cJSON> cJSON_DetachItemFromArray(
-    ffi.Pointer<cJSON> array,
-    int which,
-  ) {
-    return _cJSON_DetachItemFromArray(
-      array,
-      which,
-    );
-  }
-
-  late final _cJSON_DetachItemFromArrayPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<cJSON> Function(
-              ffi.Pointer<cJSON>, ffi.Int)>>('cJSON_DetachItemFromArray');
-  late final _cJSON_DetachItemFromArray = _cJSON_DetachItemFromArrayPtr
-      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>, int)>();
-
-  void cJSON_DeleteItemFromArray(
-    ffi.Pointer<cJSON> array,
-    int which,
-  ) {
-    return _cJSON_DeleteItemFromArray(
-      array,
-      which,
-    );
-  }
-
-  late final _cJSON_DeleteItemFromArrayPtr = _lookup<
-          ffi.NativeFunction<ffi.Void Function(ffi.Pointer<cJSON>, ffi.Int)>>(
-      'cJSON_DeleteItemFromArray');
-  late final _cJSON_DeleteItemFromArray = _cJSON_DeleteItemFromArrayPtr
-      .asFunction<void Function(ffi.Pointer<cJSON>, int)>();
-
-  ffi.Pointer<cJSON> cJSON_DetachItemFromObject(
-    ffi.Pointer<cJSON> object,
-    ffi.Pointer<ffi.Char> string,
-  ) {
-    return _cJSON_DetachItemFromObject(
-      object,
-      string,
-    );
-  }
-
-  late final _cJSON_DetachItemFromObjectPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>,
-              ffi.Pointer<ffi.Char>)>>('cJSON_DetachItemFromObject');
-  late final _cJSON_DetachItemFromObject =
-      _cJSON_DetachItemFromObjectPtr.asFunction<
-          ffi.Pointer<cJSON> Function(
-              ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>)>();
-
-  void cJSON_DeleteItemFromObject(
-    ffi.Pointer<cJSON> object,
-    ffi.Pointer<ffi.Char> string,
-  ) {
-    return _cJSON_DeleteItemFromObject(
-      object,
-      string,
-    );
-  }
-
-  late final _cJSON_DeleteItemFromObjectPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<cJSON>,
-              ffi.Pointer<ffi.Char>)>>('cJSON_DeleteItemFromObject');
-  late final _cJSON_DeleteItemFromObject = _cJSON_DeleteItemFromObjectPtr
-      .asFunction<void Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>)>();
-
-  /// Update array items.
-  void cJSON_InsertItemInArray(
-    ffi.Pointer<cJSON> array,
-    int which,
-    ffi.Pointer<cJSON> newitem,
-  ) {
-    return _cJSON_InsertItemInArray(
-      array,
-      which,
-      newitem,
-    );
-  }
-
-  late final _cJSON_InsertItemInArrayPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Int,
-              ffi.Pointer<cJSON>)>>('cJSON_InsertItemInArray');
-  late final _cJSON_InsertItemInArray = _cJSON_InsertItemInArrayPtr
-      .asFunction<void Function(ffi.Pointer<cJSON>, int, ffi.Pointer<cJSON>)>();
-
-  void cJSON_ReplaceItemInArray(
-    ffi.Pointer<cJSON> array,
-    int which,
-    ffi.Pointer<cJSON> newitem,
-  ) {
-    return _cJSON_ReplaceItemInArray(
-      array,
-      which,
-      newitem,
-    );
-  }
-
-  late final _cJSON_ReplaceItemInArrayPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Int,
-              ffi.Pointer<cJSON>)>>('cJSON_ReplaceItemInArray');
-  late final _cJSON_ReplaceItemInArray = _cJSON_ReplaceItemInArrayPtr
-      .asFunction<void Function(ffi.Pointer<cJSON>, int, ffi.Pointer<cJSON>)>();
-
-  void cJSON_ReplaceItemInObject(
-    ffi.Pointer<cJSON> object,
-    ffi.Pointer<ffi.Char> string,
-    ffi.Pointer<cJSON> newitem,
-  ) {
-    return _cJSON_ReplaceItemInObject(
-      object,
-      string,
-      newitem,
-    );
-  }
-
-  late final _cJSON_ReplaceItemInObjectPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>,
-              ffi.Pointer<cJSON>)>>('cJSON_ReplaceItemInObject');
-  late final _cJSON_ReplaceItemInObject =
-      _cJSON_ReplaceItemInObjectPtr.asFunction<
-          void Function(
-              ffi.Pointer<cJSON>, ffi.Pointer<ffi.Char>, ffi.Pointer<cJSON>)>();
-
-  /// Duplicate a cJSON item
-  ffi.Pointer<cJSON> cJSON_Duplicate(
-    ffi.Pointer<cJSON> item,
-    int recurse,
-  ) {
-    return _cJSON_Duplicate(
-      item,
-      recurse,
-    );
-  }
-
-  late final _cJSON_DuplicatePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<cJSON> Function(
-              ffi.Pointer<cJSON>, ffi.Int)>>('cJSON_Duplicate');
-  late final _cJSON_Duplicate = _cJSON_DuplicatePtr
-      .asFunction<ffi.Pointer<cJSON> Function(ffi.Pointer<cJSON>, int)>();
-
-  /// ParseWithOpts allows you to require (and check) that the JSON is null terminated, and to retrieve the pointer to the final byte parsed.
-  ffi.Pointer<cJSON> cJSON_ParseWithOpts(
-    ffi.Pointer<ffi.Char> value,
-    ffi.Pointer<ffi.Pointer<ffi.Char>> return_parse_end,
-    int require_null_terminated,
-  ) {
-    return _cJSON_ParseWithOpts(
-      value,
-      return_parse_end,
-      require_null_terminated,
-    );
-  }
-
-  late final _cJSON_ParseWithOptsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<cJSON> Function(
-              ffi.Pointer<ffi.Char>,
-              ffi.Pointer<ffi.Pointer<ffi.Char>>,
-              ffi.Int)>>('cJSON_ParseWithOpts');
-  late final _cJSON_ParseWithOpts = _cJSON_ParseWithOptsPtr.asFunction<
-      ffi.Pointer<cJSON> Function(
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Pointer<ffi.Char>>, int)>();
-
-  void cJSON_Minify(
-    ffi.Pointer<ffi.Char> json,
-  ) {
-    return _cJSON_Minify(
-      json,
-    );
-  }
-
-  late final _cJSON_MinifyPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'cJSON_Minify');
-  late final _cJSON_Minify =
-      _cJSON_MinifyPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
 
   int sched_yield() {
     return _sched_yield();
@@ -15842,6 +15864,45 @@ class FlutterOpenimSdkFfiBindings {
       _getIMListenerPtr.asFunction<Openim_Listener Function()>();
 }
 
+/// The cJSON structure:
+final class cJSON extends ffi.Struct {
+  /// next/prev allow you to walk array/object chains. Alternatively, use GetArraySize/GetArrayItem/GetObjectItem
+  external ffi.Pointer<cJSON> next;
+
+  external ffi.Pointer<cJSON> prev;
+
+  /// An array or object item will have a child pointer pointing to a chain of the items in the array/object.
+  external ffi.Pointer<cJSON> child;
+
+  /// The type of the item, as above.
+  @ffi.Int()
+  external int type;
+
+  /// The item's string, if type==cJSON_String
+  external ffi.Pointer<ffi.Char> valuestring;
+
+  /// The item's number, if type==cJSON_Number
+  @ffi.Int()
+  external int valueint;
+
+  /// The item's number, if type==cJSON_Number
+  @ffi.Double()
+  external double valuedouble;
+
+  /// The item's name string, if this item is the child of, or is in the list of subitems of an object.
+  external ffi.Pointer<ffi.Char> string;
+}
+
+final class cJSON_Hooks extends ffi.Struct {
+  external ffi
+      .Pointer<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Int sz)>>
+      malloc_fn;
+
+  external ffi
+      .Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void> ptr)>>
+      free_fn;
+}
+
 /// mbstate_t is an opaque object to keep conversion state, during multibyte
 /// stream conversions.  The content must not be referenced by user programs.
 final class __mbstate_t extends ffi.Union {
@@ -16091,19 +16152,9 @@ typedef __int64_t = ffi.LongLong;
 ///
 /// NB: see WARNING above before changing the layout of this structure!
 typedef FILE = __sFILE;
-
-final class __va_list_tag extends ffi.Struct {
-  @ffi.UnsignedInt()
-  external int gp_offset;
-
-  @ffi.UnsignedInt()
-  external int fp_offset;
-
-  external ffi.Pointer<ffi.Void> overflow_arg_area;
-
-  external ffi.Pointer<ffi.Void> reg_save_area;
-}
-
+typedef va_list = __darwin_va_list;
+typedef __darwin_va_list = __builtin_va_list;
+typedef __builtin_va_list = ffi.Pointer<ffi.Char>;
 typedef off_t = __darwin_off_t;
 typedef ssize_t = __darwin_ssize_t;
 typedef __darwin_ssize_t = ffi.Long;
@@ -16116,319 +16167,171 @@ abstract class idtype_t {
   static const int P_PGID = 2;
 }
 
-final class __darwin_i386_thread_state extends ffi.Struct {
-  @ffi.UnsignedInt()
-  external int __eax;
-
-  @ffi.UnsignedInt()
-  external int __ebx;
-
-  @ffi.UnsignedInt()
-  external int __ecx;
-
-  @ffi.UnsignedInt()
-  external int __edx;
-
-  @ffi.UnsignedInt()
-  external int __edi;
-
-  @ffi.UnsignedInt()
-  external int __esi;
-
-  @ffi.UnsignedInt()
-  external int __ebp;
-
-  @ffi.UnsignedInt()
-  external int __esp;
-
-  @ffi.UnsignedInt()
-  external int __ss;
-
-  @ffi.UnsignedInt()
-  external int __eflags;
-
-  @ffi.UnsignedInt()
-  external int __eip;
-
-  @ffi.UnsignedInt()
-  external int __cs;
-
-  @ffi.UnsignedInt()
-  external int __ds;
-
-  @ffi.UnsignedInt()
-  external int __es;
-
-  @ffi.UnsignedInt()
-  external int __fs;
-
-  @ffi.UnsignedInt()
-  external int __gs;
-}
-
-final class __darwin_fp_control extends ffi.Opaque {}
-
-final class __darwin_fp_status extends ffi.Opaque {}
-
-final class __darwin_mmst_reg extends ffi.Struct {
-  @ffi.Array.multi([10])
-  external ffi.Array<ffi.Char> __mmst_reg;
-
-  @ffi.Array.multi([6])
-  external ffi.Array<ffi.Char> __mmst_rsrv;
-}
-
-final class __darwin_xmm_reg extends ffi.Struct {
-  @ffi.Array.multi([16])
-  external ffi.Array<ffi.Char> __xmm_reg;
-}
-
-final class __darwin_ymm_reg extends ffi.Struct {
-  @ffi.Array.multi([32])
-  external ffi.Array<ffi.Char> __ymm_reg;
-}
-
-final class __darwin_zmm_reg extends ffi.Struct {
-  @ffi.Array.multi([64])
-  external ffi.Array<ffi.Char> __zmm_reg;
-}
-
-final class __darwin_opmask_reg extends ffi.Struct {
-  @ffi.Array.multi([8])
-  external ffi.Array<ffi.Char> __opmask_reg;
-}
-
-final class __darwin_i386_float_state extends ffi.Opaque {}
-
-final class __darwin_i386_avx_state extends ffi.Opaque {}
-
-final class __darwin_i386_avx512_state extends ffi.Opaque {}
-
-final class __darwin_i386_exception_state extends ffi.Struct {
-  @__uint16_t()
-  external int __trapno;
-
-  @__uint16_t()
-  external int __cpu;
-
+final class __darwin_arm_exception_state extends ffi.Struct {
+  /// number of arm exception taken
   @__uint32_t()
-  external int __err;
+  external int __exception;
 
+  /// Fault status
   @__uint32_t()
-  external int __faultvaddr;
+  external int __fsr;
+
+  /// Virtual Fault Address
+  @__uint32_t()
+  external int __far;
 }
 
-typedef __uint16_t = ffi.UnsignedShort;
 typedef __uint32_t = ffi.UnsignedInt;
 
-final class __darwin_x86_debug_state32 extends ffi.Struct {
-  @ffi.UnsignedInt()
-  external int __dr0;
-
-  @ffi.UnsignedInt()
-  external int __dr1;
-
-  @ffi.UnsignedInt()
-  external int __dr2;
-
-  @ffi.UnsignedInt()
-  external int __dr3;
-
-  @ffi.UnsignedInt()
-  external int __dr4;
-
-  @ffi.UnsignedInt()
-  external int __dr5;
-
-  @ffi.UnsignedInt()
-  external int __dr6;
-
-  @ffi.UnsignedInt()
-  external int __dr7;
-}
-
-final class __x86_instruction_state extends ffi.Struct {
-  @ffi.Int()
-  external int __insn_stream_valid_bytes;
-
-  @ffi.Int()
-  external int __insn_offset;
-
-  /// non-zero when the cacheline that includes the insn_offset
-  /// is replaced in the insn_bytes array due to a mismatch
-  /// detected when comparing it with the same cacheline in memory
-  @ffi.Int()
-  external int __out_of_synch;
-
-  @ffi.Array.multi([2380])
-  external ffi.Array<__uint8_t> __insn_bytes;
-
-  @ffi.Array.multi([64])
-  external ffi.Array<__uint8_t> __insn_cacheline;
-}
-
-typedef __uint8_t = ffi.UnsignedChar;
-
-final class __last_branch_record extends ffi.Opaque {}
-
-final class __last_branch_state extends ffi.Opaque {}
-
-final class __x86_pagein_state extends ffi.Struct {
-  @ffi.Int()
-  external int __pagein_error;
-}
-
-final class __darwin_x86_thread_state64 extends ffi.Struct {
+final class __darwin_arm_exception_state64 extends ffi.Struct {
+  /// Virtual Fault Address
   @__uint64_t()
-  external int __rax;
+  external int __far;
 
-  @__uint64_t()
-  external int __rbx;
+  /// Exception syndrome
+  @__uint32_t()
+  external int __esr;
 
-  @__uint64_t()
-  external int __rcx;
-
-  @__uint64_t()
-  external int __rdx;
-
-  @__uint64_t()
-  external int __rdi;
-
-  @__uint64_t()
-  external int __rsi;
-
-  @__uint64_t()
-  external int __rbp;
-
-  @__uint64_t()
-  external int __rsp;
-
-  @__uint64_t()
-  external int __r8;
-
-  @__uint64_t()
-  external int __r9;
-
-  @__uint64_t()
-  external int __r10;
-
-  @__uint64_t()
-  external int __r11;
-
-  @__uint64_t()
-  external int __r12;
-
-  @__uint64_t()
-  external int __r13;
-
-  @__uint64_t()
-  external int __r14;
-
-  @__uint64_t()
-  external int __r15;
-
-  @__uint64_t()
-  external int __rip;
-
-  @__uint64_t()
-  external int __rflags;
-
-  @__uint64_t()
-  external int __cs;
-
-  @__uint64_t()
-  external int __fs;
-
-  @__uint64_t()
-  external int __gs;
+  /// number of arm exception taken
+  @__uint32_t()
+  external int __exception;
 }
 
 typedef __uint64_t = ffi.UnsignedLongLong;
 
-final class __darwin_x86_thread_full_state64 extends ffi.Struct {
-  external __darwin_x86_thread_state64 __ss64;
+final class __darwin_arm_thread_state extends ffi.Struct {
+  /// General purpose register r0-r12
+  @ffi.Array.multi([13])
+  external ffi.Array<__uint32_t> __r;
 
-  @__uint64_t()
-  external int __ds;
+  /// Stack pointer r13
+  @__uint32_t()
+  external int __sp;
 
-  @__uint64_t()
-  external int __es;
+  /// Link register r14
+  @__uint32_t()
+  external int __lr;
 
-  @__uint64_t()
-  external int __ss;
+  /// Program counter r15
+  @__uint32_t()
+  external int __pc;
 
-  @__uint64_t()
-  external int __gsbase;
+  /// Current program status register
+  @__uint32_t()
+  external int __cpsr;
 }
 
-final class __darwin_x86_float_state64 extends ffi.Opaque {}
+final class __darwin_arm_thread_state64 extends ffi.Struct {
+  /// General purpose registers x0-x28
+  @ffi.Array.multi([29])
+  external ffi.Array<__uint64_t> __x;
 
-final class __darwin_x86_avx_state64 extends ffi.Opaque {}
+  /// Frame pointer x29
+  @__uint64_t()
+  external int __fp;
 
-final class __darwin_x86_avx512_state64 extends ffi.Opaque {}
+  /// Link register x30
+  @__uint64_t()
+  external int __lr;
 
-final class __darwin_x86_exception_state64 extends ffi.Struct {
-  @__uint16_t()
-  external int __trapno;
+  /// Stack pointer x31
+  @__uint64_t()
+  external int __sp;
 
-  @__uint16_t()
-  external int __cpu;
+  /// Program counter
+  @__uint64_t()
+  external int __pc;
+
+  /// Current program status register
+  @__uint32_t()
+  external int __cpsr;
+
+  /// Same size for 32-bit or 64-bit clients
+  @__uint32_t()
+  external int __pad;
+}
+
+final class __darwin_arm_vfp_state extends ffi.Struct {
+  @ffi.Array.multi([64])
+  external ffi.Array<__uint32_t> __r;
 
   @__uint32_t()
-  external int __err;
-
-  @__uint64_t()
-  external int __faultvaddr;
+  external int __fpscr;
 }
 
-final class __darwin_x86_debug_state64 extends ffi.Struct {
-  @__uint64_t()
-  external int __dr0;
+final class __darwin_arm_neon_state64 extends ffi.Opaque {}
 
-  @__uint64_t()
-  external int __dr1;
+final class __darwin_arm_neon_state extends ffi.Opaque {}
 
-  @__uint64_t()
-  external int __dr2;
-
-  @__uint64_t()
-  external int __dr3;
-
-  @__uint64_t()
-  external int __dr4;
-
-  @__uint64_t()
-  external int __dr5;
-
-  @__uint64_t()
-  external int __dr6;
-
-  @__uint64_t()
-  external int __dr7;
+final class __arm_pagein_state extends ffi.Struct {
+  @ffi.Int()
+  external int __pagein_error;
 }
 
-final class __darwin_x86_cpmu_state64 extends ffi.Struct {
+final class __arm_legacy_debug_state extends ffi.Struct {
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint32_t> __bvr;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint32_t> __bcr;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint32_t> __wvr;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint32_t> __wcr;
+}
+
+final class __darwin_arm_debug_state32 extends ffi.Struct {
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint32_t> __bvr;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint32_t> __bcr;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint32_t> __wvr;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint32_t> __wcr;
+
+  /// Bit 0 is SS (Hardware Single Step)
+  @__uint64_t()
+  external int __mdscr_el1;
+}
+
+final class __darwin_arm_debug_state64 extends ffi.Struct {
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint64_t> __bvr;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint64_t> __bcr;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint64_t> __wvr;
+
+  @ffi.Array.multi([16])
+  external ffi.Array<__uint64_t> __wcr;
+
+  /// Bit 0 is SS (Hardware Single Step)
+  @__uint64_t()
+  external int __mdscr_el1;
+}
+
+final class __darwin_arm_cpmu_state64 extends ffi.Struct {
   @ffi.Array.multi([16])
   external ffi.Array<__uint64_t> __ctrs;
 }
 
-final class __darwin_mcontext32 extends ffi.Opaque {}
+final class __darwin_mcontext32 extends ffi.Struct {
+  external __darwin_arm_exception_state __es;
 
-final class __darwin_mcontext_avx32 extends ffi.Opaque {}
+  external __darwin_arm_thread_state __ss;
 
-final class __darwin_mcontext_avx512_32 extends ffi.Opaque {}
+  external __darwin_arm_vfp_state __fs;
+}
 
 final class __darwin_mcontext64 extends ffi.Opaque {}
-
-final class __darwin_mcontext64_full extends ffi.Opaque {}
-
-final class __darwin_mcontext_avx64 extends ffi.Opaque {}
-
-final class __darwin_mcontext_avx64_full extends ffi.Opaque {}
-
-final class __darwin_mcontext_avx512_64 extends ffi.Opaque {}
-
-final class __darwin_mcontext_avx512_64_full extends ffi.Opaque {}
 
 final class __darwin_sigaltstack extends ffi.Struct {
   /// signal stack base
@@ -17320,6 +17223,25 @@ final class proc_rlimit_control_wakeupmon extends ffi.Struct {
 typedef id_t = __darwin_id_t;
 typedef __darwin_id_t = __uint32_t;
 
+/// Functions for byte reversed loads.
+@ffi.Packed(1)
+final class _OSUnalignedU16 extends ffi.Struct {
+  @ffi.Uint16()
+  external int __val;
+}
+
+@ffi.Packed(1)
+final class _OSUnalignedU32 extends ffi.Struct {
+  @ffi.Uint32()
+  external int __val;
+}
+
+@ffi.Packed(1)
+final class _OSUnalignedU64 extends ffi.Struct {
+  @ffi.Uint64()
+  external int __val;
+}
+
 /// Deprecated:
 /// Structure of the information in the status word returned by wait4.
 /// If w_stopval==_WSTOPPED, then the second structure describes
@@ -17358,6 +17280,7 @@ typedef dev_t = __darwin_dev_t;
 typedef __darwin_dev_t = __int32_t;
 typedef mode_t = __darwin_mode_t;
 typedef __darwin_mode_t = __uint16_t;
+typedef __uint16_t = ffi.UnsignedShort;
 typedef intmax_t = ffi.Long;
 
 /// 7.8.2.2
@@ -18389,45 +18312,6 @@ typedef GoInt = GoInt64;
 typedef GoInt64 = ffi.LongLong;
 typedef GoString = _GoString_;
 
-/// The cJSON structure:
-final class cJSON extends ffi.Struct {
-  /// next/prev allow you to walk array/object chains. Alternatively, use GetArraySize/GetArrayItem/GetObjectItem
-  external ffi.Pointer<cJSON> next;
-
-  external ffi.Pointer<cJSON> prev;
-
-  /// An array or object item will have a child pointer pointing to a chain of the items in the array/object.
-  external ffi.Pointer<cJSON> child;
-
-  /// The type of the item, as above.
-  @ffi.Int()
-  external int type;
-
-  /// The item's string, if type==cJSON_String
-  external ffi.Pointer<ffi.Char> valuestring;
-
-  /// The item's number, if type==cJSON_Number
-  @ffi.Int()
-  external int valueint;
-
-  /// The item's number, if type==cJSON_Number
-  @ffi.Double()
-  external double valuedouble;
-
-  /// The item's name string, if this item is the child of, or is in the list of subitems of an object.
-  external ffi.Pointer<ffi.Char> string;
-}
-
-final class cJSON_Hooks extends ffi.Struct {
-  external ffi
-      .Pointer<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function(ffi.Size sz)>>
-      malloc_fn;
-
-  external ffi
-      .Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void> ptr)>>
-      free_fn;
-}
-
 final class sched_param extends ffi.Struct {
   @ffi.Int()
   external int sched_priority;
@@ -18602,11 +18486,29 @@ const int QOS_CLASS_BACKGROUND = 9;
 
 const int QOS_CLASS_UNSPECIFIED = 0;
 
-const int __DARWIN_ONLY_64_BIT_INO_T = 0;
+const int cJSON_False = 0;
+
+const int cJSON_True = 1;
+
+const int cJSON_NULL = 2;
+
+const int cJSON_Number = 3;
+
+const int cJSON_String = 4;
+
+const int cJSON_Array = 5;
+
+const int cJSON_Object = 6;
+
+const int cJSON_IsReference = 256;
+
+const int cJSON_StringIsConst = 512;
+
+const int __DARWIN_ONLY_64_BIT_INO_T = 1;
 
 const int __DARWIN_ONLY_UNIX_CONFORMANCE = 1;
 
-const int __DARWIN_ONLY_VERS_1050 = 0;
+const int __DARWIN_ONLY_VERS_1050 = 1;
 
 const int __DARWIN_UNIX03 = 1;
 
@@ -18615,10 +18517,6 @@ const int __DARWIN_64_BIT_INO_T = 1;
 const int __DARWIN_VERS_1050 = 1;
 
 const int __DARWIN_NON_CANCELABLE = 0;
-
-const String __DARWIN_SUF_64_BIT_INO_T = '\$INODE64';
-
-const String __DARWIN_SUF_1050 = '\$1050';
 
 const String __DARWIN_SUF_EXTSN = '\$DARWIN_EXTSN';
 
@@ -18633,6 +18531,10 @@ const int __STDC_WANT_LIB_EXT1__ = 1;
 const int __DARWIN_NO_LONG_LONG = 0;
 
 const int _DARWIN_FEATURE_64_BIT_INODE = 1;
+
+const int _DARWIN_FEATURE_ONLY_64_BIT_INODE = 1;
+
+const int _DARWIN_FEATURE_ONLY_VERS_1050 = 1;
 
 const int _DARWIN_FEATURE_ONLY_UNIX_CONFORMANCE = 1;
 
@@ -19326,7 +19228,7 @@ const int __DARWIN_NSIG = 32;
 
 const int NSIG = 32;
 
-const int _I386_SIGNAL_H_ = 1;
+const int _ARM_SIGNAL_ = 1;
 
 const int SIGHUP = 1;
 
@@ -19392,27 +19294,7 @@ const int SIGUSR1 = 30;
 
 const int SIGUSR2 = 31;
 
-const int FP_PREC_24B = 0;
-
-const int FP_PREC_53B = 2;
-
-const int FP_PREC_64B = 3;
-
-const int FP_RND_NEAR = 0;
-
-const int FP_RND_DOWN = 1;
-
-const int FP_RND_UP = 2;
-
-const int FP_CHOP = 3;
-
-const int FP_STATE_BYTES = 512;
-
-const int _X86_INSTRUCTION_STATE_MAX_INSN_BYTES = 2380;
-
-const int _X86_INSTRUCTION_STATE_CACHELINE_SIZE = 64;
-
-const int __LASTBRANCH_MAX = 32;
+const int __DARWIN_OPAQUE_ARM_THREAD_STATE64 = 0;
 
 const int SIGEV_NONE = 0;
 
@@ -20133,24 +20015,6 @@ const String kIsolateSnapshotInstructionsAsmSymbol =
     '_kDartIsolateSnapshotInstructions';
 
 const String kIsolateSnapshotBssAsmSymbol = '_kDartIsolateSnapshotBss';
-
-const int cJSON_False = 0;
-
-const int cJSON_True = 1;
-
-const int cJSON_NULL = 2;
-
-const int cJSON_Number = 3;
-
-const int cJSON_String = 4;
-
-const int cJSON_Array = 5;
-
-const int cJSON_Object = 6;
-
-const int cJSON_IsReference = 256;
-
-const int cJSON_StringIsConst = 512;
 
 const int _PTHREAD_MUTEX_SIG_init = 850045863;
 

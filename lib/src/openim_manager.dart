@@ -436,6 +436,24 @@ class OpenIMManager {
             calloc.free(operationID);
             calloc.free(imagePath);
             break;
+          case _PortMethod.encryptFile:
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
+            final filePath = (msg.data['filePath'] as String).toNativeUtf8().cast<ffi.Char>();
+            final publicKeyFilePath = (msg.data['publicKeyFilePath'] as String).toNativeUtf8().cast<ffi.Char>();
+            final newMsg = bindings.EncryptFile(operationID, filePath, publicKeyFilePath);
+            msg.sendPort?.send(_PortResult(data: newMsg.cast<Utf8>().toDartString()));
+            calloc.free(operationID);
+            calloc.free(filePath);
+            calloc.free(publicKeyFilePath);
+            break;
+          case _PortMethod.decryptFile:
+            final filePath = (msg.data['filePath'] as String).toNativeUtf8().cast<ffi.Char>();
+            final privateKeyFilePath = (msg.data['privateKeyFilePath'] as String).toNativeUtf8().cast<ffi.Char>();
+            final newMsg = bindings.DecryptFile(filePath, privateKeyFilePath);
+            msg.sendPort?.send(_PortResult(data: newMsg.cast<Utf8>().toDartString()));
+            calloc.free(filePath);
+            calloc.free(privateKeyFilePath);
+            break;
           case _PortMethod.createSoundMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final soundPath = (msg.data['soundPath'] as String).toNativeUtf8().cast<ffi.Char>();

@@ -190,6 +190,13 @@ class _PortMethod {
   static const String getLoginStatus = 'GetLoginStatus';
   static const String logout = 'Logout';
   static const String setAppBadge = 'SetAppBadge';
+
+  /// 加密文件
+  static const String encryptFile = 'EncryptFile';
+
+  /// 解密文件
+  static const String decryptFile = 'DecryptFile';
+
   // static const String unInitSDK = 'UnInitSDK';
 }
 
