@@ -12154,24 +12154,6 @@ class FlutterOpenimSdkFfiBindings {
       void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  ffi.Pointer<ffi.Char> DecryptFile(
-    ffi.Pointer<ffi.Char> encryptedFilePath,
-    ffi.Pointer<ffi.Char> privateKeyPath,
-  ) {
-    return _DecryptFile(
-      encryptedFilePath,
-      privateKeyPath,
-    );
-  }
-
-  late final _DecryptFilePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('DecryptFile');
-  late final _DecryptFile = _DecryptFilePtr.asFunction<
-      ffi.Pointer<ffi.Char> Function(
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
-
   ffi.Pointer<ffi.Char> EncryptFile(
     ffi.Pointer<ffi.Char> operationID,
     ffi.Pointer<ffi.Char> filePath,
@@ -12189,6 +12171,26 @@ class FlutterOpenimSdkFfiBindings {
           ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('EncryptFile');
   late final _EncryptFile = _EncryptFilePtr.asFunction<
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  ffi.Pointer<ffi.Char> DecryptFile(
+    ffi.Pointer<ffi.Char> operationID,
+    ffi.Pointer<ffi.Char> filePath,
+    ffi.Pointer<ffi.Char> privateKeyPath,
+  ) {
+    return _DecryptFile(
+      operationID,
+      filePath,
+      privateKeyPath,
+    );
+  }
+
+  late final _DecryptFilePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('DecryptFile');
+  late final _DecryptFile = _DecryptFilePtr.asFunction<
       ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 

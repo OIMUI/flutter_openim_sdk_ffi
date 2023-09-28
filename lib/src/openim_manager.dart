@@ -447,10 +447,12 @@ class OpenIMManager {
             calloc.free(publicKeyFilePath);
             break;
           case _PortMethod.decryptFile:
+            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
             final filePath = (msg.data['filePath'] as String).toNativeUtf8().cast<ffi.Char>();
             final privateKeyFilePath = (msg.data['privateKeyFilePath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = bindings.DecryptFile(filePath, privateKeyFilePath);
+            final newMsg = bindings.DecryptFile(operationID, filePath, privateKeyFilePath);
             msg.sendPort?.send(_PortResult(data: newMsg.cast<Utf8>().toDartString()));
+            calloc.free(operationID);
             calloc.free(filePath);
             calloc.free(privateKeyFilePath);
             break;
