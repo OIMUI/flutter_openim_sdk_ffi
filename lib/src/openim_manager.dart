@@ -38,6 +38,7 @@ class OpenIMManager {
   static Future<bool> init({
     required String apiAddr,
     required String wsAddr,
+    required String secretKey,
     String? dataDir,
     int logLevel = 6,
     String? operationID,
@@ -56,6 +57,7 @@ class OpenIMManager {
       isLogStandardOutput: isLogStandardOutput,
       logFilePath: logFilePath,
       isExternalExtensions: isExternalExtensions,
+      secretKey: secretKey,
     );
     Isolate isolate = await Isolate.spawn(
       _isolateEntry,
@@ -128,6 +130,7 @@ class OpenIMManager {
           'LogFilePath': data.logFilePath,
           'isLogStandardOutput': data.isLogStandardOutput,
           'isExternalExtensions': data.isExternalExtensions,
+          'secretKey': data.secretKey,
         });
         final listenerPtr = bindings.getIMListener();
 
@@ -435,26 +438,6 @@ class OpenIMManager {
             msg.sendPort?.send(_PortResult(data: IMUtils.toObj(newMsg.cast<Utf8>().toDartString(), (v) => Message.fromJson(v))));
             calloc.free(operationID);
             calloc.free(imagePath);
-            break;
-          case _PortMethod.encryptFile:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final filePath = (msg.data['filePath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final publicKeyFilePath = (msg.data['publicKeyFilePath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = bindings.EncryptFile(operationID, filePath, publicKeyFilePath);
-            msg.sendPort?.send(_PortResult(data: newMsg.cast<Utf8>().toDartString()));
-            calloc.free(operationID);
-            calloc.free(filePath);
-            calloc.free(publicKeyFilePath);
-            break;
-          case _PortMethod.decryptFile:
-            final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();
-            final filePath = (msg.data['filePath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final privateKeyFilePath = (msg.data['privateKeyFilePath'] as String).toNativeUtf8().cast<ffi.Char>();
-            final newMsg = bindings.DecryptFile(operationID, filePath, privateKeyFilePath);
-            msg.sendPort?.send(_PortResult(data: newMsg.cast<Utf8>().toDartString()));
-            calloc.free(operationID);
-            calloc.free(filePath);
-            calloc.free(privateKeyFilePath);
             break;
           case _PortMethod.createSoundMessage:
             final operationID = (msg.data['operationID'] as String).toNativeUtf8().cast<ffi.Char>();

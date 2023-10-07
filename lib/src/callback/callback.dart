@@ -62,6 +62,8 @@ class _PortMethod {
 
   /// 消息
   static const String sendMessage = 'SendMessage';
+
+  /// 发送加密消息
   static const String getAdvancedHistoryMessageList = 'GetAdvancedHistoryMessageList';
   static const String getAdvancedHistoryMessageListReverse = 'GetAdvancedHistoryMessageListReverse';
   // static const String revokeMessage = 'RevokeMessage';
@@ -190,12 +192,6 @@ class _PortMethod {
   static const String getLoginStatus = 'GetLoginStatus';
   static const String logout = 'Logout';
   static const String setAppBadge = 'SetAppBadge';
-
-  /// 加密文件
-  static const String encryptFile = 'EncryptFile';
-
-  /// 解密文件
-  static const String decryptFile = 'DecryptFile';
 
   // static const String unInitSDK = 'UnInitSDK';
 }

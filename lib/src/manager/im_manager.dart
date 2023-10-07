@@ -323,58 +323,6 @@ class IMManager {
     }
   }
 
-  /// 加密文件
-  ///
-  /// [filePath] 文件路径
-  ///
-  /// [publicKeyFilePath] 公钥路径
-  Future<String> encryptFile({
-    required String filePath,
-    required String publicKeyFilePath,
-    String? operationID,
-  }) async {
-    ReceivePort receivePort = ReceivePort();
-    OpenIMManager._sendPort.send(_PortModel(
-      method: _PortMethod.encryptFile,
-      data: {
-        'operationID': IMUtils.checkOperationID(operationID),
-        'filePath': filePath,
-        'publicKeyFilePath': publicKeyFilePath,
-      },
-      sendPort: receivePort.sendPort,
-    ));
-    _PortResult result = await receivePort.first;
-    receivePort.close();
-
-    return result.value;
-  }
-
-  /// 解密文件
-  ///
-  /// [filePath] 文件路径
-  ///
-  /// [publicKeyFilePath] 私钥路径
-  Future<String> decryptFile({
-    required String filePath,
-    required String privateKeyFilePath,
-    String? operationID,
-  }) async {
-    ReceivePort receivePort = ReceivePort();
-    OpenIMManager._sendPort.send(_PortModel(
-      method: _PortMethod.decryptFile,
-      data: {
-        'operationID': IMUtils.checkOperationID(operationID),
-        'filePath': filePath,
-        'privateKeyFilePath': privateKeyFilePath,
-      },
-      sendPort: receivePort.sendPort,
-    ));
-    _PortResult result = await receivePort.first;
-    receivePort.close();
-
-    return result.value;
-  }
-
   /// 获取当前登录用户信息
   Future<UserInfo> getLoginUserInfo() async {
     if (uInfo == null) {
