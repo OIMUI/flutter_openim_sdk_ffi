@@ -2,12 +2,6 @@ part of flutter_openim_sdk_ffi;
 
 const String _libName = 'flutter_openim_sdk_ffi';
 
-const mode = kReleaseMode
-    ? 'Release'
-    : kProfileMode
-        ? 'Profile'
-        : 'Debug';
-
 class OpenIM {
   static Future<String> version() async {
     ReceivePort receivePort = ReceivePort();
