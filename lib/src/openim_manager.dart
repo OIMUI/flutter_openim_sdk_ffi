@@ -38,7 +38,6 @@ class OpenIMManager {
   static Future<bool> init({
     required String apiAddr,
     required String wsAddr,
-    required String secretKey,
     String? dataDir,
     int logLevel = 6,
     String? operationID,
@@ -57,7 +56,6 @@ class OpenIMManager {
       isLogStandardOutput: isLogStandardOutput,
       logFilePath: logFilePath,
       isExternalExtensions: isExternalExtensions,
-      secretKey: secretKey,
     );
     Isolate isolate = await Isolate.spawn(
       _isolateEntry,
@@ -130,7 +128,6 @@ class OpenIMManager {
           'LogFilePath': data.logFilePath,
           'isLogStandardOutput': data.isLogStandardOutput,
           'isExternalExtensions': data.isExternalExtensions,
-          'secretKey': data.secretKey,
         });
         final listenerPtr = bindings.getIMListener();
 

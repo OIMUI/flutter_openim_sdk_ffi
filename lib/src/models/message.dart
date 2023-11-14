@@ -256,8 +256,7 @@ class Message {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) || other is Message && runtimeType == other.runtimeType && clientMsgID == other.clientMsgID;
+  bool operator ==(Object other) => identical(this, other) || other is Message && runtimeType == other.runtimeType && clientMsgID == other.clientMsgID;
 
   @override
   int get hashCode => clientMsgID.hashCode;
@@ -468,19 +467,7 @@ class VideoElem {
   /// 缩率图高度
   int? snapshotHeight;
 
-  VideoElem(
-      {this.videoPath,
-      this.videoUUID,
-      this.videoUrl,
-      this.videoType,
-      this.videoSize,
-      this.duration,
-      this.snapshotPath,
-      this.snapshotUUID,
-      this.snapshotSize,
-      this.snapshotUrl,
-      this.snapshotWidth,
-      this.snapshotHeight});
+  VideoElem({this.videoPath, this.videoUUID, this.videoUrl, this.videoType, this.videoSize, this.duration, this.snapshotPath, this.snapshotUUID, this.snapshotSize, this.snapshotUrl, this.snapshotWidth, this.snapshotHeight});
 
   VideoElem.fromJson(Map<String, dynamic> json) {
     videoPath = json['videoPath'];
@@ -879,8 +866,7 @@ class AdvancedTextElem {
 
   AdvancedTextElem.fromJson(Map<String, dynamic> json) {
     text = json['text'];
-    messageEntityList =
-        json['messageEntityList'] == null ? null : (json['messageEntityList'] as List).map((e) => MessageEntity.fromJson(e)).toList();
+    messageEntityList = json['messageEntityList'] == null ? null : (json['messageEntityList'] as List).map((e) => MessageEntity.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -1128,31 +1114,31 @@ class RevokedInfo {
 }
 
 class AdvancedMessage {
-  List<Message>? messageList;
+  List<Message> messageList;
   bool? isEnd;
   int? errCode;
   String? errMsg;
   int? lastMinSeq;
 
   AdvancedMessage({
-    this.messageList,
+    this.messageList = const [],
     this.isEnd,
     this.errCode,
     this.errMsg,
     this.lastMinSeq,
   });
 
-  AdvancedMessage.fromJson(Map<String, dynamic> json) {
-    messageList = json['messageList'] == null ? null : (json['messageList'] as List).map((e) => Message.fromJson(e)).toList();
-    isEnd = json['isEnd'];
-    errCode = json['errCode'];
-    errMsg = json['errMsg'];
-    lastMinSeq = json['lastMinSeq'];
-  }
+  factory AdvancedMessage.fromJson(Map<String, dynamic> json) => AdvancedMessage(
+        messageList: json['messageList'] == null ? [] : (json['messageList'] as List).map((e) => Message.fromJson(e)).toList(),
+        isEnd: json['isEnd'],
+        errCode: json['errCode'],
+        errMsg: json['errMsg'],
+        lastMinSeq: json['lastMinSeq'],
+      );
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
-    data['messageList'] = messageList?.map((e) => e.toJson()).toList();
+    data['messageList'] = messageList.map((e) => e.toJson()).toList();
     data['isEnd'] = isEnd;
     data['errCode'] = errCode;
     data['errMsg'] = errMsg;
@@ -1277,8 +1263,7 @@ class MessageKv {
 
   MessageKv.fromJson(Map<String, dynamic> json) {
     clientMsgID = json['clientMsgID'];
-    changedKvList =
-        json['changedKvList'] == null ? null : (json['changedKvList'] as List).map((e) => SingleTypeKeyInfoSum.fromJson(e)).toList();
+    changedKvList = json['changedKvList'] == null ? null : (json['changedKvList'] as List).map((e) => SingleTypeKeyInfoSum.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -1328,9 +1313,7 @@ class MessageTypeKeyMapping {
   MessageTypeKeyMapping.fromJson(Map<String, dynamic> json) {
     errCode = json['errCode'];
     errMsg = json['errMsg'];
-    reactionExtensionList = json['reactionExtensionList'] != null
-        ? (json['reactionExtensionList'] as Map).map((key, value) => MapEntry(key, KeyValue.fromJson(value)))
-        : null;
+    reactionExtensionList = json['reactionExtensionList'] != null ? (json['reactionExtensionList'] as Map).map((key, value) => MapEntry(key, KeyValue.fromJson(value))) : null;
     clientMsgID = json['clientMsgID'];
   }
 

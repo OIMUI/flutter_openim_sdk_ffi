@@ -85,7 +85,6 @@ class _InitSdkParams {
   final bool isLogStandardOutput;
   final String? logFilePath;
   final bool isExternalExtensions;
-  final String secretKey;
 
   _InitSdkParams({
     required this.apiAddr,
@@ -96,7 +95,6 @@ class _InitSdkParams {
     this.isLogStandardOutput = false,
     this.logFilePath,
     this.isExternalExtensions = false,
-    required this.secretKey,
   });
 }
 
