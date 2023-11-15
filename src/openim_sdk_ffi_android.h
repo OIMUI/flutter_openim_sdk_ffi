@@ -142,7 +142,6 @@ extern "C"
   extern void SetConversationIsMsgDestruct(char *operationID, char *conversationID, _Bool isMsgDestruct);
   extern void HideConversation(char *operationID, char *conversationID);
   extern void GetConversationRecvMessageOpt(char *operationID, char *conversationIDList);
-  extern void DeleteAllConversationFromLocal(char *operationID);
   extern void SetConversationDraft(char *operationID, char *conversationID, char *draftText);
   extern void ResetConversationGroupAtType(char *operationID, char *conversationID);
   extern void PinConversation(char *operationID, char *conversationID, _Bool isPinned);
@@ -164,7 +163,7 @@ extern "C"
   extern char *CreateSoundMessageFromFullPath(char *operationID, char *soundFullPath, int64_t duration);
   extern char *CreateFileMessageFromFullPath(char *operationID, char *fileFullPath, char *fileName);
   extern char *CreateImageMessage(char *operationID, char *imagePath);
-  extern char *CreateImageMessageByURL(char *operationID, char *sourcePicture, char *bigPicture, char *snapshotPicture);
+  extern char *CreateImageMessageByURL(char *operationID, char *sourcePath, char *sourcePicture, char *bigPicture, char *snapshotPicture);
   extern char *CreateSoundMessageByURL(char *operationID, char *soundBaseInfo);
   extern char *CreateSoundMessage(char *operationID, char *soundPath, int64_t duration);
   extern char *CreateVideoMessageByURL(char *operationID, char *videoBaseInfo);
@@ -186,7 +185,6 @@ extern "C"
   extern void MarkMessagesAsReadByMsgID(char *operationID, char *conversationID, char *clientMsgIDs);
   extern void DeleteMessageFromLocalStorage(char *operationID, char *conversationID, char *clientMsgID);
   extern void DeleteMessage(char *operationID, char *conversationID, char *clientMsgID);
-  extern void DeleteConversationFromLocal(char *operationID, char *conversationID);
   extern void DeleteAllMsgFromLocalAndSvr(char *operationID);
   extern void DeleteAllMsgFromLocal(char *operationID);
   extern void ClearConversationAndDeleteAllMsg(char *operationID, char *conversationID);
@@ -248,7 +246,7 @@ extern "C"
   extern void NetworkStatusChanged(char *operationID);
   extern int GetLoginStatus(char *operationID);
   extern char *GetLoginUserID();
-  extern void UpdateFcmToken(char *operationID, char *userIDList);
+  extern void UpdateFcmToken(char *operationID, char *fcmToken, int64_t expireTime);
   extern void SetAppBadge(char *operationID, int32_t appUnreadCount);
   extern void GetUsersInfo(char *operationID, char *userIDList);
   extern void GetUsersInfoFromSrv(char *operationID, char *userIDList);
