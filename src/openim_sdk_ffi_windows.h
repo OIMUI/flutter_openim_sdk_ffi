@@ -135,7 +135,6 @@ extern __declspec(dllexport) void SetConversationMsgDestructTime(char* operation
 extern __declspec(dllexport) void SetConversationIsMsgDestruct(char* operationID, char* conversationID, _Bool isMsgDestruct);
 extern __declspec(dllexport) void HideConversation(char* operationID, char* conversationID);
 extern __declspec(dllexport) void GetConversationRecvMessageOpt(char* operationID, char* conversationIDList);
-extern __declspec(dllexport) void DeleteAllConversationFromLocal(char* operationID);
 extern __declspec(dllexport) void SetConversationDraft(char* operationID, char* conversationID, char* draftText);
 extern __declspec(dllexport) void ResetConversationGroupAtType(char* operationID, char* conversationID);
 extern __declspec(dllexport) void PinConversation(char* operationID, char* conversationID, _Bool isPinned);
@@ -157,7 +156,7 @@ extern __declspec(dllexport) char* CreateImageMessageFromFullPath(char* operatio
 extern __declspec(dllexport) char* CreateSoundMessageFromFullPath(char* operationID, char* soundFullPath, int64_t duration);
 extern __declspec(dllexport) char* CreateFileMessageFromFullPath(char* operationID, char* fileFullPath, char* fileName);
 extern __declspec(dllexport) char* CreateImageMessage(char* operationID, char* imagePath);
-extern __declspec(dllexport) char* CreateImageMessageByURL(char* operationID, char* sourcePicture, char* bigPicture, char* snapshotPicture);
+extern __declspec(dllexport) char* CreateImageMessageByURL(char* operationID, char* sourcePath, char* sourcePicture, char* bigPicture, char* snapshotPicture);
 extern __declspec(dllexport) char* CreateSoundMessageByURL(char* operationID, char* soundBaseInfo);
 extern __declspec(dllexport) char* CreateSoundMessage(char* operationID, char* soundPath, int64_t duration);
 extern __declspec(dllexport) char* CreateVideoMessageByURL(char* operationID, char* videoBaseInfo);
@@ -179,7 +178,6 @@ extern __declspec(dllexport) void MarkConversationMessageAsRead(char* operationI
 extern __declspec(dllexport) void MarkMessagesAsReadByMsgID(char* operationID, char* conversationID, char* clientMsgIDs);
 extern __declspec(dllexport) void DeleteMessageFromLocalStorage(char* operationID, char* conversationID, char* clientMsgID);
 extern __declspec(dllexport) void DeleteMessage(char* operationID, char* conversationID, char* clientMsgID);
-extern __declspec(dllexport) void DeleteConversationFromLocal(char* operationID, char* conversationID);
 extern __declspec(dllexport) void DeleteAllMsgFromLocalAndSvr(char* operationID);
 extern __declspec(dllexport) void DeleteAllMsgFromLocal(char* operationID);
 extern __declspec(dllexport) void ClearConversationAndDeleteAllMsg(char* operationID, char* conversationID);
@@ -241,7 +239,7 @@ extern __declspec(dllexport) void SetAppBackgroundStatus(char* operationID, _Boo
 extern __declspec(dllexport) void NetworkStatusChanged(char* operationID);
 extern __declspec(dllexport) int GetLoginStatus(char* operationID);
 extern __declspec(dllexport) char* GetLoginUserID();
-extern __declspec(dllexport) void UpdateFcmToken(char* operationID, char* userIDList);
+extern __declspec(dllexport) void UpdateFcmToken(char* operationID, char* fcmToken, int64_t expireTime);
 extern __declspec(dllexport) void SetAppBadge(char* operationID, int32_t appUnreadCount);
 extern __declspec(dllexport) void GetUsersInfo(char* operationID, char* userIDList);
 extern __declspec(dllexport) void GetUsersInfoFromSrv(char* operationID, char* userIDList);
