@@ -131,20 +131,10 @@ class OpenIMManager {
         });
         final listenerPtr = bindings.getIMListener();
 
-        final ffi.DynamicLibrary runLib = () {
-          if (Platform.isMacOS || Platform.isIOS) {
-            return ffi.DynamicLibrary.open('openim_sdk_ffi.framework/openim_sdk_ffi');
-          }
-          if (Platform.isAndroid || Platform.isLinux) {
-            return ffi.DynamicLibrary.open('libopenim_sdk_ffi.so');
-          }
-          if (Platform.isWindows) {
-            return ffi.DynamicLibrary.open('libopenim_sdk_ffi.dll');
-          }
-          throw UnsupportedError('Unknown platform: ${Platform.operatingSystem}');
-        }();
-
-        bindings = FlutterOpenimSdkFfiBindings(runLib);
+        /// 临时解决方案
+        if (Platform.isWindows) {
+          bindings = FlutterOpenimSdkFfiBindings(ffi.DynamicLibrary.open('libopenim_sdk_ffi.dll'));
+        }
 
         status = bindings.InitSDK(
           listenerPtr,
